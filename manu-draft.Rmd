@@ -1,0 +1,53 @@
+---
+title: "Title placeholder"
+output: 
+  bookdown::word_document2:
+    reference_docx: my_styles.docx
+    number_sections: false
+always_allow_html: true
+# bibliography: refs.bib
+author: "Marcus W. Beck (mbeck@tbep.org), Gary E. Raulerson (graulerson@tbep.org), Maya C. Burke (mburke@tbep.org), Joe Whalen (jwhalen@tbep.org), Sheila Scolaro (sscolar@tbep.org), Ed T. Sherwood (esherwood@tbep.org)"
+urlcolor: blue
+csl: marine-pollution-bulletin.csl
+link-citations: true
+---
+
+```{r setup, echo = F, warning = F, message = F, results = 'hide'}
+# figure path, chunk options
+knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, cache = F, dev.args = list(family = 'serif'), dpi = 300, warning = F,
+  fig.process = function(x) {
+  x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+  if (file.rename(x, x2)) x2 else x
+  })
+
+# # extract bib entries from online
+# bib_scrp('manu_draft.Rmd', 'refs.bib')
+```
+
+`r paste('Last manuscript build', Sys.time())`
+
+```{r echo = F, cache = F, eval = F}
+spelling::spell_check_files('manu_draft.Rmd')
+```
+
+# Abstract
+
+*Key words*: 
+
+# Introduction
+
+https://docs.google.com/document/d/1KqaEAYEG7pdcGpWbUjONfVKMHHB6_kOkKCyncp4JYKA/edit
+
+# Methods
+
+# Results
+
+# Conclusions
+
+# Acknowledgments
+
+# Figures
+
+# Tables
+
+# References
