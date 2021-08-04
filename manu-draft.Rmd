@@ -1,11 +1,11 @@
 ---
-title: "Title placeholder"
+title: "Initial environmental impacts of Piney Point wastewater discharge into Tampa Bay, Florida"
 output: 
   bookdown::word_document2:
     reference_docx: my_styles.docx
     number_sections: false
 always_allow_html: true
-# bibliography: refs.bib
+bibliography: refs.bib
 author: "Marcus W. Beck (mbeck@tbep.org), Gary E. Raulerson (graulerson@tbep.org), Maya C. Burke (mburke@tbep.org), Joe Whalen (jwhalen@tbep.org), Sheila Scolaro (sscolar@tbep.org), Ed T. Sherwood (esherwood@tbep.org)"
 urlcolor: blue
 csl: marine-pollution-bulletin.csl
@@ -36,13 +36,34 @@ spelling::spell_check_files('manu_draft.Rmd')
 
 # Introduction
 
-https://docs.google.com/document/d/1KqaEAYEG7pdcGpWbUjONfVKMHHB6_kOkKCyncp4JYKA/edit
+* Nutrient management paradigm for southwest Florida estuaries, historical progress
+* Threats/challenges to protecting water quality: nutrient inputs, climate change
+* Wastewater byproducts from mining are a global threat to the quality of surface and groundwater sources worldwide [@Hudson11].  Phosphate mining industry in Florida, then/now
+* Piney Point
+* Goals/objectives
 
 # Methods
 
+* Historical timeline: https://docs.google.com/document/d/1KqaEAYEG7pdcGpWbUjONfVKMHHB6_kOkKCyncp4JYKA/edit
+* Initial response, data collection
+* Synthesis and Analysis
+
 # Results
 
-# Conclusions
+* 2021 timeline
+* Historical context/baseline condition
+* effluent characteristics
+* water-column water quality changes
+* red tide impacts
+* Seagrass/macroalgae
+
+# Discussion
+
+* Comparison to other locations/past events - Grand Bay, Bishop Harbor, Huelva estuary [@Perez10;@Perez16]
+* Analysis limitations: no smoking gun but 2021 is an anomaly, additional info (benthic diversity TBD, nekton diversity TBD, large mammals, etc.)
+* Potential long-term impacts TBD
+* Current challenges in TB/southwest FL - OTB, seagrass loss, red tide, climate change
+* Risk of decline (IRL ex.)/regression of past progress
 
 # Acknowledgments
 
