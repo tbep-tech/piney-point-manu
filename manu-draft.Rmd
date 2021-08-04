@@ -38,13 +38,18 @@ spelling::spell_check_files('manu_draft.Rmd')
 
 * Nutrient management paradigm for southwest Florida estuaries, historical progress
 * Threats/challenges to protecting water quality: nutrient inputs, climate change
-* Wastewater byproducts from mining are a global threat to the quality of surface and groundwater sources worldwide [@Hudson11].  Phosphate mining industry in Florida, then/now
+* Wastewater byproducts from mining are a global threat to the quality of surface and groundwater sources worldwide [@Hudson11]. 
+     * [@Tayibi09] reviews environmental impact of phosphogypsum production, including contaminantion of groundwater/leaching to coastal waters.  
+     * [@Burnett01] evaluate radiochemistry of phosphogypsum at Piney Point to evaluate potential for contamination of groundwater sources [pdf](https://www.osti.gov/etdeweb/servlets/purl/20243518)
+    * Citations from [@Perez16] to track down: Santos-Cubatao estuarine system (Brazil; Sanders et al., 2013), in the Lebanese coast (El Samad et al., 2014) and in the Gulf of Gabes (Tunisia; El Zrelli et al., 2016)
+    * Dillon report about Grand Bay [link](https://www.wrri.msstate.edu/pdf/2016dillon_finalreport.pdf)
+* Phosphate mining industry in Florida, then/now
 * Piney Point
 * Goals/objectives
 
 # Methods
 
-* Historical timeline: https://docs.google.com/document/d/1KqaEAYEG7pdcGpWbUjONfVKMHHB6_kOkKCyncp4JYKA/edit
+* Historical timeline: https://docs.google.com/document/d/1KqaEAYEG7pdcGpWbUjONfVKMHHB6_kOkKCyncp4JYKA/edit, https://thebradentontimes.com/piney-point-a-retrospective-p6328-158.htm
 * Initial response, data collection
 * Synthesis and Analysis
 
