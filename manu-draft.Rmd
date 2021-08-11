@@ -32,6 +32,8 @@ spelling::spell_check_files('manu_draft.Rmd')
 
 # Abstract
 
+From March 30th to April 9th, 2021, an estimated 215 million gallons of legacy phosphate mining wastewater from the Piney Point phosphogypsum stacks were released into Tampa Bay (Florida, USA).  Ammonium concentrations in the wastewater were measured in excess of 200 mg/L and an estimated ~205 tons of total nitrogen were exported to Lower Tampa Bay, exceeding typical annual nitrogen load estimates in a matter of days.  In response to these events, a coordinated environmental monitoring effort consisting of multiple government, university, and private sector partners began to assess conditions of surface waters around Piney Point to understand conditions prior to, during, and after the wastewater release.  These efforts included sampling of surface water chemistry, surveys of algal community response, assessments of wastewater contaminants, and biological surveys of seagrass, macroalgae, benthic, and nekton communities.  Over a five month period, environmental conditions in Tampa Bay deviated from historical baseline data.  Water quality monitoring data showed an initial phytoplankton response in April dominated by centric diatoms in samples closest to the discharge site, with chlorophyll concentrations exceeding 50 ug/L.  Macroalgae blooms of cyanobacteria (*Lyngbya* spp.) were observed in May, with biomass estimated at 0.5 kg/m2 at some locations.  Beginning in May and continuing through July, bloom concentrations of the red tide organism (*Karenia brevis*) were observed in Tampa Bay.  Reported fish kills tracked bloom concentrations, prompting local cleanup efforts to remove over 1700 tons of dead fish from coastal areas of the bay.  Combined, these observations indicate abnormal conditions in Tampa Bay following release of wastewater from Piney Point, which is supported by comparison to the decades of baseline environmental monitoring data for the region.  Ongoing monitoring will continue to assess potential long-term impacts to Tampa Bay to ensure decades of progress in environmental restoration are not reversed by acute, short-term events.
+
 *Key words*: 
 
 # Introduction
@@ -68,7 +70,7 @@ spelling::spell_check_files('manu_draft.Rmd')
 * Analysis limitations: no smoking gun but 2021 is an anomaly, additional info (benthic diversity TBD, nekton diversity TBD, large mammals, etc.)
 * Potential long-term impacts TBD
 * Current challenges in TB/southwest FL - OTB, seagrass loss, red tide, climate change
-* Risk of decline (IRL ex.)/regression of past progress
+* Risk of decline (IRL ex.), regression of past progress
 
 # Acknowledgments
 
