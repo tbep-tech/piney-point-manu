@@ -32,9 +32,9 @@ spelling::spell_check_files('manu_draft.Rmd')
 
 # Abstract
 
-From March 30th to April 9th, 2021, an estimated 215 million gallons of legacy phosphate mining wastewater from the Piney Point facility were released into Tampa Bay (Florida, USA).  An estimated ~205 tons of total nitrogen were exported to Lower Tampa Bay, exceeding typical annual nitrogen load estimates in a matter of days.  An initial phytoplankton response was observed in samples closest to the discharge site, with chlorophyll concentrations exceeding 50 ug/L.  Macroalgae blooms of cyanobacteria (*Lyngbya* spp.) were observed in May, with biomass estimated at 0.5 kg/m2 at some locations.  Blooms of *Karenia brevis* were observed beginning in May and continuing through July.  Reported fish kills tracked bloom concentrations, prompting local cleanup efforts to remove over 1700 tons of dead fish.  Combined, these observations indicate abnormal conditions in Tampa Bay following release of wastewater from Piney Point, which is supported by comparison to the decades of baseline environmental monitoring data for the region. 
+From March 30th to April 9th, 2021, 215 million gallons of legacy phosphate mining wastewater from the Piney Point facility were released into Tampa Bay (Florida, USA).  An estimated ~205 tons of total nitrogen were exported to Lower Tampa Bay, exceeding typical annual nitrogen load estimates in a matter of days.  An initial phytoplankton response was observed in samples closest to the discharge site, with chlorophyll concentrations exceeding 50 ug/L.  Macroalgae blooms of cyanobacteria (*Lyngbya* spp.) were observed in May, with biomass estimated at 0.5 kg/m2 at some locations.  Blooms of *Karenia brevis* were observed beginning in May and continuing through July.  Reported fish kills tracked bloom concentrations, prompting local cleanup efforts to remove over 1700 tons of dead fish.  Combined, these observations indicate abnormal conditions in Tampa Bay following release of wastewater from Piney Point, which is supported by comparison to the decades of baseline environmental monitoring data for the region. 
 
-*Key words*: 
+*Key words*: nitrogen, phosphate mining, Tampa Bay, wastewater, water quality
 
 # Introduction
 
@@ -48,6 +48,8 @@ From March 30th to April 9th, 2021, an estimated 215 million gallons of legacy p
 * Phosphate mining industry in Florida, then/now
 * Piney Point
 * Goals/objectives
+
+This paper provides an initial assessment of environmental conditions in Tampa Bay following the release of 215 million gallons of legacy phosphate mining wastewater over a ten-day period.  The goal is to describe the results of monitoring data collected in response to the discharge event to assess deviation of current conditions relative to long-term, seasonal records of water quality, phytoplankton, seagrass, benthic, and nekton datasets available for the region.  We provide a brief overview of the history of the Piney Point facility, including past wastewater releases and impacts observed in Tampa Bay.  A timeline of events in 2021 is also provided, which is supported by the results from response-based monitoring of conditions in and around Piney Point.  The results of this study provide an initial documentation of impacts to the natural resources of Tampa Bay that can be used to inform long-term assessments of acute wastewater discharge events on the environmental quality of the region.  
 
 # Methods
 
