@@ -61,9 +61,9 @@ This paper provides an initial assessment of environmental conditions in Tampa B
 * Figure \@ref(fig:map) map
 * Figure \@ref(fig:timeline) timeline of events
 * Figure \@ref(fig:wqmap) map of water quality observations
-* Fig 3 Boxplots by week with +/-1sd for monthly long-term, or value median of long-term and monthly for seasonal eval
-* Fig 4 seagrass and macroalgae, correlation matrix
-* Fig 5 Red tide historic and current, include fish kill reports
+* Figure \@ref(fig:wqtrnds) boxplots by week with +/-1sd for monthly long-term
+* Fig x seagrass and macroalgae, correlation matrix
+* Fig x Red tide historic and current, include fish kill reports
 
 * Table 1 Data collected
 * Table 2 Stack/effluent characteristics, load estimates
@@ -90,6 +90,10 @@ knitr::include_graphics(here('figs/timeline.jpeg'))
 
 ```{r wqmap, fig.cap = 'Sampled water quality data for April to July 2021 in response to wastewater discarge from Piney Point for (a) total nitrogen (mg/L), (b) chlorophyll-a (ug/L), and (c) secchi disk depth (meters).  Values outside of the normal range (above for total nitrogen and chlorophyll, below for secchi) are outlined in black and those in normal range are outlined in light grey.  Color ramps and point sizes show relative values (reversed for Secchi).  Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at the nearest long-term monitoring site to each sample location.  Chlorophyll observations were truncated to a maximum of 30 ug/L to remove some outliers.'}
 knitr::include_graphics(here('figs/wqmap.jpeg'))
+```
+
+```{r wqtrnds, fig.cap = 'Sampled water quality data by week for April to July 2021 in response to wastewater discarge from Piney Point for (a) total nitrogen (mg/L), (b) chlorophyll-a (ug/L), and (c) secchi disk depth (meters).  Observations are aggregated by week and within assessment areas shown in Figure \\@ref(fig:map)a.  Normal ranges for the month of observation (monthly baseline) and area are shown by the blue shaded areas. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at long-term monitoring sites within each area.'}
+knitr::include_graphics(here('figs/wqtrnds.jpeg'))
 ```
 
 # Tables

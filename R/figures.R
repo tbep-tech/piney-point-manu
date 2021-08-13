@@ -14,6 +14,8 @@ library(scales)
 library(USAboundaries)
 
 data(rsallpts)
+data(bswqdat)
+data(bsstatloc)
 data(ppseg)
 data(segmask)
 data(rswqdat)
@@ -311,5 +313,128 @@ p3 <- bsmap +
 p <- p1 + p2 + p3
 
 jpeg(here('figs/wqmap.jpeg'), height = 7, width = 12, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+# weekly plots ------------------------------------------------------------
+
+# water quality plot fun
+wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet = FALSE, ttl, ylb){
+  
+  nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+  
+  ##
+  # wq data
+  
+  # monitoring data
+  rswqtmp <- rswqdat %>% 
+    filter(var == vr) %>% 
+    filter(!station %in% nonbay) %>% 
+    inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
+    st_intersection(ppseg) %>% 
+    st_set_geometry(NULL) %>% 
+    select(-qual, -bswqstation, -nrmrng, -source, -source_lng, -uni, -lbunis) %>% 
+    mutate(
+      date = floor_date(date, unit = 'week'), 
+      mo = month(date), 
+      fillcl = factor(area, levels = levels(area), labels = cols), 
+      fillcl = as.character(fillcl)
+    ) 
+  
+  # baseline data
+  bswqtmp <- bswqdat %>% 
+    select(-source, -uni) %>% 
+    filter(var == vr) %>% 
+    filter(yr > 2005) %>% 
+    inner_join(bsstatloc, ., by = 'station') %>% 
+    st_intersection(ppseg) %>% 
+    st_set_geometry(NULL) %>% 
+    group_by(mo, var, area) %>% 
+    summarise(   
+      avev = mean(val, na.rm = T), 
+      stdv = sd(val, na.rm = T), 
+      .groups = 'drop'
+    ) %>%
+    left_join(parms, by = 'var') %>% 
+    mutate(
+      avev = round(avev, sigdig), 
+      stdv = round(stdv, sigdig), 
+      minv = avev - stdv, 
+      minv = pmax(0, minv),
+      maxv = avev + stdv,
+      lbunis = gsub('^.*\\s(\\(.*\\))$', '\\1', lbs), 
+      lbunis = gsub('pH', '', lbunis), 
+      datestr= paste0('2021-', mo, '-01'), 
+      datestr = ymd(datestr), 
+      dateend = ceiling_date(datestr, unit = 'month')
+    )
+  
+  # boxplot colors
+  bxcls <- rswqtmp %>% 
+    select(area, date, fillcl) %>% 
+    unique
+  
+  p1 <- ggplot() + 
+    geom_rect(data = bswqtmp, aes(xmin = datestr, xmax = dateend, ymin = minv, ymax = maxv, group = mo, fill = 'Monthly baseline (mean +/- 1 sd)'), alpha = 0.2) +
+    geom_boxplot(data = rswqtmp, aes(x = date, y = val, group = date), fill= bxcls$fillcl, outlier.colour = NA, lwd = 0.5, alpha = 0.8, show.legend = F) + 
+    geom_jitter(data = rswqtmp, aes(x = date, y = val, group = date), alpha = 0.4, size = 0.5) + 
+    scale_fill_manual(NULL, values = 'blue') +
+    scale_linetype_manual(values = 'dashed') + 
+    facet_grid(area ~ ., scales = 'free_y') + 
+    scale_x_date(breaks = unique(rswqtmp$date), date_labels = '%b %d', expand = c(0.05, 0.05)) +
+    labs(
+      y = ylb, 
+      title = ttl
+    ) + 
+    coord_cartesian(xlim = range(rswqtmp$date)) +
+    theme_minimal(base_size = 12) + 
+    theme(
+      legend.position = 'top', 
+      strip.background = element_blank(), 
+      axis.title.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(size = 14), 
+      axis.text.x = element_text(size = 7, angle = 45, hjust = 1)
+    )
+  
+  if(logtr)
+    p1 <- p1 + 
+    scale_y_log10()
+  
+  if(rmfacet)
+    p1 <- p1 + 
+    theme(
+      strip.text = element_blank()
+    )
+  
+  out <- p1
+  
+  return(out)
+  
+}
+
+# segments
+ppsegbf <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+cols <- c("#E16A86", "#50A315", "#009ADE")
+names(cols) <- levels(ppseg$area)
+
+p1 <- wqplo_fun(rswqdat, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
+p2 <- wqplo_fun(rswqdat, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
+p3 <- wqplo_fun(rswqdat, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = FALSE, ttl = '(c) Secchi', ylb = 'meters')
+
+p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week of', gp = gpar(fontsize=14))) + 
+  plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.05)) & 
+  theme(legend.position = 'top')
+
+jpeg(here('figs/wqtrnds.jpeg'), height = 6, width = 8, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
