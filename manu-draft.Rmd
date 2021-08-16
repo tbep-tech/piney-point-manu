@@ -68,7 +68,7 @@ This paper provides an initial assessment of environmental conditions in Tampa B
 * Figure \@ref(fig:trnex) seagrass and macroalgae example transect
 * Figure \@ref(fig:trnfrq) seagrass, macroalgae frequency occurrence estimates
 * Figure \@ref(fig:allpcacors) seagrass, macralgae, wq pca and correlation matrix
-* Fig x Red tide historic and current, include fish kill reports
+* Figure \@ref(fig:redtide) red tide historic and current, fish kill reports historic and current
 
 * Table 1 Data collected
 * Table 2 Stack/effluent characteristics, load estimates
@@ -116,6 +116,10 @@ knitr::include_graphics(here('figs/trnfrq.jpeg'))
 
 ```{r allpcacors, fig.cap = 'Principal components analysis (PCA) and correlation matrix for water quality variables, macroalgae, and seagrasses by week for April to July 2021 in response to wastewater discharge from Piney Point.  Only areas 1 and 3 (Figure \\@ref(fig:map)a) are included where seagrass transects were surveyed. All variables were standardized to zero mean and unit variance prior to PCA. Variables with log-normal distribution were log-transformed prior to analysis.  Thick black lines in the correlation matrix separate water quality, macroalgae, and seagrass variables. Pearson correlations indicate the linear strength of assocation between pairs of variables. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'}
 knitr::include_graphics(here('figs/allpcacors.jpeg'))
+```
+
+```{r redtide, fig.cap = '*Karenia brevis* concentrations (100k cells/L) and number of fish kill reports for the contiguous record showing cell concentrations (a) by year and (b) by week in 2021 and reported fish kills by city (Tampa, St. Petersburg) (c) by year and (d) by week in 2021. Red tide concentrations show minimum, tenth percentile, median, 90th percentile, and maximum for each year or week for middle and lower Tampa Bay. *K. brevis* cell counts are from NOAA Harmful Algal BloomS Observing System (HABSOS, https://www.ncei.noaa.gov/maps/habsos), Fish kill reports are from Florida Wildlife Research Insitute Fish Kill Database, attributed to *K. brevis* (https://public.myfwc.com/FWRI/FishKillReport/).'}
+knitr::include_graphics('figs/redtide.jpeg')
 ```
 
 # Tables

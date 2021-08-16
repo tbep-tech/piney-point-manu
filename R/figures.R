@@ -871,3 +871,211 @@ jpeg(here('figs/allpcacors.jpeg'), height = 4, width = 10, units = 'in', res = 5
 print(p)
 dev.off()
 
+# red tide and fish kills -------------------------------------------------
+
+# data from https://public.myfwc.com/fwri/FishKillReport/searchresults.aspx
+# requested hillsborough, pinellas, manatee 1/1/95 to 8/13/21
+fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>% 
+  select(
+    date = textBox6, 
+    county = tEMPDataTextBox,
+    city = cOUNTYDataTextBox, 
+    waterbody = lOCATIONDataTextBox,
+    species = textBox18
+  ) %>% 
+  mutate(
+    date = mdy(date),
+    yr = year(date),
+    week = floor_date(date, unit = 'week'), 
+    week = factor(format(week, '%b %d')), 
+    week = factor(week, levels = as.character(unique(week))), 
+    county = case_when(
+      county %in% c('Pinellas ', 'Pinellas', 'pinellas') ~ 'Pinellas', 
+      county %in% c('Hillsborough', 'Hillsborough ') ~ 'Hillsborough', 
+      T ~ county
+    ),
+    city = gsub('\\s+$', '', city),
+    city = gsub('^St\\s', 'St. ', city),
+    city = case_when(
+      city %in% c('St. pete Beach', 'St. Pete Beach', 'St. Petersburg Beach') ~ 'St. Petersburg Beach', 
+      city %in% 'Tierra Ceia' ~ 'Terra Ceia', 
+      city %in% 'dunedin' ~ 'Dunedin',
+      T ~ city
+    )
+  )
+
+
+# levels for week, starts on first of week from jan through july
+weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %>% 
+  lubridate::floor_date(unit = 'week') %>% 
+  unique %>% 
+  tibble(
+    dt = ., 
+    yr = year(dt), 
+    mo = month(dt), 
+    lb = format(dt, '%b %d')
+  ) %>%
+  filter(yr > 2020) %>% 
+  filter(mo <= 8) %>% 
+  pull(lb)
+
+# MTB subset
+toplo <- kbrdat %>%
+  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>%
+  filter(var == 'kb') %>% 
+  mutate(
+    dtgrp = quarter(date),
+    yr = year(date)
+  ) %>%
+  st_set_geometry(NULL) %>%
+  # filter(year(date) >= 1990) %>%
+  mutate(
+    yr = factor(yr, levels = seq(min(yr), max(yr)))
+  ) %>%
+  group_by(yr) %>%
+  summarise(
+    cnt = n(),
+    y0 = min(val, na.rm = T), 
+    y10 = quantile(val, prob = 0.25, na.rm = T),
+    y50 = quantile(val, prob = 0.5, na.rm = T),
+    y90 = quantile(val, prob = 0.75, na.rm = T),
+    y100 = max(val, na.rm = T),
+    .groups = 'drop'
+  ) %>%
+  filter(cnt > quantile(cnt, 0.25, na.rm = T)) %>%
+  complete(yr) %>% 
+  filter(as.numeric(as.character(yr)) >= 1995)
+
+# plot
+p1 <- ggplot(toplo, aes(x = yr)) +
+  geom_boxplot(
+    aes(ymin = y0, lower = y10, middle = y50, upper = y90, ymax = y100),
+    stat = "identity", width = 0.75, fill = '#00806E'
+  ) +
+  scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    x = 'Year',
+    y = 'Cells (100k / L)',
+    subtitle = expression(paste('(a) ', italic('K. brevis'), ' concentrations by year, middle/lower Tampa Bay'))
+  )
+
+# MTB subset
+toplo <- kbrdat %>%
+  .[tbseg[tbseg$bay_segment %in% c('LTB', 'MTB'), ], ] %>%
+  filter(var == 'kb') %>% 
+  filter(year(date) >= 2021) %>%
+  mutate(
+    week = floor_date(date, unit = 'week'),
+    week = factor(format(week, '%b %d')), 
+    week = factor(week, levels = weeklv)
+  ) %>%
+  st_set_geometry(NULL) %>%
+  group_by(week) %>%
+  summarise(
+    cnt = n(),
+    y0 = min(val, na.rm = T), 
+    y10 = quantile(val, prob = 0.1, na.rm = T),
+    y50 = quantile(val, prob = 0.5, na.rm = T),
+    y90 = quantile(val, prob = 0.9, na.rm = T),
+    y100 = max(val, na.rm = T),
+    .groups = 'drop'
+  ) %>%
+  complete(week)
+
+# plot
+p2 <- ggplot(toplo, aes(x = week)) +
+  geom_boxplot(
+    aes(ymin = y0, lower = y10, middle = y50, upper = y90, ymax = y100),
+    stat = "identity", width = 0.75, fill = '#00806E'
+  ) +
+  scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    x= 'Week of',
+    y = 'Cells (100k / L)',
+    subtitle = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
+  )
+
+toplo1 <- fishdat %>% 
+  filter(city %in% c('Tampa', 'St. Petersburg')) %>% 
+  mutate(
+    yr = factor(yr, levels = seq(min(yr), max(yr)))
+  ) %>%
+  group_by(yr, city) %>% 
+  summarise(
+    cnt = n(), 
+    .groups = 'drop'
+  ) %>% 
+  complete(yr)
+
+p3 <- ggplot(toplo1, aes(x = yr, fill = city, y = cnt)) + 
+  geom_bar(stat = 'identity', colour = 'darkgrey') + 
+  labs(
+    x = 'Year',
+    y = 'No. of reports',
+    subtitle = '(c) Fish kill reports for red tide across years'
+  ) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_fill_brewer('City', palette = 'Pastel1') + 
+  theme_minimal() + 
+  theme(
+    axis.ticks.x = element_line(),
+    # axis.title.x = element_blank(), 
+    axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+    legend.position = 'top', 
+    panel.grid.minor.y = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    panel.grid.major.x = element_blank(), 
+    plot.caption = element_text(size = 10)
+  )
+
+
+toplo2 <- fishdat %>% 
+  filter(city %in% c('Tampa', 'St. Petersburg')) %>% 
+  filter(yr >= 2021) %>%  
+  group_by(week, city) %>% 
+  summarise(
+    cnt = n(), 
+    .groups = 'drop'
+  ) %>% 
+  mutate(
+    week = factor(week, levels = weeklv)
+  ) %>% 
+  complete(week)
+
+p4 <- ggplot(toplo2, aes(x = week, fill = city, y = cnt)) + 
+  geom_bar(stat = 'identity', colour = 'darkgrey') + 
+  labs(
+    x = 'Week of',
+    y = 'No. of reports', 
+    subtitle = '(d) Fish kill reports for red tide in 2021 by week'
+  ) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_fill_brewer('City', palette = 'Pastel1') + 
+  theme_minimal() + 
+  theme(
+    axis.ticks.x = element_line(),
+    # axis.title.x = element_blank(), 
+    axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+    legend.position = 'top', 
+    panel.grid.minor.y = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    panel.grid.major.x = element_blank()
+  )
+
+p <- p1 + p2 + (p3 + p4 + plot_layout(ncol = 1, guides = 'collect') & theme(legend.position = 'top')) + plot_layout(ncol = 1, heights = c(0.2, 0.2, 0.6))
+
+jpeg(here('figs/redtide.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
