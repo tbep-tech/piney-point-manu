@@ -29,6 +29,7 @@ data(ppseg)
 data(segmask)
 data(rswqdat)
 data(rsstatloc)
+data(rstrndat)
 
 source(here('R/funcs.R'))
 
@@ -329,101 +330,6 @@ dev.off()
 
 # weekly plots ------------------------------------------------------------
 
-# water quality plot fun
-wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet = FALSE, ttl, ylb){
-  
-  nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
-  
-  ##
-  # wq data
-  
-  # monitoring data
-  rswqtmp <- rswqdat %>% 
-    filter(var == vr) %>% 
-    filter(!station %in% nonbay) %>% 
-    inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
-    st_intersection(ppseg) %>% 
-    st_set_geometry(NULL) %>% 
-    select(-qual, -bswqstation, -nrmrng, -source, -source_lng, -uni, -lbunis) %>% 
-    mutate(
-      date = floor_date(date, unit = 'week'), 
-      mo = month(date), 
-      fillcl = factor(area, levels = levels(area), labels = cols), 
-      fillcl = as.character(fillcl)
-    ) 
-  
-  # baseline data
-  bswqtmp <- bswqdat %>% 
-    select(-source, -uni) %>% 
-    filter(var == vr) %>% 
-    filter(yr > 2005) %>% 
-    inner_join(bsstatloc, ., by = 'station') %>% 
-    st_intersection(ppseg) %>% 
-    st_set_geometry(NULL) %>% 
-    group_by(mo, var, area) %>% 
-    summarise(   
-      avev = mean(val, na.rm = T), 
-      stdv = sd(val, na.rm = T), 
-      .groups = 'drop'
-    ) %>%
-    left_join(parms, by = 'var') %>% 
-    mutate(
-      avev = round(avev, sigdig), 
-      stdv = round(stdv, sigdig), 
-      minv = avev - stdv, 
-      minv = pmax(0, minv),
-      maxv = avev + stdv,
-      lbunis = gsub('^.*\\s(\\(.*\\))$', '\\1', lbs), 
-      lbunis = gsub('pH', '', lbunis), 
-      datestr= paste0('2021-', mo, '-01'), 
-      datestr = ymd(datestr), 
-      dateend = ceiling_date(datestr, unit = 'month')
-    )
-  
-  # boxplot colors
-  bxcls <- rswqtmp %>% 
-    select(area, date, fillcl) %>% 
-    unique
-  
-  p1 <- ggplot() + 
-    geom_rect(data = bswqtmp, aes(xmin = datestr, xmax = dateend, ymin = minv, ymax = maxv, group = mo, fill = 'Monthly baseline (mean +/- 1 sd)'), alpha = 0.2) +
-    geom_boxplot(data = rswqtmp, aes(x = date, y = val, group = date), fill= bxcls$fillcl, outlier.colour = NA, lwd = 0.5, alpha = 0.8, show.legend = F) + 
-    geom_jitter(data = rswqtmp, aes(x = date, y = val, group = date), alpha = 0.4, size = 0.5) + 
-    scale_fill_manual(NULL, values = 'blue') +
-    scale_linetype_manual(values = 'dashed') + 
-    facet_grid(area ~ ., scales = 'free_y') + 
-    scale_x_date(breaks = unique(rswqtmp$date), date_labels = '%b %d', expand = c(0.05, 0.05)) +
-    labs(
-      y = ylb, 
-      title = ttl
-    ) + 
-    coord_cartesian(xlim = range(rswqtmp$date)) +
-    theme_minimal(base_size = 12) + 
-    theme(
-      legend.position = 'top', 
-      strip.background = element_blank(), 
-      axis.title.x = element_blank(),
-      panel.grid.minor = element_blank(),
-      strip.text = element_text(size = 14), 
-      axis.text.x = element_text(size = 7, angle = 45, hjust = 1)
-    )
-  
-  if(logtr)
-    p1 <- p1 + 
-    scale_y_log10()
-  
-  if(rmfacet)
-    p1 <- p1 + 
-    theme(
-      strip.text = element_blank()
-    )
-  
-  out <- p1
-  
-  return(out)
-  
-}
-
 # segments
 ppsegbf <- ppseg %>% 
   rename(area = Name) %>% 
@@ -627,6 +533,341 @@ p <- (rswqtmp$ord[[1]] + rswqtmp$corplo[[1]] + plot_layout(ncol = 3)) /
   (rswqtmp$ord[[3]] + rswqtmp$corplo[[3]] + plot_layout(ncol = 3)) 
 
 jpeg(here('figs/pcacors.jpeg'), height = 8, width = 7, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+# transect example --------------------------------------------------------
+
+trn <- 'S3T6b'
+rmdt <- as.Date('2021-04-07')
+
+mcrdat <- rstrndat %>% 
+  filter(station %in% trn) %>% 
+  filter(typ == 'mcr') %>% 
+  filter(date != rmdt) %>% 
+  mutate(taxa = fct_drop(taxa))
+savdat <- rstrndat %>% 
+  filter(station %in% trn) %>% 
+  filter(typ == 'sav') %>% 
+  filter(date != rmdt) %>% 
+  mutate(taxa = fct_drop(taxa))
+
+mcrsel <- mcrdat %>% 
+  filter(bb != 0) %>% 
+  pull(taxa) %>% 
+  unique %>% 
+  as.character()
+savsel <- savdat %>% 
+  filter(bb != 0) %>% 
+  pull(taxa) %>% 
+  unique %>% 
+  as.character()
+
+p <- show_rstransect(savdat, mcrdat, savsel, mcrsel)
+
+jpeg(here('figs/trnex.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+# transect frequency occurrence -------------------------------------------
+
+mcrsel <- c("Red", "Green", "Brown", "Cyanobacteria")
+savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
+
+colpal <- colorRampPalette(RColorBrewer::brewer.pal(n = 8, name = 'Dark2'))
+savlevs <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme', 'Ruppia maritima', 'Halophila engelmannii', 'Halophila decipiens')
+savcol <- colpal(length(savlevs))
+names(savcol) <- savlevs
+savcol <- savcol[savsel]
+mcrcol <- c('tomato1', 'lightgreen', 'burlywood3', 'lightblue')
+names(mcrcol) <- mcrsel
+mcrcol <- mcrcol[mcrsel]
+cols <- c(savcol, mcrcol)
+
+# segments
+areas <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+# add area
+trnsum <- rstrndat %>%
+  inner_join(rstrnpts, ., by = 'station') %>% 
+  st_intersection(areas) %>% 
+  st_set_geometry(NULL) %>%
+  dplyr::group_by(area, typ, date, station, taxa, location) %>%
+  dplyr::summarise(
+    pa = as.numeric(any(bb > 0))
+  ) %>%  
+  mutate(
+    date = floor_date(date, unit = 'month'), 
+    typ = factor(typ, levels = c('sav', 'mcr'), labels = c('Seagrasses', 'Macroalgae')), 
+    taxa = factor(taxa, levels = c(savsel, mcrsel)), 
+    area = forcats::fct_drop(area), 
+    area = factor(area, levels = c('Area 1', 'Area 3'), labels = c('(a) Area 1', '(b) Area 3'))
+  ) %>% 
+  group_by(area, typ, date, taxa) %>% 
+  summarize(
+    foest = sum(pa) / length(pa)
+  ) %>% 
+  filter(taxa %in% c(mcrsel, savsel))
+
+p <- ggplot(trnsum, aes(x =date, y = foest, fill = taxa)) + 
+  geom_bar(pch = 16, stat = 'identity', color = 'grey', alpha = 0.8) +
+  facet_grid(typ ~ area, scales = 'free') +
+  theme_minimal(base_size = 14) + 
+  scale_fill_manual(values = cols) +
+  labs(
+    y = 'Freq. occurrence'
+  ) +
+  scale_y_continuous(expand = c(0, 0)) + 
+  coord_cartesian(ylim = c(0, NA)) +
+  theme(
+    legend.position = 'top', 
+    legend.title = element_blank(),
+    strip.background = element_blank(), 
+    strip.text = element_text(size = 14), 
+    axis.title.x = element_blank(), 
+    axis.ticks.x = element_line(), 
+    panel.grid.minor = element_blank(), 
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    strip.text.x = element_text(hjust = 0)
+  )
+
+jpeg(here('figs/trnfrq.jpeg'), height = 6, width = 8, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+# all PCA and correlations ------------------------------------------------
+
+mcrsel <- c("Red", "Green", "Brown", "Cyanobacteria")
+savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
+wqsel <- c('chla', 'dosat', 'nh34', 'ph', 'sal', 'secchi', 'temp', 'tn', 'tp')
+wqlab <- c('Chl-a', 'DOsat', 'NH3, NH4+', 'pH', 'Sal', 'Secchi', 'Temp', 'TN', 'TP')
+
+nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+
+# segments
+areas <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+# correlate transect data at transect scale
+
+# add area
+trnsum <- rstrndat %>%
+  mutate(
+    date = floor_date(date, unit = 'week')
+  ) %>%
+  dplyr::group_by(date, station, location, taxa) %>%
+  dplyr::summarise(
+    pa = as.numeric(any(bb > 0))
+  ) %>%
+  group_by(date, station, taxa) %>% 
+  summarize(
+    foest = sum(pa) / length(pa)
+  )
+
+trncors <- trnsum %>% 
+  ungroup %>% 
+  filter(taxa %in% c(savsel, mcrsel)) %>% 
+  spread(taxa, foest) %>% 
+  # filter(area %in% 'Area 3') %>% 
+  select(-station, -date)
+
+
+trncrs <- crossing(var1 = names(trncors), var2 = names(trncors)) %>% 
+  filter(var1 != var2) %>% 
+  rownames_to_column() %>% 
+  group_by(rowname) %>% 
+  nest %>% 
+  mutate(
+    crs = map(data, function(x){
+      
+      # variables
+      vr1 <- trncors[[x$var1]]
+      vr2 <- trncors[[x$var2]]
+      
+      # pearson
+      pr_ts <- cor.test(vr1, vr2, method = 'pearson')
+      pr_cr <- round(pr_ts$estimate, 2)
+      pr_pv <- p_ast(pr_ts$p.value)
+      pr <- paste(pr_cr, pr_pv)
+      
+      out <- data.frame(pr = pr, stringsAsFactors = F)
+      return(out)
+      
+    })
+  ) %>% 
+  unnest(c('data', 'crs')) %>% 
+  ungroup %>% 
+  select(-rowname)
+
+# correlate water quality with transect data at aggregated scale
+
+# add area
+trnsum <- rstrndat %>% 
+  mutate(
+    date = floor_date(date, unit = 'week')
+  ) %>% 
+  inner_join(rstrnpts, ., by = 'station') %>% 
+  st_intersection(areas) %>% 
+  st_set_geometry(NULL) %>% 
+  dplyr::group_by(area, date, station, location, taxa) %>%
+  dplyr::summarise(
+    pa = as.numeric(any(bb > 0))
+  ) %>%
+  group_by(area, date, taxa) %>% 
+  summarize(
+    val = sum(pa) / length(pa) # freq occ.
+  ) %>% 
+  ungroup %>% 
+  filter(taxa %in% c(savsel, mcrsel)) %>% 
+  rename(var = taxa) %>%
+  spread(var, val)
+
+# water quality summary
+rswqsum <- rswqdat %>% 
+  filter(var %in% vrs) %>% 
+  filter(source == 'fldep') %>%
+  filter(!station %in% nonbay) %>% 
+  inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
+  st_intersection(areas) %>% 
+  st_set_geometry(NULL) %>% 
+  select(date, var, val, station, area) %>% 
+  mutate(
+    var = case_when(
+      var == 'chla' ~ 'Chl-a', 
+      var == 'dosat' ~ 'DOsat', 
+      var == 'nh34' ~ 'NH3, NH4+', 
+      var == 'ph' ~ 'pH', 
+      var == 'secchi' ~ 'Secchi', 
+      var == 'temp' ~ 'Temp', 
+      var == 'tn' ~ 'TN', 
+      var == 'no23' ~ 'NOx',
+      var == 'tp' ~ 'TP', 
+      var == 'sal' ~ 'Sal'
+    ),
+    date = floor_date(date, unit = 'week')
+  ) %>% 
+  group_by(date, var, area) %>% 
+  summarise(
+    val = median(val, na.rm = T), 
+    .groups = 'drop'
+  ) %>% 
+  complete(date, area, var) %>% 
+  group_by(area, var) %>% 
+  ungroup() %>% 
+  mutate(
+    val = case_when(
+      var %in% c('Chl-a', 'NH3, NH4+', 'NOx', 'TN', 'TP') ~ log10(1 + val),
+      T ~ val
+    )
+  ) %>% 
+  spread(var, val)
+
+tocor <- full_join(trnsum, rswqsum, by = c('area', 'date'))
+
+crs <- crossing(var1 = c(wqlab, mcrsel, savsel), var2 = c(wqlab, mcrsel, savsel)) %>% 
+  filter(var1 != var2) %>% 
+  rownames_to_column() %>% 
+  group_by(rowname) %>% 
+  nest %>% 
+  mutate(
+    crs = map(data, function(x){
+      
+      # variables
+      vr1 <- tocor[[x$var1]]
+      vr2 <- tocor[[x$var2]]
+      
+      # pearson
+      pr_ts <- try(cor.test(vr1, vr2, method = 'pearson'))
+      pr_cr <- round(pr_ts$estimate, 2)
+      pr_pv <- p_ast(pr_ts$p.value)
+      pr <- paste(pr_cr, pr_pv)
+      
+      out <- data.frame(pr = pr, stringsAsFactors = F)
+      return(out)
+      
+    })
+  ) %>% 
+  unnest(c('data', 'crs')) %>% 
+  ungroup %>% 
+  select(-rowname) %>% 
+  filter(!(var1 %in% c(mcrsel, savsel) & var2 %in% c(mcrsel, savsel)))
+
+# combine correlations and make plot
+
+prplo <- bind_rows(crs, trncrs) %>% 
+  separate(pr, c('cor', 'sig'), sep = ' ') %>%  
+  mutate(
+    cor = as.numeric(cor), 
+    var1 = factor(var1, levels = c(wqlab, mcrsel, savsel), labels =  c(wqlab, mcrsel, savsel)), 
+    var2 = factor(var2, levels = c(wqlab, mcrsel, savsel), labels =  c(wqlab, mcrsel, savsel)), 
+    sig = gsub('ns', '', sig)
+  )
+
+pbase <- theme(
+  panel.grid.major = element_blank(), 
+  panel.grid.minor = element_blank(), 
+  axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, size = 6), 
+  axis.text.y = element_text(size = 6),
+  legend.position = c(0.5, 1.1),
+  legend.direction = 'horizontal',
+  plot.margin = unit(c(4,4,0,0), "lines"),
+  strip.background = element_blank(), 
+  strip.text.y = element_text(angle = 0, hjust = 0, vjust = 0.5), 
+  panel.background = element_rect(fill = 'black')
+) 
+
+p3 <- ggplot(prplo) + 
+  geom_tile(aes(y = var1, x = var2, fill = cor), colour = 'black') + 
+  geom_text(aes(y = var1, x = var2, label = sig), size = 3) +
+  pbase +
+  scale_y_discrete('', expand = c(0, 0)) + #, labels = parse(text = rev(labs))) + 
+  scale_x_discrete('', expand = c(0, 0)) + #, labels = parse(text = rev(labs))) +
+  scale_fill_gradientn('Corr. ', colours = c(muted("blue"), "white", muted("red")), limits = c(-1, 1)) +
+  guides(fill = guide_colourbar(barheight = 0.25, barwidth = 5, label.theme = element_text(size = 6, angle = 0))) +
+  geom_hline(yintercept = 9.5, size = 1) +
+  geom_hline(yintercept = 13.5, size = 1) +
+  geom_vline(xintercept = 9.5, size = 1) +
+  geom_vline(xintercept = 13.5, size = 1)
+
+toord <- tocor %>% 
+  select(-date, -area) %>% 
+  na.omit() %>% 
+  decostand(method = 'standardize')
+
+vec_ext <- 5
+coord_fix <- F
+size <- 2
+repel <- F
+arrow <- 0.2
+txt <- 2.5
+alpha <- 0.5
+ext <- 1.2
+exp <- 0.1
+parse <- F
+
+ppp <- PCA(toord, scale.unit = F, graph = F) 
+p1 <- ggord(ppp, axes = c('1', '2'), parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
+p2 <- ggord(ppp, axes = c('2', '3'), parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
+
+p <- p1 + p2 + p3
+
+jpeg(here('figs/allpcacors.jpeg'), height = 4, width = 10, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 

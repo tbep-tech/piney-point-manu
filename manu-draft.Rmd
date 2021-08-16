@@ -22,6 +22,8 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 
 library(here)
 
+data(rstrnpts)
+
 # # extract bib entries from online
 # bib_scrp('manu_draft.Rmd', 'refs.bib')
 ```
@@ -62,12 +64,15 @@ This paper provides an initial assessment of environmental conditions in Tampa B
 * Figure \@ref(fig:timeline) timeline of events
 * Figure \@ref(fig:wqmap) map of water quality observations
 * Figure \@ref(fig:wqtrnds) boxplots by week with +/-1sd for monthly long-term
-* Fig x pca of all wq variables, by area? 
-* Fig x seagrass and macroalgae, correlation matrix
+* Figure \@ref(fig:pcacors) pca and correlations of all wq variables, by area 
+* Figure \@ref(fig:trnex) seagrass and macroalgae example transect
+* Figure \@ref(fig:trnfrq) seagrass, macroalgae frequency occurrence estimates
+* Figure \@ref(fig:allpcacors) seagrass, macralgae, wq pca and correlation matrix
 * Fig x Red tide historic and current, include fish kill reports
 
 * Table 1 Data collected
 * Table 2 Stack/effluent characteristics, load estimates
+* Table 3 Tukey multiple comparisons of water quality by week/area, with median/min/max
 
 # Discussion
 
@@ -97,8 +102,20 @@ knitr::include_graphics(here('figs/wqmap.jpeg'))
 knitr::include_graphics(here('figs/wqtrnds.jpeg'))
 ```
 
-```{r pcacors, fig.cap = 'Principal components analyses (PCA) and correlation matrices for water quality variables by week for April to July 2021 in response to wastewater discharge form Piney Point for (a) area 1, (b) area 2, and (c) area 3 (Figure \\@ref(fig:map)a).  All variables were standardized to zero mean and unit variance prior to PCA. Variables with log-normal distribution were log-transformed prior to analysis.  Pearson correlations indicate the linear strength of assocation between pairs of variables. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'}
+```{r pcacors, fig.cap = 'Principal components analyses (PCA) and correlation matrices for water quality variables by week for April to July 2021 in response to wastewater discharge from Piney Point for (a) area 1, (b) area 2, and (c) area 3 (Figure \\@ref(fig:map)a).  All variables were standardized to zero mean and unit variance prior to PCA. Variables with log-normal distribution were log-transformed prior to analysis.  Pearson correlations indicate the linear strength of assocation between pairs of variables. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'}
 knitr::include_graphics(here('figs/pcacors.jpeg'))
+```
+
+```{r trnex, fig.cap = 'Results for (a) seagrass and (b) macroalgae rapid response transect surveys at a site (S3T6, -82.55866 W longitude, 27.64483 N latitude) near Piney Point.  Sample dates in 2021 are shown in rows with transect meter results shown in columns. Results show dominance of manatee grass (*Syringodium filiforme*) and red macroalgae groups, with abundances of *Lyngbya sp.* (cyanobacteria) peaking in June and green macroalgae (*Ulva sp.*) increasing in July.  Abundances are Braun-Blanquet coverage estimates.'}
+knitr::include_graphics(here('figs/trnex.jpeg'))
+```
+
+```{r trnfrq, fig.cap = 'Frquency occurrence estimates for (a) area 1 and (b) area 2 (Figure \\@ref(fig:map)a) for seagrass (top) and macroalgae (bottom) rapid response transect surveys across all transects (n = `r nrow(rstrnpts)`) near Piney Point.  Estimates are grouped by sample months in 2021. Frequency occurrences are absolute for each taxa based on presence/absence.'}
+knitr::include_graphics(here('figs/trnfrq.jpeg'))
+```
+
+```{r allpcacors, fig.cap = 'Principal components analysis (PCA) and correlation matrix for water quality variables, macroalgae, and seagrasses by week for April to July 2021 in response to wastewater discharge from Piney Point.  Only areas 1 and 3 (Figure \\@ref(fig:map)a) are included where seagrass transects were surveyed. All variables were standardized to zero mean and unit variance prior to PCA. Variables with log-normal distribution were log-transformed prior to analysis.  Thick black lines in the correlation matrix separate water quality, macroalgae, and seagrass variables. Pearson correlations indicate the linear strength of assocation between pairs of variables. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'}
+knitr::include_graphics(here('figs/allpcacors.jpeg'))
 ```
 
 # Tables
