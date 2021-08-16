@@ -12,6 +12,15 @@ library(units)
 library(grid)
 library(scales)
 library(USAboundaries)
+library(ggord)
+library(lubridate)
+library(patchwork)
+box::use(
+  scales = scales[muted], 
+  units = units[set_units], 
+  vegan = vegan[decostand], 
+  FactoMineR = FactoMineR[PCA]
+)
 
 data(rsallpts)
 data(bswqdat)
@@ -20,6 +29,8 @@ data(ppseg)
 data(segmask)
 data(rswqdat)
 data(rsstatloc)
+
+source(here('R/funcs.R'))
 
 # map ---------------------------------------------------------------------
 
@@ -438,3 +449,184 @@ p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week
 jpeg(here('figs/wqtrnds.jpeg'), height = 6, width = 8, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
+
+# PCA and correlations ----------------------------------------------------
+
+vrs <- c('chla', 'dosat', 'nh34', 'ph', 'secchi', 'temp', 'tn', 'no23', 'tp', 'sal')
+nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+
+cols <- c("#E16A86", "#50A315", "#009ADE")
+names(cols) <- c('Area 1', 'Area 2', 'Area 3')
+
+ppsegbf <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+rswqsub <- rswqdat %>% 
+  filter(var %in% vrs) %>% 
+  filter(source == 'fldep') %>%
+  filter(!station %in% nonbay) %>% 
+  inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
+  st_intersection(ppsegbf) %>% 
+  st_set_geometry(NULL) %>% 
+  select(date, var, val, station, area) %>% 
+  mutate(
+    var = case_when(
+      var == 'chla' ~ 'Chl-a', 
+      var == 'dosat' ~ 'DOsat', 
+      var == 'nh34' ~ 'NH3, NH4+', 
+      var == 'ph' ~ 'pH', 
+      var == 'secchi' ~ 'Secchi', 
+      var == 'temp' ~ 'Temp', 
+      var == 'tn' ~ 'TN', 
+      var == 'no23' ~ 'NOx',
+      var == 'tp' ~ 'TP', 
+      var == 'sal' ~ 'Sal'
+    ),
+    date = floor_date(date, unit = 'week')
+  ) %>% 
+  group_by(date, var, area) %>% 
+  summarise(
+    val = median(val, na.rm = T), 
+    .groups = 'drop'
+  ) 
+
+rswqtmp <- rswqsub %>% 
+  complete(date, area, var) %>% 
+  group_by(area, var) %>% 
+  # mutate(
+  #   val = ifelse(is.na(val), median(val, na.rm = T), val)
+  # ) %>% 
+  ungroup() %>% 
+  mutate(
+    val = case_when(
+      var %in% c('Chl-a', 'NH3, NH4+', 'NOx', 'TN', 'TP') ~ log10(1 + val),
+      T ~ val
+    )
+  ) %>%
+  group_by(area) %>% 
+  nest %>% 
+  mutate(
+    data = purrr::map(data, function(x){
+      
+      out <- spread(x, var, val) %>% 
+        na.omit()
+      
+      return(out)
+      
+    }
+    ),
+    ord = purrr::pmap(list(area, data), function(area, data){
+      
+      toord <- data %>% 
+        select(-date) %>% 
+        decostand(method = 'standardize')
+      
+      ppp <- PCA(toord, scale.unit = F, graph = F) 
+      
+      if(area == 'Area 1')
+        ttl <- paste('(a)', area)
+      if(area == 'Area 2')
+        ttl <- paste('(b)', area)
+      if(area == 'Area 3')
+        ttl <- paste('(c)', area)
+      
+      vec_ext <- 3
+      coord_fix <- F
+      size <- 2
+      repel <- F
+      arrow <- 0.2
+      txt <- 3
+      alpha <- 0.5
+      lbcl <- cols[area]
+      max.overlaps <- 10
+      force <- 1
+      ext <- 1.2
+      exp <- 0.1
+      parse <- F
+      
+      p1 <- ggord(ppp, axes = c('1', '2'), parse = parse, exp = exp, force = force, ext = ext, max.overlaps = max.overlaps, alpha = alpha, veccol = lbcl, labcol = lbcl, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt) + 
+        labs(title = ttl)
+      p2 <- ggord(ppp, axes = c('2', '3'), parse = parse, exp = exp, force = force, ext = ext, max.overlaps = max.overlaps, alpha = alpha, veccol = lbcl, labcol = lbcl, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt)
+      
+      out <- p1 + p2 + plot_layout(ncol = 2)
+      
+      return(out)
+      
+    }
+    ), 
+    cormat = purrr::map(data, function(x){
+      
+      out <- x %>% 
+        select(-date) %>% 
+        names %>% 
+        crossing(var1 = ., var2 = .) %>% 
+        filter(!var1 == var2) %>% 
+        mutate(
+          corv = NA_real_, 
+          pval = NA_real_, 
+          pstr = NA_character_
+        )
+      
+      for(i in 1:nrow(out)){
+        
+        var1 <- out[[i, 'var1']]
+        var2 <- out[[i, 'var2']]
+        
+        tst <- cor.test(x[[var1]], x[[var2]])
+        
+        corv <- tst$estimate
+        pval <- tst$p.value
+        pstr <- p_ast(pval)
+        
+        cri <- data.frame(corv = corv, pval = pval, pstr = pstr)
+        
+        out[i, c('corv', 'pval', 'pstr')] <- cri
+        
+      }
+      
+      return(out)
+      
+    }
+    ), 
+    corplo = purrr::map(cormat, function(x){
+      
+      pbase <- theme(
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, size = 7), 
+        axis.text.y = element_text(size = 7),
+        legend.position = c(0.5, 1.12),
+        legend.direction = 'horizontal', 
+        panel.background = element_rect(fill = 'black')
+      ) 
+      
+      p <- ggplot(x) + 
+        geom_tile(aes(y = var1, x = var2, fill = corv), colour = 'black') + 
+        geom_text(aes(y = var1, x = var2, label = pstr), size = 3) +
+        pbase +
+        scale_y_discrete('', expand = c(0, 0)) + 
+        scale_x_discrete('', expand = c(0, 0)) + 
+        scale_fill_gradientn('Corr. ', colours = c(muted("blue"), "white", muted("red")), limits = c(-1, 1)) +
+        guides(fill = guide_colourbar(barheight = 0.25, barwidth = 4, label.theme = element_text(size = 6, angle = 0)))
+      
+      return(p)
+      
+    }
+    )
+  )
+
+p <- (rswqtmp$ord[[1]] + rswqtmp$corplo[[1]] + plot_layout(ncol = 3)) / 
+  (rswqtmp$ord[[2]]  + rswqtmp$corplo[[2]] + plot_layout(ncol = 3)) / 
+  (rswqtmp$ord[[3]] + rswqtmp$corplo[[3]] + plot_layout(ncol = 3)) 
+
+jpeg(here('figs/pcacors.jpeg'), height = 8, width = 7, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
