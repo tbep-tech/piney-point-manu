@@ -1,6 +1,8 @@
 
 # setup -------------------------------------------------------------------
 
+library(here)
+library(tbeptools)
 library(tidyverse)
 library(sf)
 box::use(
@@ -11,6 +13,71 @@ data(rswqdat)
 data(ppseg)
 data(rsstatloc)
 data(parms)
+data(bsstatloc)
+data(bswqdat)
+
+# stack characteristics ---------------------------------------------------
+
+# ltb seg
+ltb <- tbseg %>% 
+  filter(bay_segment %in% 'LTB')
+
+# relevant stack measurements form ngs-s, FDEP measurements
+# original data from https://docs.google.com/spreadsheets/d/1AgRPWUv8TLVcLf6KmDCSIcTOVZmQL7ij/edit#gid=1685851796
+stkraw <- read.csv(here('data-raw/stack_samples.csv')) %>% 
+  select(var = Parameter, val = NGS.S, Units) %>% 
+  filter(var %in% c('NO2NO3-N', 'Ammonia N', 'Total N', 'Total-P', 'Ortho Phosphate as P', 'Dissolved Oxygen', 'pH*')) %>% 
+  filter(!(var %in% 'Dissolved Oxygen' & Units %in% 'mg/L')) %>% 
+  mutate(
+    var = case_when(
+      var == 'NO2NO3-N' ~ 'no23', 
+      var == 'Ammonia N' ~ 'nh34', 
+      var == 'Total N' ~ 'tn', 
+      var == 'Total-P' ~ 'tp', 
+      var == 'Ortho Phosphate as P' ~ 'orthop', 
+      var == 'Dissolved Oxygen' ~ 'dosat', 
+      var == 'pH*' ~ 'ph'
+    )
+  ) %>% 
+  left_join(parms, by = 'var') %>% 
+  select(var, lbs, val)
+
+bssum <- bswqdat %>% 
+  filter(yr > 2005 & yr < 2021) %>% 
+  filter(source == 'epchc') %>% 
+  filter(var %in% unique(stkraw$var)) %>% 
+  inner_join(bsstatloc, ., by = c('station')) %>% 
+  .[ltb, ] %>% 
+  st_set_geometry(NULL) %>% 
+  group_by(yr, var) %>% 
+  summarise(
+    val = median(val, na.rm = T),
+    .groups = 'drop'
+  ) %>%
+  left_join(parms, by = 'var') %>% 
+  group_by(var) %>% 
+  summarise(
+    minv = round(min(val), unique(sigdig)),
+    maxv = round(max(val), unique(sigdig)),
+    avev = round(mean(val), unique(sigdig)), 
+    .groups = 'drop'
+  ) %>% 
+  mutate(
+    minv = paste0(' (', minv, ', '), 
+    maxv = paste0(maxv, ')')
+  ) %>% 
+  unite(sumv, avev, minv, maxv, sep = '')
+
+tab <- full_join(stkraw, bssum, by = 'var') %>% 
+  select(
+    `Water quality variable` = lbs, 
+    `Stack value` = val, 
+    `Normal mean (min, max)` = sumv
+  )
+
+stktab <- tab
+
+save(stktab, file = here('tables/stktab.RData'))
 
 # water quality summary table ---------------------------------------------
 

@@ -24,6 +24,7 @@ library(here)
 
 data(rstrnpts)
 load(file = here('tables/wqsumtab.RData'))
+load(file = here('tables/stktab.RData'))
 
 # # extract bib entries from online
 # bib_scrp('manu_draft.Rmd', 'refs.bib')
@@ -71,9 +72,10 @@ This paper provides an initial assessment of environmental conditions in Tampa B
 * Figure \@ref(fig:allpcacors) seagrass, macralgae, wq pca and correlation matrix
 * Figure \@ref(fig:redtide) red tide historic and current, fish kill reports historic and current
 
+* Table \@ref(tab:stktab) Stack characteristics
 * Table \@ref(tab:wqsumtab) water quality data collected and summarized
-* Table 2 Stack/effluent characteristics, load estimates
 * Table 3 Tukey multiple comparisons of water quality by week/area, with median/min/max
+* Table 4 Seagrass/macroalgae freq. occurrence summaries
 
 # Discussion
 
@@ -119,18 +121,20 @@ knitr::include_graphics(here('figs/trnfrq.jpeg'))
 knitr::include_graphics(here('figs/allpcacors.jpeg'))
 ```
 
-```{r redtide, fig.cap = '*Karenia brevis* concentrations (100k cells/L) and number of fish kill reports for the contiguous record showing cell concentrations (a) by year and (b) by week in 2021 and reported fish kills by city (Tampa, St. Petersburg) (c) by year and (d) by week in 2021. Red tide concentrations show minimum, tenth percentile, median, 90th percentile, and maximum for each year or week for middle and lower Tampa Bay. *K. brevis* cell counts are from NOAA Harmful Algal BloomS Observing System (HABSOS, https://www.ncei.noaa.gov/maps/habsos), Fish kill reports are from Florida Wildlife Research Insitute Fish Kill Database, attributed to *K. brevis* (https://public.myfwc.com/FWRI/FishKillReport/).'}
+```{r redtide, fig.cap = '*Karenia brevis* concentrations (100k cells/L) and number of fish kill reports for the contiguous record showing cell concentrations (a) by year and (b) by week in 2021 and reported fish kills by city (Tampa, St. Petersburg) (c) by year and (d) by week in 2021. Red tide concentrations show minimum, tenth percentile, median, 90th percentile, and maximum for each year or week for middle and lower Tampa Bay. *K. brevis* cell counts are from NOAA Harmful Algal BloomS Observing System (HABSOS, https://www.ncei.noaa.gov/maps/habsos), Fish kill reports are from Florida Fish and Wildlife Conservation Commission, Fish and Wildlife Research Insitute Fish Kill Database, attributed to *K. brevis* (https://public.myfwc.com/FWRI/FishKillReport/).'}
 knitr::include_graphics('figs/redtide.jpeg')
 ```
 
 # Tables
 
+```{r stktab}
+cap.val <- 'Measured concentrations from the phosphogypsum stack (NGS-S) at Piney Point on April 9th, 2021 for relevant water quality variables compared to normal annual means (min, max) for concentrations in lower Tampa Bay.  Normal means are based on data for a baseline period from 2006 to 2020 from long-term monitoring stations in lower Tampa Bay collected monthly by Hillsborough County Environmental Protection Commission.'
+knitr::kable(stktab, booktabs = T, caption = cap.val)
+```
+
 ```{r wqsumtab}
-# table stuff
 cap.val <- 'Summary of water quality variables collected from March to July 2021 in response to wastewater discharge from Piney Point. Variables are grouped by major areas interest for evaluating status and trends shown in Figure \\@ref(fig:map)a. Summaries are median, maximum, and minimum values. Total observations (N obs.) and values in rnage, above, or below normal ranges are also shown. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at the nearest long-term monitoring site to each sample location.'
-tab <- wqsumtab
-# table
-knitr::kable(tab, booktabs = T, caption = cap.val)
+knitr::kable(wqsumtab, booktabs = T, caption = cap.val)
 ```
 
 # References
