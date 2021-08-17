@@ -25,6 +25,7 @@ library(here)
 data(rstrnpts)
 load(file = here('tables/wqsumtab.RData'))
 load(file = here('tables/stktab.RData'))
+load(file = here('tables/wqcmptab.RData'))
 
 # # extract bib entries from online
 # bib_scrp('manu_draft.Rmd', 'refs.bib')
@@ -60,6 +61,8 @@ This paper provides an initial assessment of environmental conditions in Tampa B
 * Initial response, data collection
 * Synthesis and Analysis
 
+For total nitrogen, chlorophyll-a, and secchi depth, differences in concentrations between months within each area (Figure \@ref(fig:map)a) were evaluated using a Kruskal-Wallis one-way analysis of variance (ANOVA) followed by multiple comparisons using 2-sided Mann-Whitney U tests [@Hollander13]. Probability values were adjusted using the sequential Bonferroni method described in [@Holm79] to account for the increased probability of Type I error rates with multiple comparisons. An adjusted p-value < 5\% ($\alpha$ = 0.05) was considered a significant difference between months.
+
 # Results
 
 * Figure \@ref(fig:map) map
@@ -74,7 +77,7 @@ This paper provides an initial assessment of environmental conditions in Tampa B
 
 * Table \@ref(tab:stktab) Stack characteristics
 * Table \@ref(tab:wqsumtab) water quality data collected and summarized
-* Table 3 Tukey multiple comparisons of water quality by week/area, with median/min/max
+* Table \@ref(tab:wqcmptab) Multiple comparisons of water quality by month/area, with median/min/max
 * Table 4 Seagrass/macroalgae freq. occurrence summaries
 
 # Discussion
@@ -128,13 +131,18 @@ knitr::include_graphics('figs/redtide.jpeg')
 # Tables
 
 ```{r stktab}
-cap.val <- 'Measured concentrations from the phosphogypsum stack (NGS-S) at Piney Point on April 9th, 2021 for relevant water quality variables compared to normal annual means (min, max) for concentrations in lower Tampa Bay.  Normal means are based on data for a baseline period from 2006 to 2020 from long-term monitoring stations in lower Tampa Bay collected monthly by Hillsborough County Environmental Protection Commission.'
+cap.val <- 'Measured concentrations from the phosphogypsum stack (NGS-S) at Piney Point on April 9th, 2021 for relevant water quality variables compared to normal annual means (min, max) for concentrations in lower Tampa Bay.  Normal medians are based on data for a baseline period from 2006 to 2020 from long-term monitoring stations in lower Tampa Bay collected monthly by Hillsborough County Environmental Protection Commission.'
 knitr::kable(stktab, booktabs = T, caption = cap.val)
 ```
 
 ```{r wqsumtab}
 cap.val <- 'Summary of water quality variables collected from March to July 2021 in response to wastewater discharge from Piney Point. Variables are grouped by major areas interest for evaluating status and trends shown in Figure \\@ref(fig:map)a. Summaries are median, maximum, and minimum values. Total observations (N obs.) and values in rnage, above, or below normal ranges are also shown. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at the nearest long-term monitoring site to each sample location.'
 knitr::kable(wqsumtab, booktabs = T, caption = cap.val)
+```
+
+```{r wqcmps}
+cap.val <- 'Comparison of total nitrogen, chlorophyll-a, and secchi depth by areas of interest (Figure \\@ref(fig:map)a) and month.  Multiple comparisons with Mann-Whitney U tests were used to evaluate pairwise monthly concentrations for each water quality variable in each area.  Rows that share a letter within each area and water quality variable combination have concentrations that are not significantly different at $\\alpha$ = 0.05. Probability values were adjusted using the Bonferroni method in @Holm79.'
+knitr::kable(wqcmptab, booktabs = T, caption = cap.val)
 ```
 
 # References

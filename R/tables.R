@@ -5,8 +5,11 @@ library(here)
 library(tbeptools)
 library(tidyverse)
 library(sf)
+library(lubridate)
 box::use(
   units = units[set_units], 
+  forcats = forcats[fct_drop], 
+  multcompView = multcompView[multcompLetters]
 )
 
 data(rswqdat)
@@ -59,7 +62,7 @@ bssum <- bswqdat %>%
   summarise(
     minv = round(min(val), unique(sigdig)),
     maxv = round(max(val), unique(sigdig)),
-    avev = round(mean(val), unique(sigdig)), 
+    avev = round(median(val), unique(sigdig)), 
     .groups = 'drop'
   ) %>% 
   mutate(
@@ -72,7 +75,7 @@ tab <- full_join(stkraw, bssum, by = 'var') %>%
   select(
     `Water quality variable` = lbs, 
     `Stack value` = val, 
-    `Normal mean (min, max)` = sumv
+    `Normal median (min, max)` = sumv
   )
 
 stktab <- tab
@@ -145,3 +148,105 @@ totab2 <- totab %>%
 
 wqsumtab <- totab2
 save(wqsumtab, file = here('tables/wqsumtab.RData'))
+
+# water quality comparison trnds ------------------------------------------
+
+vrs <- c('chla', 'secchi', 'tn')
+nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+
+ppsegbf <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+rswqsub <- rswqdat %>% 
+  filter(var %in% vrs) %>% 
+  filter(source == 'fldep') %>%
+  filter(!station %in% nonbay) %>% 
+  inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
+  st_intersection(ppsegbf) %>% 
+  st_set_geometry(NULL) %>% 
+  left_join(parms, by = c('var', 'lbs')) %>% 
+  select(date, var, lbs, val, sigdig, station, area) %>% 
+  mutate(
+    mo = month(date, label = T)
+  ) %>% 
+  filter(mo %in% c('Apr', 'May', 'Jun', 'Jul')) %>% 
+  mutate(mo = fct_drop(mo))
+
+# multiple comparisons of time frames within sites, all nutrients
+cmps <- rswqsub %>% 
+  group_by(area, lbs) %>% 
+  nest %>% 
+  mutate(
+    ests = map(data, function(x){
+      
+      # pairwise comparisons with mann-whitney (wilcox)
+      grps <- unique(x$mo)
+      grps <- combn(grps, 2)
+      pval <- rep(NA, ncol(grps))
+      for(col in 1:ncol(grps)){
+        grp <- x$mo %in% grps[, col, drop = TRUE]
+        res <- wilcox.test(val ~ mo, data = x[grp, ], exact = FALSE, 
+                           alternative = 'two.sided')
+        pval[col] <- res$p.value
+      }
+      
+      # adjust p-values using holm sequential bonferroni
+      pval <- p.adjust(pval, method = 'holm')
+      
+      # pval as t/f using bonferroni correction
+      vecs <- rep(FALSE, ncol(grps))
+      vecs[pval < 0.05] <- TRUE
+      names(vecs) <- paste(grps[1, ], grps[2, ], sep = '-')
+      
+      # group membership based on multiple comparisons
+      lets <- multcompLetters(vecs)$Letters
+      
+      # standard summary stats
+      sums <- group_by(x, mo) %>%
+        summarise(
+          length = length(na.omit(val)),
+          medval = round(median(val, na.rm = TRUE), unique(sigdig)),
+          minval = round(min(val, na.rm = TRUE), unique(sigdig)),
+          maxval = round(max(val, na.rm = TRUE), unique(sigdig)), 
+          .groups = 'drop'
+        ) %>% 
+        mutate(
+          minval = paste0(' (', minval, ', '),
+          maxval = paste0(maxval, ')')
+        ) %>% 
+        unite('sumv', medval, minval, maxval, sep = '')
+      
+      data.frame(lets, sums, stringsAsFactors = FALSE)
+      
+    })
+  ) %>% 
+  dplyr::select(-data) %>% 
+  unnest('ests') %>% 
+  ungroup() %>% 
+  mutate(
+    lbs = factor(lbs, levels = c('TN (mg/L)', 'Chl-a (ug/L)', 'Secchi (m)'))
+  ) %>% 
+  arrange(area, lbs, mo) %>% 
+  group_by(area) %>%  
+  mutate(
+    area = ifelse(duplicated(area), '', area), 
+    lbs = ifelse(duplicated(lbs), '', as.character(lbs))
+  ) %>% 
+  select(
+    Area = area, 
+    `Water quality variable` = lbs, 
+    `Comp.` = lets, 
+    Month = mo, 
+    `N obs.` = length, 
+    `Med. (Min., Max.)` = sumv
+  )
+
+wqcmptab <- cmps
+save(wqcmptab, file = here('tables/wqcmptab.RData'))
