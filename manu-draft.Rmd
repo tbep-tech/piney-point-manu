@@ -120,7 +120,7 @@ knitr::include_graphics(here('figs/trnex.jpeg'))
 knitr::include_graphics(here('figs/trnfrq.jpeg'))
 ```
 
-```{r allpcacors, fig.cap = 'Principal components analysis (PCA) and correlation matrix for water quality variables, macroalgae, and seagrasses by week for April to July 2021 in response to wastewater discharge from Piney Point.  Only areas 1 and 3 (Figure \\@ref(fig:map)a) are included where seagrass transects were surveyed. All variables were standardized to zero mean and unit variance prior to PCA. Variables with log-normal distribution were log-transformed prior to analysis.  Thick black lines in the correlation matrix separate water quality, macroalgae, and seagrass variables. Pearson correlations indicate the linear strength of assocation between pairs of variables. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'}
+```{r allpcacors, fig.cap = 'Principal components analysis (PCA) and correlation matrix for water quality variables, macroalgae, and seagrasses by week for April to July 2021 in response to wastewater discharge from Piney Point.  Only areas 1 and 3 (Figure \\@ref(fig:map)a) are included where seagrass transects were surveyed. All variables were standardized to zero mean and unit variance prior to PCA. Variables with log-normal distribution were log-transformed prior to analysis.  Thick black lines in the correlation matrix separate water quality, macroalgae, and seagrass variables. Pearson correlations indicate the linear strength of assocation between pairs of variables. ** p < 0.005, * p < 0.05, blank is not significant at $\\alpha$ = 0.05.'}
 knitr::include_graphics(here('figs/allpcacors.jpeg'))
 ```
 
@@ -141,7 +141,7 @@ knitr::kable(wqsumtab, booktabs = T, caption = cap.val)
 ```
 
 ```{r wqcmps}
-cap.val <- 'Comparison of total nitrogen, chlorophyll-a, and secchi depth by areas of interest (Figure \\@ref(fig:map)a) and month.  Multiple comparisons with Mann-Whitney U tests were used to evaluate pairwise monthly concentrations for each water quality variable in each area.  Rows that share a letter within each area and water quality variable combination have concentrations that are not significantly different at $\\alpha$ = 0.05. Probability values were adjusted using the Bonferroni method in @Holm79.'
+cap.val <- 'Comparison of total nitrogen, chlorophyll-a, and secchi depth by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of concentrations between months for each water quality variable and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp column) were used to evaluate pairwise monthly concentrations for each water quality variable in each area.  Rows that share a letter within each area and water quality variable combination have concentrations that are not significantly different. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'
 knitr::kable(wqcmptab, booktabs = T, caption = cap.val)
 ```
 

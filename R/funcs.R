@@ -1,8 +1,11 @@
 # function for formatting p-values in tables
-p_ast <- function(x){
+p_ast <- function(x, usens = F){
   
   sig_cats <- c('**', '*', '')
   sig_vals <- c(-Inf, 0.005, 0.05, Inf)
+  
+  if(usens)
+    sig_cats[3] <- 'ns'
   
   out <- cut(x, breaks = sig_vals, labels = sig_cats, right = FALSE)
   out <- as.character(out)

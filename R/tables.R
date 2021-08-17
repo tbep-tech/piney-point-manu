@@ -12,6 +12,8 @@ box::use(
   multcompView = multcompView[multcompLetters]
 )
 
+source(here('R/funcs.R'))
+
 data(rswqdat)
 data(ppseg)
 data(rsstatloc)
@@ -208,6 +210,9 @@ cmps <- rswqsub %>%
       # group membership based on multiple comparisons
       lets <- multcompLetters(vecs)$Letters
       
+      # kruskal test
+      tst <- kruskal.test(val ~ mo, x)
+      
       # standard summary stats
       sums <- group_by(x, mo) %>%
         summarise(
@@ -219,9 +224,12 @@ cmps <- rswqsub %>%
         ) %>% 
         mutate(
           minval = paste0(' (', minval, ', '),
-          maxval = paste0(maxval, ')')
+          maxval = paste0(maxval, ')'), 
+          krusk_pval = p_ast(tst$p.value),
+          krusk_chis = round(tst$statistic, 2)
         ) %>% 
-        unite('sumv', medval, minval, maxval, sep = '')
+        unite('sumv', medval, minval, maxval, sep = '') %>% 
+        unite('krusk', krusk_chis, krusk_pval, sep = '')
       
       data.frame(lets, sums, stringsAsFactors = FALSE)
       
@@ -237,11 +245,14 @@ cmps <- rswqsub %>%
   group_by(area) %>%  
   mutate(
     area = ifelse(duplicated(area), '', area), 
-    lbs = ifelse(duplicated(lbs), '', as.character(lbs))
+    lbs = ifelse(duplicated(lbs), '', as.character(lbs)), 
+    krusk = ifelse(duplicated(krusk), '', krusk)
   ) %>% 
+  ungroup() %>% 
   select(
     Area = area, 
     `Water quality variable` = lbs, 
+    `Chi-Sq.` = krusk,
     `Comp.` = lets, 
     Month = mo, 
     `N obs.` = length, 
@@ -250,3 +261,4 @@ cmps <- rswqsub %>%
 
 wqcmptab <- cmps
 save(wqcmptab, file = here('tables/wqcmptab.RData'))
+
