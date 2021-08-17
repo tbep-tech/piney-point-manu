@@ -15,6 +15,7 @@ library(USAboundaries)
 library(ggord)
 library(lubridate)
 library(patchwork)
+library(tbeptools)
 box::use(
   scales = scales[muted], 
   units = units[set_units], 
@@ -30,6 +31,9 @@ data(segmask)
 data(rswqdat)
 data(rsstatloc)
 data(rstrndat)
+data(parms)
+data(kbrdat)
+data(rstrnpts)
 
 source(here('R/funcs.R'))
 
@@ -179,7 +183,6 @@ lbs2 <- tibble(
   st_as_sf(coords = c('lon', 'lat'), crs = 4326)
 
 p2b <- ggplot() + 
-  geom_sf(data = continent, fill = 'grey', colour = 'grey') +
   geom_sf(data = states, fill = 'grey', colour = 'grey') +
   geom_sf(data = insetbb, fill = NA, color = 'blue', size = 1.5) +
   geom_sf_text(data = lbs1, aes(label = label), size = 5) + 
@@ -485,7 +488,7 @@ rswqtmp <- rswqsub %>%
         var1 <- out[[i, 'var1']]
         var2 <- out[[i, 'var2']]
         
-        tst <- cor.test(x[[var1]], x[[var2]])
+        tst <- cor.test(x[[var1]], x[[var2]], method = 'spearman')
         
         corv <- tst$estimate
         pval <- tst$p.value
@@ -701,7 +704,7 @@ trncrs <- crossing(var1 = names(trncors), var2 = names(trncors)) %>%
       vr2 <- trncors[[x$var2]]
       
       # pearson
-      pr_ts <- cor.test(vr1, vr2, method = 'pearson')
+      pr_ts <- cor.test(vr1, vr2, method = 'spearman')
       pr_cr <- round(pr_ts$estimate, 2)
       pr_pv <- p_ast(pr_ts$p.value)
       pr <- paste(pr_cr, pr_pv)
@@ -793,7 +796,7 @@ crs <- crossing(var1 = c(wqlab, mcrsel, savsel), var2 = c(wqlab, mcrsel, savsel)
       vr2 <- tocor[[x$var2]]
       
       # pearson
-      pr_ts <- try(cor.test(vr1, vr2, method = 'pearson'))
+      pr_ts <- try(cor.test(vr1, vr2, method = 'spearman'))
       pr_cr <- round(pr_ts$estimate, 2)
       pr_pv <- p_ast(pr_ts$p.value)
       pr <- paste(pr_cr, pr_pv)
