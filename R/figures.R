@@ -598,6 +598,23 @@ areas <- ppseg %>%
     area = factor(area)
   )
 
+# # view sample effort by transect, area, month
+# smpeff <- rstrndat %>% 
+#   left_join(rstrnpts, ., by = 'station') %>% 
+#   select(-source, -type, -lng, -lat) %>% 
+#   st_intersection(areas) %>% 
+#   st_set_geometry(NULL) %>% 
+#   mutate(
+#     mo = month(date)
+#   ) %>% 
+#   group_by(station, area, mo) %>% 
+#   summarise(
+#     obs = (any(bb > 0)),
+#     .groups = 'drop'
+#   ) %>% 
+#   spread(mo, obs)
+# View(smpeff)
+
 # add area
 trnsum <- rstrndat %>%
   inner_join(rstrnpts, ., by = 'station') %>% 
@@ -689,7 +706,6 @@ trncors <- trnsum %>%
   spread(taxa, foest) %>% 
   # filter(area %in% 'Area 3') %>% 
   select(-station, -date)
-
 
 trncrs <- crossing(var1 = names(trncors), var2 = names(trncors)) %>% 
   filter(var1 != var2) %>% 

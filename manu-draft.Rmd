@@ -26,6 +26,8 @@ data(rstrnpts)
 load(file = here('tables/wqsumtab.RData'))
 load(file = here('tables/stktab.RData'))
 load(file = here('tables/wqcmptab.RData'))
+load(file = here('tables/savtab.RData'))
+load(file = here('tables/mcrtab.RData'))
 
 # # extract bib entries from online
 # bib_scrp('manu_draft.Rmd', 'refs.bib')
@@ -61,6 +63,10 @@ This paper provides an initial assessment of environmental conditions in Tampa B
 * Initial response, data collection
 * Synthesis and Analysis
 
+Need to note that K. brevis cell data are from event-based sampling, i.e., not appropriate to combine with other data for stats analysis.
+
+All stats based on FLDEP monitoring, fixed sample design, etc.
+
 For total nitrogen, chlorophyll-a, and secchi depth, differences in concentrations between months within each area (Figure \@ref(fig:map)a) were evaluated using a Kruskal-Wallis one-way analysis of variance (ANOVA) followed by multiple comparisons using 2-sided Mann-Whitney U tests [@Hollander13]. Probability values were adjusted using the sequential Bonferroni method described in [@Holm79] to account for the increased probability of Type I error rates with multiple comparisons. An adjusted p-value < 5\% ($\alpha$ = 0.05) was considered a significant difference between months.
 
 # Results
@@ -78,7 +84,22 @@ For total nitrogen, chlorophyll-a, and secchi depth, differences in concentratio
 * Table \@ref(tab:stktab) Stack characteristics
 * Table \@ref(tab:wqsumtab) water quality data collected and summarized
 * Table \@ref(tab:wqcmptab) Multiple comparisons of water quality by month/area, with median/min/max
-* Table 4 Seagrass/macroalgae freq. occurrence summaries
+* Table \@ref(tab:mcrtab) Macroalgae freq. occurrence summaries by month/area, with median/min/max
+* Table \@ref(tab:savtab) Seagrass freq. occurrence summaries by month/area, with median/min/max
+
+Seagrass: note decline of HW and correlations in the matrix, these make sense. 
+
+Seagrass interp from DT: 
+
+First off, Marcus please correct me if any confusion on my part about how to read the chart, but it’s my take that the asterisks reflect levels of significance, and that a box without an asterisk – I didn’t pay much attention to that.  Also, a negative number would be a “cool” color, reflecting an inverse relationship, while a positive number (warm color) would reflect a positive correlation?
+
+If I have this correct, then what stood out to me was some of the following – seagrass distributions are highly inversely correlated between most of the species, which reflects seagrass being clonal organisms that tend not to grow interspersed with each other in a random manner.  S. filiforme does not grow in shallow waters, because it’s blades can’t “lay down” during low tides, and it often is the deepest growing species in some of our cleaner areas, while H. wrightii can be both the shallowest and deepest growing species in areas like Hillsborough Bay.
+
+More relevant here is that there is no significant correlation between the abundance of cyanobacteria and either chlorophyll-a or TN or TP.  To me, that makes sense, since macroalgae like cyanos seem to reflect an alternative nutrient destination, compared to phytoplankton.  The strongest correlations out there are the well expected ones between TN and Chl-a, but also between TP and NH3/4, which suggests overall nutrient availability tracks together, and phytoplankton continue to be a major destination of nitrogen availability.
+
+But what about the positive correlation between cyanobacteria and S. filiforme?  From my experience in Sarasota Bay, that makes sense, since the highest levels of cyanobacteria were found entangled within the manatee grass meadows in the fairly deeper waters farther offshore.  Cyanos are strongly negatively correlated with red algae, since they occurred at different times, basically.
+
+Finally, keep in mind that “Lyngbya” life cycles are such that most of the biomass produced does not stay where it was produced.  Those clumps of Lyngbya growing on the bottom get lifted up off the bottom by the oxygen bubbles you can see in their blooms, and they then are carried along the shoreline to decompose on whatever shoreline that they’ve been blown to.  Our photos (and others) clearly show that there is MUCH more Lyngbya in our bays than what we’ve sampled along the bottom of the bay – that’s a bit different than “traditional” red algae biomass.
 
 # Discussion
 
@@ -143,6 +164,16 @@ knitr::kable(wqsumtab, booktabs = T, caption = cap.val)
 ```{r wqcmps}
 cap.val <- 'Comparison of total nitrogen, chlorophyll-a, and secchi depth by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of concentrations between months for each water quality variable and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp column) were used to evaluate pairwise monthly concentrations for each water quality variable in each area.  Rows that share a letter within each area and water quality variable combination have concentrations that are not significantly different. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'
 knitr::kable(wqcmptab, booktabs = T, caption = cap.val)
+```
+
+```{r mcrtab}
+cap.val <- 'Comparison of macroalgae frequency occurrence by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of frequency occurrence between months for macroalgae groups and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp column) were used to evaluate pairwise monthly frequency occurrences for each macroalgae group in each area.  Rows that share a letter within each area and macroalgae group combination have frequency occurrences that are not significantly different. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'
+knitr::kable(mcrtab, booktabs = T, caption = cap.val)
+```
+
+```{r savtab}
+cap.val <- 'Comparison of seagrass species frequency occurrence by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of frequency occurrence between months for seagrass species and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp column) were used to evaluate pairwise monthly frequency occurrences for each seagrass species in each area.  Rows that share a letter within each area and seagrass species combination have frequency occurrences that are not significantly different. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'
+knitr::kable(savtab, booktabs = T, caption = cap.val)
 ```
 
 # References
