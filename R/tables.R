@@ -45,7 +45,22 @@ stkraw <- read.csv(here('data-raw/stack_samples.csv')) %>%
     )
   ) %>% 
   left_join(parms, by = 'var') %>% 
-  select(var, lbs, val)
+  select(var, lbs, stkval = val) %>% 
+  bind_rows(
+    tibble(
+      var = 'chla', 
+      lbs = c('Chl-a (ug/L)'), 
+      stkval = NA
+    )
+  )
+
+# effluent characteristics (end of pipe)
+effraw <- tibble(
+  var = c('no23', 'nh34', 'tn', 'tp', 'orthop', 'dosat', 'ph', 'chla'),
+  lbs = c("Nitrate/Nitrite (mg/L)", "NH3, NH4+ (mg/L)", "TN (mg/L)", 
+          "TP (mg/L)", "Ortho-P (mg/L)", "DO (% sat.)", "pH", "Chl-a (ug/L)"),
+  effval = c(0.292, 210, 220, mean(c(140, 161)), mean(c(140, 155)), NA, NA, 105)
+)
 
 bssum <- bswqdat %>% 
   filter(yr > 2005 & yr < 2021) %>% 
@@ -74,10 +89,12 @@ bssum <- bswqdat %>%
   unite(sumv, avev, minv, maxv, sep = '')
 
 tab <- full_join(stkraw, bssum, by = 'var') %>% 
+  full_join(effraw, by = c('var', 'lbs')) %>% 
   select(
     `Water quality variable` = lbs, 
-    `Stack value` = val, 
-    `Normal median (min, max)` = sumv
+    `2019 stack value` = stkval, 
+    `2021 end-of-pipe value` = effval,
+    `Bay median (min, max)` = sumv
   )
 
 stktab <- tab

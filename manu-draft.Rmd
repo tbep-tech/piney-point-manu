@@ -152,7 +152,7 @@ knitr::include_graphics('figs/redtide.jpeg')
 # Tables
 
 ```{r stktab}
-cap.val <- 'Measured concentrations from the phosphogypsum stack (NGS-S) at Piney Point on April 9th, 2021 for relevant water quality variables compared to normal annual means (min, max) for concentrations in lower Tampa Bay.  Normal medians are based on data for a baseline period from 2006 to 2020 from long-term monitoring stations in lower Tampa Bay collected monthly by Hillsborough County Environmental Protection Commission.'
+cap.val <- 'Measured concentrations from the phosphogypsum stack (NGS-S) at Piney Point from a 2019 sample and end-of-pipe samples from April 2021 for relevant water quality variables.  Values are compared to normal annual medians (min, max) for concentrations in lower Tampa Bay.  Normal medians are based on data for a baseline period from 2006 to 2020 from long-term monitoring stations in lower Tampa Bay collected monthly by the Environmental Protection Commission of Hillsborough County.  Effluent concentrations were taken from two samples on April 6th and 13th at the outflow at Port Manatee.  Averages were taken when two measured values were available from both effluent sample dates.  Missing values were not measured in the effluent.'
 knitr::kable(stktab, booktabs = T, caption = cap.val)
 ```
 
