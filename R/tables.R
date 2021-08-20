@@ -90,12 +90,16 @@ bssum <- bswqdat %>%
 
 tab <- full_join(stkraw, bssum, by = 'var') %>% 
   full_join(effraw, by = c('var', 'lbs')) %>% 
+  mutate(
+    stkval = ifelse(is.na(stkval), '-', as.character(stkval)),
+    effval = ifelse(is.na(effval), '-', as.character(effval))
+  ) %>% 
   select(
     `Water quality variable` = lbs, 
     `2019 stack value` = stkval, 
     `2021 end-of-pipe value` = effval,
     `Bay median (min, max)` = sumv
-  )
+  ) 
 
 stktab <- tab
 
