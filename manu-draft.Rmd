@@ -20,7 +20,10 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
   if (file.rename(x, x2)) x2 else x
   })
 
-library(here)
+box::use(
+  here[here],
+  dplyr[...]
+)
 
 data(rstrnpts)
 load(file = here('tables/wqsumtab.RData'))
@@ -95,7 +98,34 @@ The "PCA" function from the FactoMineR R package [@Le08] was used for PCA and th
 
 # Results
 
-A general narrative of events in Tampa Bay following release of wastewater from Piney Point on March 30th is shown in Figure \@ref(fig:timeline).  These events are supported by data summaries and results of statistical tests described below.  After the the discharge stopped on April 9th, an initial phytoplankton response was observed near Piney Point peaking around mid-April (Area 1, Figure \@ref(fig:wqtrnd)b).  Taxa from the Bacillariophyta phylum (diatoms) were dominant in April, with a maximum chlorophyll concentration of 265 ug/L, although median concentrations for each week in April were less than 10 ug/L. The inition diatom bloom did not perist past April.  On April 20th, *K. brevis* was first observed near Anna Maria Sound at the mouth of Tampa Bay and reached bloom concentrations by May 23rd, although observations were limited to lower Tampa Bay.  Also during May, increased observations of *Lyngbya sp.* (a macroalgal cyanobacteria)   
+## Timeline of events from April 2021
+
+A general narrative of 2021 events in Tampa Bay following release of wastewater from Piney Point is shown in Figure \@ref(fig:timeline). After the discharge stopped on April 9th, an initial phytoplankton response was observed near Piney Point peaking around mid-April (Area 1, Figure \@ref(fig:wqtrnd)b).  Taxa from the Bacillariophyta phylum (diatoms) were dominant in April, with a maximum chlorophyll concentration of 265 ug/L, although median concentrations for each week in April were less than 10 ug/L. The initial diatom bloom did not persist past April.  On April 20th, *K. brevis* was first observed near Anna Maria Sound at the southern edge of the mouth of Tampa Bay and reached bloom concentrations (>10k cells/L) by May 23rd, although observations were limited to lower Tampa Bay.  Also during May, *Lyngbya sp.* (cyanobacteria macroalgae) were observed at high abundances in Anna Maria Sound and near Port Manatee.  *Lyngbya* were observed in large floating mats on the surface and covering benthic and seagrass habitat below the water column at these locationa.  By June 27th, fish kill reports attributed to red tide were increasing as *K. brevis* increased in abundance in lower and middle Tampa Bay.  The center of tropical storm Elsa passed to the west of Tampa Bay on July 5th, causing a shift in prevailing winds from the southeast.  This shift contributed to an increase in fish kill reports by moving dead fish closer to heavily populated areas of Tampa Bay, specifically for the cities of St. Petersburg and Tampa. Concentrations of *K. brevis* in middle and lower Tampa Bay peaked in mid-July, with bloom conditions not observed in the bay by August.  The remainder of this section quantifies these events with monitoring data collected in response to Piney Point. 
+
+## Water quality response
+
+```{r}
+nwq <- sum(wqsumtab[['N obs.']])
+outrng1 <- wqsumtab %>% 
+  filter(`Water quality variable` == 'Secchi (m)') %>% 
+  pull(below) %>%  
+  sum
+outrng2 <- wqsumtab %>% 
+  filter(`Water quality variable` != 'Secchi (m)') %>% 
+  pull(above) %>%  
+  sum
+outrng <- round(100 * (sum(outrng1, outrng2) / nwq), 1)
+```
+
+From April to August 2021, `r nwq` samples were collected for chl-a, dissolved oxygen, ammonia, nitrate/nitrite, pH, salinity, and secchi depth (Table \@ref(tab:wqsumtab)).  Of these samples, `r outrng`\% were outside of the normal range defined by the long-term monthly monitoring data for the baseline period from 2006 to 2020 (below for Secchi depth, above for all others). The percent of observations outside of the normal range varied by location and parameter.  For chl-a, over half of the observations were above the normal range for area 1, whereas only 9.1\% and 24\% were above for areas 2 and 3, respectively.  Similarly, total nitrogen concentrations were above the normal range for 39.9\% of observations in area 1, whereas concentrations were above for only 12.2\% and  23.4\% of observations in areas 2 and 3.  Secchi observations for the period of observation were below the normal range for 46.4\% of observations in area1 and for   24.2\% and 43.5\% of observations in areas 2 and 3.  Notable differences were also observed for dissolved oxygen (e.g., 49.7\% were above in area 1, 47.6\% in area 2).  Physical parameters (e.g., salinity, temperature) were generally within range over the five month period. Inorganic nitrogen (ammonia, nitrate/nitrite) were generally within range, although initial time series showed much higher concentrations in April near area 1. Spatial variation among the parameters showed that values were generally above the normal range (or below for Secchi) for many locations concentrated near Piney Point, Anna Maria Sound, and the northern mouth of Tampa Bay (Figure \@ref(fig:wqmap)). 
+
+Boxplots of total nitrogen, chl-a, and secchi depth show the temporal progression of observations by area relative to the normal ranges from long-term monitoring data (Figure \@ref(fig:wqtrnds)).  For area 1, total nitrogen and chlorophyll concentrations were frequenlty above normal ranges beginning the week of April 4th and lasting through the month.  Concentrations remained similar to baseline conditions until June and July when median values were often the baseline range. Secchi observations in area 1 were below baseline ranges in April and June.  Observations in areas 2 and 3 were more often within the normal range, wiht some exceptions for total nitrogen and chl-a in area 3 during some weeks of May, June, and July.  Statistical comparisons between months for total nitrogen, chl-a, and secchi depth (Table \@ref(tab:wqcmptab)) supported the results in Figure \@ref(fig:wqtrnds). Kruskal-Wallis tests that assessed if at least one of the months had significantly different observations for each parameter and were significant for total nitrogen, chl-a, and secchi depth for area 1, total nitrogen and chl-a for area 2, and chl-a and secchi depth for area 3 (Table \@ref(tab:wqcmptab)). Results of multiple comparison tests that evaluated differneces between pairs of months generally showed that April/May were different from June/July depending on area and parameter.  Observations in the later months were generally higher (or lower for Secchi) corresponding to increasing *K. brevis* abundances.  
+
+Multivariate assessment of all water quality parameters that combined results across weeks by area showed significant associations between groups of variables (Figure \@ref(fig:pcacors)). The first principal component explained 41\%, 74\%, and 47\% of the variation among water quality parameters for areas 1, 2, and 3, respectively.  These components generally described a positive association between nutrients and chlorophyll concentrations and a negative association with secchi depth and dissolved oxygen.  The second and third principal components explained a minorit of the variation of among water quality parameters such that 36\%, 20\%, and 34\% was explained by both axes for areas 1, 2, and 3, respectively.  The patterns explained by these axes were less clear, although physical drivers were partially explained in some cases (e.g., component 2 for area 2, Figure \@ref(fig:pcacors)b).  Spearman rank correlations between the pairs of variables used for each of the PCAs showed significant assocations.  Total nitrogen was positively associated with chlorophyll and negatively associated with secchi depth for areas 1 and 2 ($p < 0.005$ and $p < 0.05$, respectively).  Dissolved oxygen was negatively associated with chl-a only in area 3, although the temporal progression likely changed over time in the other areas (e.g., increase followed by decrease).  Temperature generally had a positive association with chlorophyll ($p < 0.05$ for area 2, $p < 0.005$ for area 3).  pH was positively associated with chl-a in areas 1 and 2 ($p < 0.05$ for both).
+
+## Seagrass and macroalgae trends
+
+## Red tide and fish kill reports
 
 * Figure \@ref(fig:timeline) timeline of events
 * Figure \@ref(fig:wqmap) map of water quality observations
@@ -128,6 +158,7 @@ Finally, keep in mind that “Lyngbya” life cycles are such that most of the b
 
 # Discussion
 
+* Explain results - what's up with inorganic nutrients?  Likely driving phyto response but concentrations are not a good indicator.  Uptake is rapid...
 * Comparison to other locations/past events - Grand Bay, Bishop Harbor, Huelva estuary [@Perez10;@Perez16], Dillon report about Grand Bay [link](https://www.wrri.msstate.edu/pdf/2016dillon_finalreport.pdf)
 * Analysis limitations: no smoking gun but 2021 is an anomaly, additional info (benthic diversity TBD, nekton diversity TBD, large mammals, etc.), response-based monitoring may be biased
 * Long-term closure plan?  NGS-N is treated with spray evaporation system, but concentrations of TN/TP higher than NGS-S (see EO)/
@@ -183,7 +214,7 @@ knitr::kable(stktab, booktabs = T, caption = cap.val)
 ```
 
 ```{r wqsumtab}
-cap.val <- 'Summary of water quality variables collected from March to July 2021 in response to wastewater discharge from Piney Point. Variables are grouped by major areas interest for evaluating status and trends shown in Figure \\@ref(fig:map)a. Summaries are median, maximum, and minimum values. Total observations (N obs.) and values in rnage, above, or below normal ranges are also shown. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at the nearest long-term monitoring site to each sample location.'
+cap.val <- 'Summary of water quality variables collected from March to July 2021 in response to wastewater discharge from Piney Point. Variables are grouped by major areas interest for evaluating status and trends shown in Figure \\@ref(fig:map)a. Summaries are median, maximum, and minimum values. Total observations (N obs.) and the percentage of observations in range, above, or below normal ranges are also shown. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at the nearest long-term monitoring site to each sample location.'
 knitr::kable(wqsumtab, booktabs = T, caption = cap.val)
 ```
 

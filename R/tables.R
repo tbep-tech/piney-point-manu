@@ -159,6 +159,11 @@ totab2 <- totab %>%
   unite('sumv', medv, rng, sep = '') %>% 
   left_join(totab1, by = c('area', 'lbs')) %>% 
   mutate(area = ifelse(duplicated(area), '', area)) %>% 
+  mutate(
+    `in range` = round(100 * `in range` / cnt, 1),
+    `above` = round(100 * `above` / cnt, 1),
+    `below` = round(100 * `below` / cnt, 1)
+  ) %>% 
   select(
     Area = area, 
     `Water quality variable` = lbs, 
