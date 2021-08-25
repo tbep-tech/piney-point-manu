@@ -203,7 +203,7 @@ jpeg(here('figs/map.jpeg'), height = 4.2, width = 9, family = 'serif', units = '
 print(pout)
 dev.off()
 
-# nutrients, chloropyll map -----------------------------------------------
+# nutrients, chloropyll, secchi map ---------------------------------------
 
 # nonbay stations
 nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
@@ -261,14 +261,17 @@ attributes(bsmap1_transparent) <- mapatt
 bsmap <- ggmap(bsmap1_transparent)
 
 toplo1 <- wqdat %>% 
-  filter(var == 'tn')
+  filter(var == 'tn') %>% 
+  mutate(val = pmin(2, val))
 
 # static plot
+brks <- c(0.1, 0.25, 0.5, 2)
+lbs <- c('0.1', '0.25', '0.5', '>2')
 p1 <- bsmap +
   geom_point(data = toplo1, aes(x = lng, y = lat, size = val, fill = val, group = dategrp, color = inrng), pch = 21, alpha = 0.8) +
-  scale_fill_gradientn('mg/L', trans = 'log10', colours = vrscols) +
+  scale_fill_gradientn('mg/L', trans = 'log10', colours = vrscols, breaks = brks, labels = lbs) +
   scale_color_manual('In normal range?', values = c('black', 'lightgrey')) +
-  scale_size('mg/L', range = c(0.5, 5), trans = 'log10') + 
+  scale_size('mg/L', range = c(0.5, 5), trans = 'log10', breaks = brks, labels = lbs) + 
   coord_map() + 
   guides(
     fill = guide_legend(order = 1), 
