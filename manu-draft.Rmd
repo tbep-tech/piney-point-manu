@@ -1,5 +1,5 @@
 ---
-title: "Initial environmental impacts of Piney Point wastewater discharge into Tampa Bay, Florida"
+title: "Initial estuarine response to the nutrient dense Piney Point wastewater discharge into Tampa Bay, Florida"
 output: 
   bookdown::word_document2:
     reference_docx: my_styles.docx
