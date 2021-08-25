@@ -636,7 +636,8 @@ trnsum <- rstrndat %>%
   ) %>% 
   group_by(area, typ, date, taxa) %>% 
   summarize(
-    foest = sum(pa) / length(pa)
+    foest = sum(pa) / length(pa), 
+    .groups = 'drop'
   ) %>% 
   filter(taxa %in% c(mcrsel, savsel))
 
@@ -666,6 +667,8 @@ p <- ggplot(trnsum, aes(x =date, y = foest, fill = taxa)) +
 jpeg(here('figs/trnfrq.jpeg'), height = 6, width = 8, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
+
+save(trnsum, file = here('data/trnsum.RData'))
 
 # all PCA and correlations ------------------------------------------------
 

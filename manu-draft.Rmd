@@ -22,10 +22,15 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 
 box::use(
   here[here],
-  dplyr[...]
+  dplyr[...], 
+  english[english], 
+  lubridate[month], 
+  tibble[deframe]
 )
 
 data(rstrnpts)
+data(rstrndat)
+data(trnsum)
 load(file = here('tables/wqsumtab.RData'))
 load(file = here('tables/stktab.RData'))
 load(file = here('tables/wqcmptab.RData'))
@@ -100,9 +105,10 @@ The "PCA" function from the FactoMineR R package [@Le08] was used for PCA and th
 
 ## Timeline of events from April 2021
 
-A general narrative of 2021 events in Tampa Bay following release of wastewater from Piney Point is shown in Figure \@ref(fig:timeline). After the discharge stopped on April 9th, an initial phytoplankton response was observed near Piney Point with concentrations peaking around mid-April (Area 1, Figure \@ref(fig:wqtrnd)b).  Taxa from the Bacillariophyta phylum (diatoms) were dominant in April, with a maximum chlorophyll concentration of 265 ug/L, although median concentrations for each week in April were less than 10 ug/L. The initial diatom bloom did not persist past April.  On April 20th, *K. brevis* was first observed near Anna Maria Sound at the southern edge of the mouth of Tampa Bay and reached bloom concentrations (>10k cells/L) by May 23rd, although observations were limited to lower Tampa Bay.  Also during May, *Lyngbya sp.* (cyanobacteria macroalgae) were observed at high abundances in Anna Maria Sound and near Port Manatee.  *Lyngbya* were observed in large floating mats on the surface and covering benthic and seagrass habitats below the water column at these locations.  By June 27th, fish kill reports attributed to red tide increased with *K. brevis* cell concentrations in lower and middle Tampa Bay.  The center of tropical storm Elsa passed to the west of Tampa Bay on July 5th, causing a shift in prevailing winds from the southeast.  This shift contributed to an increase in fish kill reports by moving dead fish closer to heavily populated areas of Tampa Bay, specifically near the cities of St. Petersburg and Tampa. Concentrations of *K. brevis* in middle and lower Tampa Bay peaked in mid-July, with bloom conditions not observed in the bay by August.  The remainder of this section is quantitative description these events. 
+A general narrative of 2021 events in Tampa Bay following release of wastewater from Piney Point is shown in Figure \@ref(fig:timeline). After the discharge stopped on April 9th, an initial phytoplankton response was observed near Piney Point with concentrations peaking around mid-April (Area 1, Figure \@ref(fig:wqtrnds)b).  Taxa from the Bacillariophyta phylum (diatoms) were dominant in April, with a maximum chlorophyll concentration of 265 ug/L, although median concentrations for each week in April were less than 10 ug/L. The initial diatom bloom did not persist past April.  On April 20th, *K. brevis* was first observed near Anna Maria Sound at the southern edge of the mouth of Tampa Bay and reached bloom concentrations (>10k cells/L) by May 23rd, although observations were limited to lower Tampa Bay.  Also during May, *Lyngbya sp.* (cyanobacteria macroalgae) were observed at high abundances in Anna Maria Sound and near Port Manatee.  *Lyngbya* were observed in large floating mats on the surface and covering benthic and seagrass habitats below the water column at these locations.  By June 27th, fish kill reports attributed to red tide increased with *K. brevis* cell concentrations in lower and middle Tampa Bay.  The center of tropical storm Elsa passed to the west of Tampa Bay on July 5th, causing a shift in prevailing winds from the southeast.  This shift contributed to an increase in fish kill reports by moving dead fish closer to heavily populated areas of Tampa Bay, specifically near the cities of St. Petersburg and Tampa. Concentrations of *K. brevis* in middle and lower Tampa Bay peaked in mid-July, with bloom conditions not observed in the bay by August.  The remainder of this section is quantitative description these events. 
 
-## Water quality response
+## Water quality trends
+
 
 ```{r}
 nwq <- sum(wqsumtab[['N obs.']])
@@ -125,8 +131,91 @@ Multivariate assessments of all water quality parameters that combined results a
 
 ## Seagrass and macroalgae trends
 
+```{r}
+ntrns <- length(unique(rstrndat$station))
+ntrns <- english(ntrns)
+visdat <- rstrndat %>% 
+  mutate(
+    mo = month(date)
+  ) %>% 
+  group_by(station, mo) %>% 
+  summarise(
+    cnt = length(unique(date)), 
+    .groups = 'drop'
+  ) %>% 
+  group_by(mo) %>% 
+  summarise(
+    cnt = mean(cnt)
+  )
+avevis <- round(mean(visdat$cnt), 1)
+
+# all fo
+foall <- rstrndat %>% 
+  mutate(
+    pa = bb > 0
+  ) %>% 
+  mutate(
+    taxa = as.character(taxa), 
+    taxa = case_when(
+      grepl('^Halophila', taxa) ~ 'Halophila sp', 
+      T ~ taxa
+    )
+  ) %>% 
+  group_by(taxa) %>% 
+  summarise(
+    fo = sum(pa) / length(pa), 
+    .groups = 'drop'
+  ) %>% 
+  mutate(
+    fo = round(100 * fo, 1)
+  ) %>% 
+  deframe
+
+# fo by month, area
+fomo <- trnsum %>% 
+  mutate(
+    foest = round(100 * foest, 1), 
+    mo = month(date)
+  )
+fomoarea1 <- fomo %>% 
+  filter(area == '(a) Area 1')
+fomoarea3 <- fomo %>% 
+  filter(area == '(b) Area 3')
+fomoarea1apr <- fomoarea1 %>% 
+  filter(mo %in% 4) %>% 
+  select(taxa, foest) %>% 
+  deframe
+fomoarea1aug <- fomoarea1 %>% 
+  filter(mo %in% 8) %>% 
+  select(taxa,foest) %>% 
+  deframe
+fomoarea3apr <- fomoarea3 %>% 
+  filter(mo %in% 4) %>% 
+  select(taxa, foest) %>% 
+  deframe
+fomoarea3jul <- fomoarea3 %>% 
+  filter(mo %in% 7) %>% 
+  select(taxa,foest) %>% 
+  deframe
+fomoarea1jun <- fomoarea1 %>% 
+  filter(mo %in% 6) %>% 
+  select(taxa, foest) %>% 
+  deframe
+fomoarea3jun <- fomoarea3 %>% 
+  filter(mo %in% 6) %>% 
+  select(taxa, foest) %>% 
+  deframe
+```
+
+A total of `r ntrns` transects were sampled for seagrasses and macroalgae from April to August, each visited on average `r avevis` times per month. Turtle grass (*T. testudinum*) was the dominant seagrass species with frequency occurrence of `r foall['Thalassia testudinum']`\% across all locations and sample dates.  Manatee grass (*S. filiforme*) and shoal grass (*H. wrightii*) had similar coverage across all transects, with frequency occurrences of `r foall['Syringodium filiforme']`\% and `r foall['Halodule wrightii']`\%, respectively.  Widgeon grass (*R. maritima*) and star grass (*H. engelmanni* and *H. decipiens*) were uncommon,  with frequency occurrences of `r foall['Ruppia maritima']`\% and `r foall['Halophila sp']`\%. The frequency occurrences of seagrasses near Piney Point were similar to the long-term record of seagrass transect data available for Tampa Bay [@Sherwood17].  At the baywide scale, shoal grass is the dominant species, whereas turtle grass is more common in euhaline waters closer to the Gulf.  Macroalgae observed along the transects also varied in coverage, with red macroalgae groups having the highest frequency occurrence of `r foall['Red']`\%.  Common taxa in the red group included *Gracilaria sp.* and *Acanthophora sp.*.  Green and cyanobacteria macroalgae were less common, with frequency occurrences of `r foall['Green']`\% and `r foall['Cyanobacteria']`\%.  Common taxa in the green group included *Ulva sp.* and *Caulerpa sp.*, whereas *Lyngbya sp.* was the only cyanobacteria macroalgae observed.  Brown macroalgae in the genus *Feldmannia* were only observed at `r foall['Brown']`\% frequency occurrence.
+
+Temporal progression of seagrassess and macroalgae varied across the months, although a typical pattern observed at many of the transects is shown in Figure \@ref(fig:trnex).  Transect S3T6 is located less than one kilometer to the north of Port Manatee.  The site is dominated by manatee grass that was observed at nearly all of the sample points along the transect at varying coverages.  Overall abundunce of seagrass did not change dramatically from April 22nd to August 9th.  However, macroalgal abundances changed over the course of sampling similar to many of the other transects sampled during the study.  Red macroalgae were present in high abundances from April to May.  *Lyngbya sp.* was first observed on May 24th and was present at all of the sample locations on June 4th and 15th.  *Lyngbya sp.* peristed through June and July, but not was observed after July 20th.  Green macroalgae taxa were first observed in July, although at generally low abundances.  By August, macroalgae abundances were low.  Trends in macroalgae somewhat followed seasonal patterns observed baywide with red macroalgae transitioning to green macroalgae.  However, overall macroalgae trends, including June dominance of cyanobacteria was observed at nearly all transects that suggests a broader impact from wastewater discharge at Piney Point.
+
+Monthly summaries in frequency occurrence by area (Figure \@ref(fig:trnex)) provided an indication of seagrass and macroalgae trends across all transects.  No transects were sampled in area 2 to the north of Piney Point.  Area 1 had generally balanced frequency occurrence of the three primary seagrass species observed in the bay, although a slight decrease over time in *H. wrightii* was observed (April frequency occurrence of `r fomoarea1apr['Halodule wrightii']`\%, August frequency occurrence of `r fomoarea1aug['Halodule wrightii']`\%).  A similar decline in coverage of *H wrightii* was also observed in area 3 (April frequency occurrence of `r fomoarea3apr['Halodule wrightii']`\%, July frequency occurrence of `r fomoarea3jul['Halodule wrightii']`\%). Frequency occurrence of *S. syringodium* also declined slightly from April to July in area 3 (April frequency occurrence of `r fomoarea3apr['Syringodium filiforme']`\%, August frequency occurrence of `r fomoarea3jul['Syringodium filiforme']`\%).  Changes in macroalgae frequency occurrence were much more pronounced than for seagrasses across months and by area. Red macroalgae was the dominant group across all months and areas, with the highest frequency occurrences observed in April (`r fomoarea1apr['Red']`\% in area 1, `r fomoarea3apr['Red']`\% in area 3). Cyanobacteria frequency occurrence peaked in June, with greater coverage in area 3 (`r fomoarea3jun['Cyanobacteria']`\%) compared to area 1 (`r fomoarea1jun['Cyanobacteria']`\%).  Green macroalgae had the second lowest frequency occurrence, with the highest coverage of `r fomoarea1aug['Green']`\% observed in August in area 1.  Brown macroalgae was only observed at one transect. 
+
 
 ## Red tide and fish kill reports
+
 
 * Figure \@ref(fig:timeline) timeline of events
 * Figure \@ref(fig:wqmap) map of water quality observations
