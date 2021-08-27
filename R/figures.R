@@ -104,6 +104,7 @@ bsmap1_transparent <- matrix(adjustcolor(bsmap1,
                              nrow = nrow(bsmap1))
 attributes(bsmap1_transparent) <- mapatt
 
+#For reference, add long-term station locations to Figure 1a or create another panel w/ stations?
 # plot
 p1 <- ggmap(bsmap1_transparent) +
   geom_sf(data = areas, aes(fill = area), color = NA, inherit.aes = F, alpha = 0.8) +
