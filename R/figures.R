@@ -221,6 +221,7 @@ thm <-  theme(
     legend.box= 'vertical'
   ) 
 
+#Secchi VOB and other qualified values should be filtered prior to use below, correct?
 # combine water quality data with locations
 wqdat <- rswqdat %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
