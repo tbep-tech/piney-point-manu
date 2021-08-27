@@ -105,12 +105,15 @@ bsmap1_transparent <- matrix(adjustcolor(bsmap1,
 attributes(bsmap1_transparent) <- mapatt
 
 #For reference, add long-term station locations to Figure 1a or create another panel w/ stations?
+#Added stations, but now how to combine with existing 1b legend or add a new legend here?
 # plot
 p1 <- ggmap(bsmap1_transparent) +
   geom_sf(data = areas, aes(fill = area), color = NA, inherit.aes = F, alpha = 0.8) +
-  scale_fill_manual(values = cols, drop = F) +
-  geom_sf_text(data = areas, aes(label = area), color = 'black', inherit.aes = F, alpha = 0.8, size = 6) +
+    scale_fill_manual(values = cols, drop = F) +
+  geom_sf(data = bsstatloc, aes(fill = 'ambient'), pch =21, color = 'black', fill = 'white', inherit.aes= F) +
   geom_sf(data = pineypoint, aes(fill = 'Piney Point'), pch = 24, color = 'black', fill = 'black', size = 3, inherit.aes= F) + 
+  geom_sf_text(data = areas, aes(label = area), color = 'black', inherit.aes = F, alpha = 0.8, size = 6) +
+  
     theme_bw() + 
   theme(
     legend.title = element_blank(), 
@@ -129,7 +132,6 @@ p1 <- ggmap(bsmap1_transparent) +
     title = '(a) Areas of interest'
   )
 
-  
 tomap <- rsallpts %>% 
   mutate(
     type = case_when(
@@ -142,7 +144,7 @@ tomap <- rsallpts %>%
 p2a <- ggmap(bsmap1_transparent) +
   geom_sf(data = tomap, aes(color = type), inherit.aes = F) +
   geom_sf(data = pineypoint, aes(fill = 'Piney Point'), pch = 24, color = 'black', size = 3, inherit.aes= F) + 
-  scale_fill_manual(NULL, values = 'black') +
+    scale_fill_manual(NULL, values = 'black') +
   theme_bw() + 
   theme(
     panel.grid = element_blank(), 
