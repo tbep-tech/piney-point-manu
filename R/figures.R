@@ -108,9 +108,10 @@ attributes(bsmap1_transparent) <- mapatt
 # plot
 p1 <- ggmap(bsmap1_transparent) +
   geom_sf(data = areas, aes(fill = area), color = NA, inherit.aes = F, alpha = 0.8) +
-  geom_sf_text(data = areas, aes(label = area), color = 'black', inherit.aes = F, alpha = 0.8, size = 6) +
   scale_fill_manual(values = cols, drop = F) +
-  theme_bw() + 
+  geom_sf_text(data = areas, aes(label = area), color = 'black', inherit.aes = F, alpha = 0.8, size = 6) +
+  geom_sf(data = pineypoint, aes(fill = 'Piney Point'), pch = 24, color = 'black', fill = 'black', size = 3, inherit.aes= F) + 
+    theme_bw() + 
   theme(
     legend.title = element_blank(), 
     panel.grid = element_blank(), 
