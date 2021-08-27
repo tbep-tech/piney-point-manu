@@ -6,7 +6,7 @@ output:
     number_sections: false
 always_allow_html: true
 bibliography: refs.bib
-author: "Marcus W. Beck (mbeck@tbep.org), Gary E. Raulerson (graulerson@tbep.org), Maya C. Burke (mburke@tbep.org), Joe Whalen (jwhalen@tbep.org), Sheila Scolaro (sscolar@tbep.org), Ed T. Sherwood (esherwood@tbep.org)"
+author: "Marcus W. Beck (mbeck@tbep.org), Maya C. Burke (mburke@tbep.org), Emma E. Dontis (edontis@co.pinellas.fl.us), Jessica Lewis (jlewis@tbep.org), Miles Medina (miles.medina@ufl.edu), Elise Morrison (elise.morrison@essie.ufl.edu), Mark Rains (Mark.Rains@floridadep.gov), Gary E. Raulerson (graulerson@tbep.org), Sheila Scolaro (sscolar@tbep.org), Ed T. Sherwood (esherwood@tbep.org), David Tomasko (dave@sarasotabay.org), Joe Whalen (jwhalen@tbep.org)"
 urlcolor: blue
 csl: marine-pollution-bulletin.csl
 link-citations: true
@@ -22,9 +22,10 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 
 box::use(
   here[here],
-  dplyr[...], 
+  dplyr[...],
+  tidyr[fill],
   english[english], 
-  lubridate[month], 
+  lubridate[month,year,mdy,floor_date], 
   tibble[deframe]
 )
 
@@ -49,7 +50,7 @@ spelling::spell_check_files('manu_draft.Rmd')
 
 # Abstract
 
-From March 30th to April 9th, 2021, 215 million gallons of legacy phosphate mining wastewater from the Piney Point facility were released into Tampa Bay (Florida, USA).  An estimated 205 tons of total nitrogen were exported to Lower Tampa Bay, exceeding typical annual external nitrogen load estimates in a matter of days.  An immediate phytoplankton response was observed in samples closest to the discharge site, with chlorophyll concentrations exceeding 50 ug/L. Macroalgae blooms of cyanobacteria (*Lyngbya* spp.) were observed beginning in May, with biomass estimated at 0.5 kg/m2 at some locations.  Though present south of Tampa Bay prior to the event, blooms of *Karenia brevis* began to be measured in May and continued through July within Tampa Bay proper.  Reported fish kills tracked bloom concentrations, prompting local cleanup efforts to remove over 1800 tons of dead fish.  Combined, these observations indicate abnormal conditions in Tampa Bay following release of wastewater from Piney Point, which is supported by comparison to the decades of baseline environmental monitoring data for the region and typical seasonal conditions experienced in recent years. 
+From March 30th to April 9th, 2021, 215 million gallons of legacy phosphate mining wastewater from the Piney Point facility were released into Tampa Bay (Florida, USA).  An estimated 205 tons of total nitrogen were exported to Lower Tampa Bay, exceeding typical annual external nitrogen load estimates in a matter of days.  An immediate phytoplankton response was observed in samples closest to the discharge site, with chlorophyll concentrations exceeding 50 ug/L. Macroalgae blooms of cyanobacteria (*Lyngbya* spp.) were observed beginning in May, with biomass estimated at 0.5 kg/m2 at some locations.  Though present south of Tampa Bay prior to the event, blooms of *Karenia brevis* were first observed in May and continued through July within Tampa Bay proper.  Reported fish kills tracked bloom concentrations, prompting local cleanup efforts to remove over 1800 tons of dead fish.  Combined, these observations indicate abnormal conditions in Tampa Bay following release of wastewater from Piney Point, which is supported by comparison to the decades of baseline environmental monitoring data for the region and typical seasonal conditions experienced in recent years. 
 
 *Key words*: nitrogen, phosphate mining, Tampa Bay, wastewater, water quality
 
@@ -57,11 +58,11 @@ From March 30th to April 9th, 2021, 215 million gallons of legacy phosphate mini
 
 Ecosystem management paradigms for estuaries of the Gulf Coast of Florida, USA are based primarily on the control of nutrient pollutants from atmospheric, stormwater and wastewater sources.  The effects of nitrogen from dominant external source inputs are well understood as a limiting nutrient for the growth of algal blooms that can degrade water quality, having a negative effect on inter- and subtidal habitats [@Nixon95;@Howarth06;@Parker12;@Greening14]. Seagrasses in particular are a primary endpoint for assessing the impacts of nutrient pollution on water quality based on established relationships between nitrogen, phytoplankton growth, water clarity, and light requirements for seagrass species observed in nearshore environments [@Dixon95;@Kenworthy96;@Greening06;@Beck18g].  Tampa Bay is the largest estuary in Florida located in a heavily urbanized watershed of nearly 3 million individuals.  Historical gains in seagrass coverage in Tampa Bay have been achieved through public-private partnerships and consensus-based approaches to science applications that seek to limit the total nutrient loads delivered to major bay segments [@Janicki96;@Greening16].  Together, these efforts have resulted in the long-term recovery of Tampa Bay through a reduction in external nitrogen loads, improvements in water clarity, and baywide expansion of seagrass coverage to benchmark targets established for the region [@Greening14;@Sherwood17].    
 
-Ongoing threats and challenges to protecting water quality of Gulf Coast estuaries persist despite historical gains in environmental recovery.  While point-source inputs of nutrient loads from wastewater treatment plants and industrial sources into Tampa Bay have been much reduced, non-point source loads from wastewater sources and stormwater runoff are estimated to dominate external nutrient loads to the bay, particularly during the rainy season from June to September [@Janicki08;@Janicki17].  Atmospheric deposition of nutrients from fossil fuel based power production and automobile traffic further contribute about one-quarter of the total nitrogen inputs directly to the bay's surface [@Poor13].  Climate change stressors, such as sea level rise, changing rainfall patterns, and temperature alterations, may further perturb ecosystem dynamics and assimilative capacity by reducing system resilience to nutrient inputs [@Sherwood14;@Burke17].  Many of these challenges are addressed by ongoing efforts of the US EPA National Estuary Program through implementation of a science-based resource management plan for the Bay [@Ohara17].  The Tampa Bay Estuary Program and its partners has been instrumental in coordinating efforts among local and regional stakeholders to address legacy pollutants and current threats to the long-term protection of bay resources [@Greening14;@Greening16]. 
+Ongoing threats and challenges to protecting water quality of Gulf Coast estuaries persist despite historical gains in environmental recovery.  While point-source inputs of nutrient loads from wastewater treatment plants and industrial sources into Tampa Bay have been much reduced, non-point source loads from wastewater sources and stormwater runoff are estimated to dominate external nutrient loads to the bay, particularly during the rainy season from June to September [@Janicki08;@Janicki17].  Atmospheric deposition of nutrients from fossil fuel-based power production and automobile traffic further contribute about one-quarter of the total nitrogen inputs directly to the bay's surface [@Poor13].  Climate change stressors, such as sea level rise, changing rainfall patterns, and temperature alterations, may further perturb ecosystem dynamics and assimilative capacity by reducing system resilience to nutrient inputs [@Sherwood14;@Burke17].  Many of these challenges are addressed by ongoing efforts of the US EPA National Estuary Program through implementation of a science-based resource management plan for the Bay [@Ohara17].  The Tampa Bay Estuary Program and its partners has been instrumental in coordinating efforts among local and regional stakeholders to address legacy pollutants and current threats to the long-term protection of bay resources [@Greening14;@Greening16]. 
 
 Wastewater byproducts from mining are a global threat to the quality of surface and groundwater resources worldwide [@Tayibi09;@Hudson11]. Phosphate fertilizer is produced through the "wet process" reaction to create phosphoric acid by treating mined phosphate rock with sulfuric acid [@Burnett01;@Perez16].  The process generates large amounts of waste, creating approximately one unit of phosphoric acid per five units of waste precipitate, or phosphogypsum (CaSO$_4\cdot$ H$_2$O).  Impurities, contaminants, and radionuclides exist in phosphogypsum, making it commercially invaluable and the resulting waste is typically stored on-site in large earthen stacks (gypstacks) or holding ponds [@Burnett01].  The stacks are usually near distribution centers where fertilizer is shipped elsewhere, such as port facilities close to coastal resources or population centers [@Beck18]. There are obvious environmental and human health risks associated with these stacks, primarily through controlled or uncontrolled discharge to surface waters or groundwater contamination through leaching from unlined or poorly maintained stacks. Examples exist worldwide demonstrating the potential harm of these facilities on the environment [@Tayibi09;@Sanders13;@elzrelli15;@Perez16;@Beck18].   
 
-The geology of central Florida is rich in phosphates that have supported a multi-billion dollar mining industry for fertilizer used in food production [@Henderson04].  By 2001, an estimated 40 million tons of phosphogypsum were created each year in northern and central Florida [@Burnett01].  Currently, seventeen phosphogypsum stacks (two active, five inactive, ten closed, [Florida Department of Environmental Protection](https://geodata.dep.state.fl.us/datasets/6277c3b1eeae4a818f8683fc29e6b35b_0/about)) exist in the Tampa Bay watershed with no comprehensive, long-term plan for closure or disposal of waste to prevent unforeseen impacts to the environment.  The Piney Point facility located in Palmetto, Florida is a large, remnant phosphogypsum stack located less than two miles from the shore of Tampa Bay and near two Florida aquatic preserves [@Henderson04].  Bankruptcy of the mining company responsible for the stack in 1999 transferred ownership to a third-party, with oversight by the Florida Departmental of Environmental Protection (FDEP).  Decreasing holding capacity of the ponds with seasonal rain events, tropical storms, and storage of dredging material from nearby Port Manatee have contributed to degradation of the facility.  Discharges of wastewater from the stacks occurred in the early 2000s and 2011 to nearby Bishop Harbor connected to Tampa Bay [@Switzer11;@Garrett11].  Those discharges resulted in spatially-restricted, ecosystem responses [@Switzer11;@Garrett11]. Recently, FDEP authorized an [emergency order](https://floridadep.gov/sites/default/files/21-0323.pdf) on March 30th, 2021 to release wastewater from the stacks directly into lower Tampa Bay to prevent catastrophic failure of the berms supporting the holding ponds. At that time, approximately 480 million gallons of legacy phosphate mining wastewater was being held in the failing stack.    
+The geology of central Florida is rich in phosphates that have supported a multi-billion dollar mining industry for fertilizer used in food production [@Henderson04].  By 2001, an estimated 40 million tons of phosphogypsum were created each year in northern and central Florida [@Burnett01].  Currently, seventeen phosphogypsum stacks (two active, five inactive, ten closed, [Florida Department of Environmental Protection](https://geodata.dep.state.fl.us/datasets/6277c3b1eeae4a818f8683fc29e6b35b_0/about)) exist in the Tampa Bay watershed with no comprehensive, long-term plan for closure or disposal of waste to prevent unforeseen impacts to the environment.  The Piney Point facility located in Palmetto, Florida is a large, remnant phosphogypsum stack located less than two miles from the shore of Tampa Bay and near two Florida aquatic preserves [@Henderson04].  Bankruptcy of the mining company responsible for the stack in 1999 transferred ownership to a third-party, with oversight by the Florida Departmental of Environmental Protection (FDEP).  Decreasing holding capacity of the ponds with seasonal rain events, tropical storms, and storage of dredging material from nearby Port Manatee have contributed to degradation of the facility.  Discharges of wastewater from the stacks occurred in the early 2000s and 2011 to nearby Bishop Harbor connected to Tampa Bay.  Those discharges resulted in spatially-restricted, ecosystem responses [@Switzer11;@Garrett11]. Recently, FDEP authorized an [emergency order](https://floridadep.gov/sites/default/files/21-0323.pdf) on March 30th, 2021 to release wastewater from the stacks directly into lower Tampa Bay to prevent catastrophic failure of the berms supporting the holding ponds. At that time, approximately 480 million gallons of legacy phosphate mining wastewater was being held in the failing stack.    
   
 This paper provides an initial assessment of environmental conditions in Tampa Bay over five months following the recent release of 215 million gallons of legacy phosphate mining wastewater in April, 2021.  The goal is to describe the results of monitoring data of surface waters collected in response to the discharge event to assess relative deviation of current conditions from long-term, seasonal records of water quality, phytoplankton, and seagrass/macroalgae datasets available for the region.  We provide a brief overview of the history of the Piney Point facility, including past wastewater releases and impacts observed in Tampa Bay.  A timeline of events in 2021 is also provided, which is supported by the results from 2021 response-based monitoring of conditions in and around Port Manatee, FL -- the focal point of emergency discharges from the Piney Point facility.  The results of this study provide an initial documentation of impacts to the natural resources of Tampa Bay that can be used to inform long-term assessments of acute wastewater discharge events on the environmental quality of the region.  We focus primarily on the perspective of the Tampa Bay Estuary Program in its role in coordinating monitoring and evaluating short-term impacts, particularly in the context of long-term management goals that leverage resources from existing partnerships among local resource management institutions. 
 
@@ -205,48 +206,99 @@ fomoarea3jun <- fomoarea3 %>%
   filter(mo %in% 6) %>% 
   select(taxa, foest) %>% 
   deframe
+
+# kw pvals
+cyanoarea3 <- mcrtab %>% 
+  mutate(
+    Area = ifelse(Area == '', NA, Area)
+  ) %>% 
+  fill(Area) %>% 
+  filter(Area == 3 & `Macroalgae group` == 'Cyanobacteria') %>% 
+  pull(pval) %>% 
+  as.numeric %>% 
+  round(3)
 ```
 
 A total of `r ntrns` transects were sampled for seagrasses and macroalgae from April to August, each visited on average `r avevis` times per month. Turtle grass (*T. testudinum*) was the dominant seagrass species with frequency occurrence of `r foall['Thalassia testudinum']`\% across all locations and sample dates.  Manatee grass (*S. filiforme*) and shoal grass (*H. wrightii*) had similar coverage across all transects, with frequency occurrences of `r foall['Syringodium filiforme']`\% and `r foall['Halodule wrightii']`\%, respectively.  Widgeon grass (*R. maritima*) and star grass (*H. engelmanni* and *H. decipiens*) were uncommon,  with frequency occurrences of `r foall['Ruppia maritima']`\% and `r foall['Halophila sp']`\%. The frequency occurrences of seagrasses near Piney Point were similar to the long-term record of seagrass transect data available for Tampa Bay [@Sherwood17].  At the baywide scale, shoal grass is the dominant species, whereas turtle grass is more common in euhaline waters closer to the Gulf.  Macroalgae observed along the transects also varied in coverage, with red macroalgae groups having the highest frequency occurrence of `r foall['Red']`\%.  Common taxa in the red group included *Gracilaria sp.* and *Acanthophora sp.*.  Green and cyanobacteria macroalgae were less common, with frequency occurrences of `r foall['Green']`\% and `r foall['Cyanobacteria']`\%.  Common taxa in the green group included *Ulva sp.* and *Caulerpa sp.*, whereas *Lyngbya sp.* was the only cyanobacteria macroalgae observed.  Brown macroalgae in the genus *Feldmannia* were only observed at `r foall['Brown']`\% frequency occurrence.
 
 Temporal progression of seagrassess and macroalgae varied across the months, although a typical pattern observed at many of the transects is shown in Figure \@ref(fig:trnex).  Transect S3T6 is located less than one kilometer to the north of Port Manatee.  The site is dominated by manatee grass that was observed at nearly all of the sample points along the transect at varying coverages.  Overall abundunce of seagrass did not change dramatically from April 22nd to August 9th.  However, macroalgal abundances changed over the course of sampling similar to many of the other transects sampled during the study.  Red macroalgae were present in high abundances from April to May.  *Lyngbya sp.* was first observed on May 24th and was present at all of the sample locations on June 4th and 15th.  *Lyngbya sp.* peristed through June and July, but not was observed after July 20th.  Green macroalgae taxa were first observed in July, although at generally low abundances.  By August, macroalgae abundances were low.  Trends in macroalgae somewhat followed seasonal patterns observed baywide with red macroalgae transitioning to green macroalgae.  However, overall macroalgae trends, including June dominance of cyanobacteria was observed at nearly all transects that suggests a broader impact from wastewater discharge at Piney Point.
 
-Monthly summaries in frequency occurrence by area (Figure \@ref(fig:trnex)) provided an indication of seagrass and macroalgae trends across all transects.  No transects were sampled in area 2 to the north of Piney Point.  Area 1 had generally balanced frequency occurrence of the three primary seagrass species observed in the bay, although a slight decrease over time in *H. wrightii* was observed (April frequency occurrence of `r fomoarea1apr['Halodule wrightii']`\%, August frequency occurrence of `r fomoarea1aug['Halodule wrightii']`\%).  A similar decline in coverage of *H wrightii* was also observed in area 3 (April frequency occurrence of `r fomoarea3apr['Halodule wrightii']`\%, July frequency occurrence of `r fomoarea3jul['Halodule wrightii']`\%). Frequency occurrence of *S. syringodium* also declined slightly from April to July in area 3 (April frequency occurrence of `r fomoarea3apr['Syringodium filiforme']`\%, August frequency occurrence of `r fomoarea3jul['Syringodium filiforme']`\%).  Changes in macroalgae frequency occurrence were much more pronounced than for seagrasses across months and by area. Red macroalgae was the dominant group across all months and areas, with the highest frequency occurrences observed in April (`r fomoarea1apr['Red']`\% in area 1, `r fomoarea3apr['Red']`\% in area 3). Cyanobacteria frequency occurrence peaked in June, with greater coverage in area 3 (`r fomoarea3jun['Cyanobacteria']`\%) compared to area 1 (`r fomoarea1jun['Cyanobacteria']`\%).  Green macroalgae had the second lowest frequency occurrence, with the highest coverage of `r fomoarea1aug['Green']`\% observed in August in area 1.  Brown macroalgae was only observed at one transect. 
+Monthly summaries in frequency occurrence by area (Figure \@ref(fig:trnfrq)) provided an indication of seagrass and macroalgae trends across all transects.  No transects were sampled in area 2 to the north of Piney Point.  Area 1 had generally balanced frequency occurrence of the three primary seagrass species observed in the bay, although a slight decrease over time in shoal grass (*H. wrightii*) was observed (April frequency occurrence of `r fomoarea1apr['Halodule wrightii']`\%, August frequency occurrence of `r fomoarea1aug['Halodule wrightii']`\%).  A similar decline in coverage of shoal grass was also observed in area 3 (April frequency occurrence of `r fomoarea3apr['Halodule wrightii']`\%, July frequency occurrence of `r fomoarea3jul['Halodule wrightii']`\%). Frequency occurrence of manatee grass (*S. syringodium*) also declined slightly from April to July in area 3 (April frequency occurrence of `r fomoarea3apr['Syringodium filiforme']`\%, August frequency occurrence of `r fomoarea3jul['Syringodium filiforme']`\%).  Changes in macroalgae frequency occurrence were much more pronounced than for seagrasses across months and by area. Red macroalgae was the dominant group across all months and areas, with the highest frequency occurrences observed in April (`r fomoarea1apr['Red']`\% in area 1, `r fomoarea3apr['Red']`\% in area 3). Cyanobacteria frequency occurrence peaked in June, with greater coverage in area 3 (`r fomoarea3jun['Cyanobacteria']`\%) compared to area 1 (`r fomoarea1jun['Cyanobacteria']`\%).  Green macroalgae had the second lowest frequency occurrence, with the highest coverage of `r fomoarea1aug['Green']`\% observed in August in area 1.  Brown macroalgae was only observed at one transect. 
 
+Statistical comparisons of results in Figure \@ref(fig:trnfrq) shown in Tables \@ref(tab:mcrtab) and \@ref(tab:savtab) further suggested that seagrass trends were minor compared to those of macroalgae.  Results by month showed that seagrass frequency occurrence, by species and area, had insignificant changes ($p > 0.05$) over the study period.  Although trends were not significant, estimated medians in each month in Table \@ref(tab:savtab) showed similar changes for seagrasses as in Figure \@ref(fig:trnex), with generally higher coverage estimates in April.  These changes were more pronounced in area 3 as compared to area 1.  For macroalgae (Table \@ref(tab:mcrtab)), significant differences between months were observed for red and cyanobacteria macroalgae in both areas 1 and 3, although cyanobacteria differences for area 3 were only marginally significant ($p = `r cyanoarea3`$).  Coverage of cyanobacteria in area 1 during June was significantly higher than coverage in April.  No significant differences between months were observed for the green macroalgae group.
+
+## Water quality compared to seagrass and macrolagae
+
+A PCA comparison of all water quality variables with seagrass and macroalgae frequency occurrence estimates shows significant assocations between groups of variables (Figure \@ref(fig:allpcacors)).  The first principal component axis explained 31\% of the variation among all variables, whereas the second and third axes explained 33\% of the remaining variation.  For the water quality varialbes, the first principal component axis had positive loadings for secchi depth and dissolved oyxgen and negatative assocations for total nitrogen, chl-a, and temperature.  For macroalgae, the first axis was positively associated with frequency occurrence of red and green macroalgae and negatively associated with cyanobacteria. Loading vectors for the seagrasses were minor, although turtle grass (*T. testudinum*) had a weak positive association with axis 1.  The second principal component axis had a strong postive assocation with total phosphorus and negative association with salinity. The third axis showed a strong positive association with manatee grass (*S. filiforme*) and negative association with shoal grass (*H. wrightii*).  
+
+Pairwise Spearman rank correlations for the same variables used in the PCA showed significant associations among several of the water quality, seagrass, and macroalgae variables.  Chlorophyll-a was positively correlated with total phosphorus, total nitrogen, temperature, and pH (all $p < 0.005$) and negatively correlated with secchi depth ($p < 0.005$).  Chlorophyll-a was also negatively correlated red and green macroalgae ($p < 0.05$) and turtle grass ($p < 0.005$).  Among the macroalgae, green and red groups were positively correlated ($p < 0.05$), whereas both were negatively correlated with cyanobacteria ($p < 0.005$ for red, $p < 0.05$ for green).  For water quality and seagrass, chl-a, total nitrogen, and total phosphorus was negatively correlated to turtle grass ($p < 0.005$ for all, except $p < 0.05$ for total nitrogen), whereas secchi was positively associated with shoal grass ($p < 0.05$).  For macroalgae and seagrass, red and cyanobacteria macroalgae were positively correlated with manatee grass ($p < 0.005$ for both), whereas cyanobacteria was negatively correlated with shoal grass ($p < 0.005$) and turtle grass ($p< 0.05$).  Among the seagrasses, manatee grass was negatively correlated with turtle grass and shoal grass ($p < 0.005$ for both).
 
 ## Red tide and fish kill reports
 
+```{r}
+fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>% 
+  select(
+    date = textBox6, 
+    city = cOUNTYDataTextBox, 
+    waterbody = lOCATIONDataTextBox,
+    species = textBox18
+  ) %>% 
+  mutate(
+    date = mdy(date),
+    yr = year(date),
+    week = floor_date(date, unit = 'week'), 
+    week = factor(format(week, '%b %d')), 
+    week = factor(week, levels = as.character(unique(week))), 
+    city = gsub('\\s+$', '', city),
+    city = gsub('^St\\s', 'St. ', city)
+  ) %>% 
+  filter(city %in% c('Tampa', 'St. Petersburg'))
+fishann <- fishdat %>% 
+  group_by(yr, city) %>% 
+  summarise(cnt = n(), .groups = 'drop') %>% 
+  group_by(city) %>% 
+  summarise(cnt = sum(cnt), .groups = 'drop') %>% 
+  mutate(per = round(100 * cnt / sum(cnt), 1))
+annstpper <- fishann %>% 
+  filter(city == 'St. Petersburg') %>% 
+  pull(per)
+anntmpper <- fishann %>% 
+  filter(city == 'Tampa') %>% 
+  pull(per)
+fishwk <- fishdat %>% 
+  filter(yr == 2021) %>% 
+  group_by(week, city) %>% 
+  summarise(cnt = n(), .groups = 'drop') %>% 
+  group_by(city) %>% 
+  summarise(cnt = sum(cnt), .groups = 'drop') %>% 
+  mutate(per = round(100 * cnt / sum(cnt), 1))
+wkstpcnt <- fishwk %>% 
+  filter(city == 'St. Petersburg') %>% 
+  pull(cnt)
+wktmpcnt <- fishwk %>% 
+  filter(city == 'Tampa') %>% 
+  pull(cnt)
+```
 
-* Figure \@ref(fig:timeline) timeline of events
-* Figure \@ref(fig:wqmap) map of water quality observations
-* Figure \@ref(fig:wqtrnds) boxplots by week with +/-1sd for monthly long-term
-* Figure \@ref(fig:pcacors) pca and correlations of all wq variables, by area 
-* Figure \@ref(fig:trnex) seagrass and macroalgae example transect
-* Figure \@ref(fig:trnfrq) seagrass, macroalgae frequency occurrence estimates
-* Figure \@ref(fig:allpcacors) seagrass, macralgae, wq pca and correlation matrix
-* Figure \@ref(fig:redtide) red tide historic and current, fish kill reports historic and current
+The increase in *K. brevis* from April to July to bloom concentrations exceeding 10k cells/L was an anomaly in 2021 that is not regularly observed in Tampa Bay.  The historical record from 1995 to present in Figure \@ref(fig:redtide)a shows the range of cell concentrations sampled in middle and lower Tampa Bay, with only a handful of years having median cell concentrations greater than 10k cells/L, notably 2001 and 2012, although several years had concentrations above the median that were at bloom levels. Median cell concentrations for most years were well below 1k cells/L.  The highest concentration of 17.6 million cells/L was observed in 2021, whereas only 2006 had a maximum observed concentration above 10 million cells/L.  Seasonally in 2021, bloom concentrations were not observed until the week of May 23, with concentrations peaking by the week of July 4th, after which concentrations declined through August (Figure \@ref(fig:redtide)b). 
 
-* Table \@ref(tab:stktab) Stack characteristics
-* Table \@ref(tab:wqsumtab) water quality data collected and summarized
-* Table \@ref(tab:wqcmptab) Multiple comparisons of water quality by month/area, with median/min/max
-* Table \@ref(tab:mcrtab) Macroalgae freq. occurrence summaries by month/area, with median/min/max
-* Table \@ref(tab:savtab) Seagrass freq. occurrence summaries by month/area, with median/min/max
-
-Seagrass: note decline of HW and correlations in the matrix, these make sense. 
-
-Seagrass interp from DT: 
-
-First off, Marcus please correct me if any confusion on my part about how to read the chart, but it’s my take that the asterisks reflect levels of significance, and that a box without an asterisk – I didn’t pay much attention to that.  Also, a negative number would be a “cool” color, reflecting an inverse relationship, while a positive number (warm color) would reflect a positive correlation?
-
-If I have this correct, then what stood out to me was some of the following – seagrass distributions are highly inversely correlated between most of the species, which reflects seagrass being clonal organisms that tend not to grow interspersed with each other in a random manner.  S. filiforme does not grow in shallow waters, because it’s blades can’t “lay down” during low tides, and it often is the deepest growing species in some of our cleaner areas, while H. wrightii can be both the shallowest and deepest growing species in areas like Hillsborough Bay.
-
-More relevant here is that there is no significant correlation between the abundance of cyanobacteria and either chlorophyll-a or TN or TP.  To me, that makes sense, since macroalgae like cyanos seem to reflect an alternative nutrient destination, compared to phytoplankton.  The strongest correlations out there are the well expected ones between TN and Chl-a, but also between TP and NH3/4, which suggests overall nutrient availability tracks together, and phytoplankton continue to be a major destination of nitrogen availability.
-
-But what about the positive correlation between cyanobacteria and S. filiforme?  From my experience in Sarasota Bay, that makes sense, since the highest levels of cyanobacteria were found entangled within the manatee grass meadows in the fairly deeper waters farther offshore.  Cyanos are strongly negatively correlated with red algae, since they occurred at different times, basically.
-
-Finally, keep in mind that “Lyngbya” life cycles are such that most of the biomass produced does not stay where it was produced.  Those clumps of Lyngbya growing on the bottom get lifted up off the bottom by the oxygen bubbles you can see in their blooms, and they then are carried along the shoreline to decompose on whatever shoreline that they’ve been blown to.  Our photos (and others) clearly show that there is MUCH more Lyngbya in our bays than what we’ve sampled along the bottom of the bay – that’s a bit different than “traditional” red algae biomass.
+Fish kill reports attributed to red tide at the cities of Tampa and Saint Petersburg, FL somewhat tracked the annual *K. brevis* cell concentrations, with a notable exception in 2021 which had the most reports among all years (Figure \@ref(fig:redtide)c). Historically, more fish kills were reported in Saint Petersburg (`r annstpper`%) as compared to Tampa (`r anntmpper`%), where the former is closer to the mouth of Tampa Bay.  In 2021, `r wkstpcnt` reports were made in Saint Petersburg and `r wktmpcnt` reports were made in Tampa (Figure \@ref(fig:redtide)d).  The combined weekly reports in 2021 for Tampa and Saint Petersburg peaked the week of July 4th, the same week as the peak of *K. brevis* cell concentrations (Figure \@ref(fig:redtide)b).  Notably, the first to last week of fish kill reports covered only one and half months, whereas red tide in the bay was observed over nearly five months.  Increased reports in early July coincided with a shift in winds from Tropical Storm Elsa which moved dead fish closer to populated nearshore areas, as noted earlier.  As a result, the city of St. Petersburg removed over 1800 tons of dead fish near public and private shoreline areas (K. Hammer Levy, City of St. Petersburg, pers. comm. Aug. 2021).    
 
 # Discussion
+
+<!-- Seagrass: note decline of HW and correlations in the matrix, these make sense.  -->
+
+<!-- Seagrass interp from DT:  -->
+
+<!-- First off, Marcus please correct me if any confusion on my part about how to read the chart, but it’s my take that the asterisks reflect levels of significance, and that a box without an asterisk – I didn’t pay much attention to that.  Also, a negative number would be a “cool” color, reflecting an inverse relationship, while a positive number (warm color) would reflect a positive correlation? -->
+
+<!-- If I have this correct, then what stood out to me was some of the following – seagrass distributions are highly inversely correlated between most of the species, which reflects seagrass being clonal organisms that tend not to grow interspersed with each other in a random manner.  S. filiforme does not grow in shallow waters, because it’s blades can’t “lay down” during low tides, and it often is the deepest growing species in some of our cleaner areas, while H. wrightii can be both the shallowest and deepest growing species in areas like Hillsborough Bay. -->
+
+<!-- More relevant here is that there is no significant correlation between the abundance of cyanobacteria and either chlorophyll-a or TN or TP.  To me, that makes sense, since macroalgae like cyanos seem to reflect an alternative nutrient destination, compared to phytoplankton.  The strongest correlations out there are the well expected ones between TN and Chl-a, but also between TP and NH3/4, which suggests overall nutrient availability tracks together, and phytoplankton continue to be a major destination of nitrogen availability. -->
+
+<!-- But what about the positive correlation between cyanobacteria and S. filiforme?  From my experience in Sarasota Bay, that makes sense, since the highest levels of cyanobacteria were found entangled within the manatee grass meadows in the fairly deeper waters farther offshore.  Cyanos are strongly negatively correlated with red algae, since they occurred at different times, basically. -->
+
+<!-- Finally, keep in mind that “Lyngbya” life cycles are such that most of the biomass produced does not stay where it was produced.  Those clumps of Lyngbya growing on the bottom get lifted up off the bottom by the oxygen bubbles you can see in their blooms, and they then are carried along the shoreline to decompose on whatever shoreline that they’ve been blown to.  Our photos (and others) clearly show that there is MUCH more Lyngbya in our bays than what we’ve sampled along the bottom of the bay – that’s a bit different than “traditional” red algae biomass. -->
 
 * Explain results - what's up with inorganic nutrients?  Likely driving phyto response but concentrations are not a good indicator.  Uptake is rapid...
 * Comparison to other locations/past events - Grand Bay, Bishop Harbor, Huelva estuary [@Perez10;@Perez16], Dillon report about Grand Bay [link](https://www.wrri.msstate.edu/pdf/2016dillon_finalreport.pdf)
@@ -284,7 +336,7 @@ knitr::include_graphics(here('figs/pcacors.jpeg'))
 knitr::include_graphics(here('figs/trnex.jpeg'))
 ```
 
-```{r trnfrq, fig.cap = 'Frequency occurrence estimates for (a) area 1 and (b) area 2 (Figure \\@ref(fig:map)a) for seagrass (top) and macroalgae (bottom) rapid response transect surveys across all transects (n = `r nrow(rstrnpts)`) near Piney Point.  Estimates are grouped by sample months in 2021. Frequency occurrences are absolute for each taxa based on presence/absence.'}
+```{r trnfrq, fig.cap = paste0('Frequency occurrence estimates for (a) area 1 and (b) area 2 (Figure \\@ref(fig:map)a) for seagrass (top) and macroalgae (bottom) rapid response transect surveys across all transects (n = ', ntrns, ') near Piney Point.  Estimates are grouped by sample months in 2021. Frequency occurrences are absolute for each taxa based on presence/absence.')}
 knitr::include_graphics(here('figs/trnfrq.jpeg'))
 ```
 
@@ -315,12 +367,16 @@ knitr::kable(wqcmptab, booktabs = T, caption = cap.val)
 
 ```{r mcrtab}
 cap.val <- 'Comparison of macroalgae frequency occurrence by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of frequency occurrence between months for macroalgae groups and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp column) were used to evaluate pairwise monthly frequency occurrences for each macroalgae group in each area.  Rows that share a letter within each area and macroalgae group combination have frequency occurrences that are not significantly different. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'
-knitr::kable(mcrtab, booktabs = T, caption = cap.val)
+totab <- mcrtab %>% 
+  select(-pval)
+knitr::kable(totab, booktabs = T, caption = cap.val)
 ```
 
 ```{r savtab}
 cap.val <- 'Comparison of seagrass species frequency occurrence by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of frequency occurrence between months for seagrass species and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp column) were used to evaluate pairwise monthly frequency occurrences for each seagrass species in each area.  Rows that share a letter within each area and seagrass species combination have frequency occurrences that are not significantly different. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not signifcant at $\\alpha$ = 0.05.'
-knitr::kable(savtab, booktabs = T, caption = cap.val)
+totab <- savtab %>% 
+  select(-pval)
+knitr::kable(totab, booktabs = T, caption = cap.val)
 ```
 
 # References

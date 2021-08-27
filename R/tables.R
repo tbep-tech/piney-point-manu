@@ -17,6 +17,8 @@ source(here('R/funcs.R'))
 data(rswqdat)
 data(ppseg)
 data(rsstatloc)
+data(rstrnpts)
+data(rstrndat)
 data(parms)
 data(bsstatloc)
 data(bswqdat)
@@ -383,6 +385,7 @@ trnsum <- trnsf %>%
         mutate(
           minval = paste0(' (', minval, ', '),
           maxval = paste0(maxval, ')'), 
+          pval = tst$p.value,
           krusk_pval = p_ast(tst$p.value),
           krusk_chis = round(tst$statistic, 2)
         ) %>% 
@@ -407,13 +410,15 @@ savests <- ests %>%
   mutate(
     area = ifelse(duplicated(area), '', area), 
     taxa = ifelse(duplicated(taxa), '', as.character(taxa)), 
-    krusk = ifelse(duplicated(krusk), '', krusk)
+    krusk = ifelse(duplicated(krusk), '', krusk),
+    pval = ifelse(duplicated(pval), '', pval)
   ) %>% 
   ungroup() %>% 
   select(
     Area = area, 
     `Seagrass species` = taxa, 
     `Chi-Sq.` = krusk,
+    pval,
     `Comp.` = lets, 
     Month = mo, 
     `N obs.` = length, 
@@ -428,13 +433,15 @@ mcrests <- ests %>%
   mutate(
     area = ifelse(duplicated(area), '', area), 
     taxa = ifelse(duplicated(taxa), '', as.character(taxa)), 
-    krusk = ifelse(duplicated(krusk), '', krusk)
+    krusk = ifelse(duplicated(krusk), '', krusk),
+    pval = ifelse(duplicated(pval), '', pval)
   ) %>% 
   ungroup() %>% 
   select(
     Area = area, 
     `Macroalgae group` = taxa, 
     `Chi-Sq.` = krusk,
+    pval,
     `Comp.` = lets, 
     Month = mo, 
     `N obs.` = length, 
