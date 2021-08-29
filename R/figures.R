@@ -20,7 +20,9 @@ box::use(
   scales = scales[muted], 
   units = units[set_units], 
   vegan = vegan[decostand], 
-  FactoMineR = FactoMineR[PCA]
+  FactoMineR = FactoMineR[PCA], 
+  ggnewscale[new_scale_fill], 
+  grid[unit]
 )
 
 data(rsallpts)
@@ -104,17 +106,17 @@ bsmap1_transparent <- matrix(adjustcolor(bsmap1,
                              nrow = nrow(bsmap1))
 attributes(bsmap1_transparent) <- mapatt
 
-#For reference, add long-term station locations to Figure 1a or create another panel w/ stations?
-#Added stations, but now how to combine with existing 1b legend or add a new legend here?
 # plot
 p1 <- ggmap(bsmap1_transparent) +
   geom_sf(data = areas, aes(fill = area), color = NA, inherit.aes = F, alpha = 0.8) +
-    scale_fill_manual(values = cols, drop = F) +
-  geom_sf(data = bsstatloc, aes(fill = 'ambient'), pch =21, color = 'black', fill = 'white', inherit.aes= F) +
-  geom_sf(data = pineypoint, aes(fill = 'Piney Point'), pch = 24, color = 'black', fill = 'black', size = 3, inherit.aes= F) + 
+  scale_fill_manual(values = cols, drop = F, guide = 'none') +
+  new_scale_fill() + 
+  geom_sf(data = bsstatloc, aes(fill = 'Long-term monitoring', shape = 'Long-term monitoring'), color = 'black', size = 2, inherit.aes= F) +
+  geom_sf(data = pineypoint, aes(fill = 'Piney Point', shape = 'Piney Point'), color = 'black', size = 3, inherit.aes= F) + 
   geom_sf_text(data = areas, aes(label = area), color = 'black', inherit.aes = F, alpha = 0.8, size = 6) +
-  
-    theme_bw() + 
+  scale_fill_manual('test', values = c('white', 'black')) +
+  scale_shape_manual('test', values= c(21, 24)) +
+  theme_bw() + 
   theme(
     legend.title = element_blank(), 
     panel.grid = element_blank(), 
@@ -125,7 +127,7 @@ p1 <- ggmap(bsmap1_transparent) +
     panel.background = element_rect(fill = 'white'),
     axis.ticks = element_line(colour = 'grey'),
     panel.border = element_rect(colour = 'grey', fill = NA), 
-    legend.position = 'none'
+    legend.position = 'right'
   ) + 
   annotation_scale(location = scaleloc) +
   labs(
@@ -143,8 +145,7 @@ tomap <- rsallpts %>%
 
 p2a <- ggmap(bsmap1_transparent) +
   geom_sf(data = tomap, aes(color = type), inherit.aes = F) +
-  geom_sf(data = pineypoint, aes(fill = 'Piney Point'), pch = 24, color = 'black', size = 3, inherit.aes= F) + 
-    scale_fill_manual(NULL, values = 'black') +
+  geom_sf(data = pineypoint, fill = 'black', pch = 24, color = 'black', size = 3, inherit.aes= F) + 
   theme_bw() + 
   theme(
     panel.grid = element_blank(), 
@@ -158,7 +159,7 @@ p2a <- ggmap(bsmap1_transparent) +
     legend.position = 'right'
   ) +
   labs(
-    color = 'Data type',
+    color = 'Response monitoring',
     title = '(b) Sample locations'
   ) +
   guides(color = guide_legend(override.aes = list(size = 3))) + 
@@ -201,7 +202,12 @@ p2b <- ggplot() +
 p2 <- p2a + 
   inset(ggplotGrob(p2b), xmin = -82.33, xmax = -82.02, ymin = 27.345, ymax = 27.57)
 
-pout <- p1 + p2
+pout <- p1 + p2 + plot_layout(ncol = 2, guides = 'collect') & 
+  theme(
+    legend.justification = 'top', 
+    legend.box.spacing = unit(0, 'cm'),
+    legend.spacing.y = unit(0, 'cm')
+    )
 
 jpeg(here('figs/map.jpeg'), height = 4.2, width = 9, family = 'serif', units = 'in', res = 500)
 print(pout)
