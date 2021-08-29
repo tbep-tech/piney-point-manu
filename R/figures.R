@@ -236,6 +236,7 @@ thm <-  theme(
 wqdat <- rswqdat %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
   filter(!station %in% nonbay) %>% 
+  filter(!qual %in% c('(VOB)', 'U')) %>% 
   inner_join(rsstatloc, ., by = 'station') %>% 
   mutate(
     lng = st_coordinates(.)[, 1], 
@@ -319,14 +320,16 @@ p2 <- bsmap +
   )
 
 toplo3 <- wqdat %>% 
-  filter(var %in% 'secchi')
+  filter(var %in% 'secchi') %>% 
+  mutate(val = pmin(5, val))
 
-brks <- c(1, 2, 3, 4)
+brks <- c(0.5, 2, 3.5, 5)
+lbs <- c('0.5', '2', '3.5', '>5')
 p3 <- bsmap +
   geom_point(data = toplo3, aes(x = lng, y = lat, size = val, fill = val, group = dategrp, color = inrng), pch = 21, alpha = 0.8) +
-  scale_fill_gradientn('meters',colours = rev(vrscols), breaks = brks) +
+  scale_fill_gradientn('meters',colours = rev(vrscols), breaks = brks, labels = lbs) +
   scale_color_manual('In normal range?', values = c('black', 'grey'), guide = T) +
-  scale_size('meters', range = c(6, 0.5), breaks = brks) + 
+  scale_size('meters', range = c(6, 0.5), breaks = brks, labels = lbs) + 
   coord_map() + 
   guides(
     fill = guide_legend(order = 1), 
@@ -361,9 +364,13 @@ ppsegbf <- ppseg %>%
 cols <- c("#E16A86", "#50A315", "#009ADE")
 names(cols) <- levels(ppseg$area)
 
-p1 <- wqplo_fun(rswqdat, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
-p2 <- wqplo_fun(rswqdat, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
-p3 <- wqplo_fun(rswqdat, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = FALSE, ttl = '(c) Secchi', ylb = 'meters')
+datin <- rswqdat %>% 
+  filter(var %in% c('tn', 'chla', 'secchi')) %>% 
+  filter(!qual %in% c('(VOB)', 'U'))
+
+p1 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
+p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
+p3 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = FALSE, ttl = '(c) Secchi', ylb = 'meters')
 
 p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week of', gp = gpar(fontsize=14))) + 
   plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.05)) & 

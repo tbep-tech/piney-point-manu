@@ -22,6 +22,19 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
   ##
   # wq data
   
+  # unique weeks
+  wklv <- rswqdat %>%
+    pull(date) %>% 
+    range
+  wklv <- seq.Date(wklv[1], wklv[2],by = 'days') %>% 
+    floor_date(unit = 'week') %>% 
+    unique %>% 
+    crossing(date = ., area = c('Area 1', 'Area 2', 'Area 3')) %>% 
+    mutate(
+      fillcl = factor(area, levels = unique(area), labels = cols), 
+      fillcl = as.character(fillcl)
+    )
+  
   # monitoring data
   rswqtmp <- rswqdat %>% 
     filter(var == vr) %>% 
@@ -35,7 +48,8 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
       mo = month(date), 
       fillcl = factor(area, levels = levels(area), labels = cols), 
       fillcl = as.character(fillcl)
-    ) 
+    ) %>% 
+    left_join(wklv, ., by = c('date', 'area', 'fillcl'))
   
   # baseline data
   bswqtmp <- bswqdat %>% 
@@ -67,12 +81,14 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
   
   # boxplot colors
   bxcls <- rswqtmp %>% 
+    na.omit() %>% 
     select(area, date, fillcl) %>% 
-    unique
+    unique %>% 
+    arrange(area)
   
   p1 <- ggplot() + 
     geom_rect(data = bswqtmp, aes(xmin = datestr, xmax = dateend, ymin = minv, ymax = maxv, group = mo, fill = 'Monthly baseline (mean +/- 1 sd)'), alpha = 0.2) +
-    geom_boxplot(data = rswqtmp, aes(x = date, y = val, group = date), fill= bxcls$fillcl, outlier.colour = NA, lwd = 0.5, alpha = 0.8, show.legend = F) + 
+    geom_boxplot(data = rswqtmp, aes(x = date, y = val, group = date), fill = bxcls$fillcl, outlier.colour = NA, lwd = 0.5, alpha = 0.8, show.legend = F) + 
     geom_jitter(data = rswqtmp, aes(x = date, y = val, group = date), alpha = 0.4, size = 0.5) + 
     scale_fill_manual(NULL, values = 'blue') +
     scale_linetype_manual(values = 'dashed') + 
@@ -90,7 +106,7 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
       axis.title.x = element_blank(),
       panel.grid.minor = element_blank(),
       strip.text = element_text(size = 14), 
-      axis.text.x = element_text(size = 7, angle = 45, hjust = 1)
+      axis.text.x = element_text(size = 6.5, angle = 45, hjust = 1)
     )
   
   if(logtr)

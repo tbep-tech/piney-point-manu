@@ -6,6 +6,7 @@ library(tbeptools)
 library(tidyverse)
 library(sf)
 library(lubridate)
+library(NADA)
 box::use(
   units = units[set_units], 
   forcats = forcats[fct_drop], 
@@ -130,8 +131,12 @@ totab <- rswqdat %>%
   left_join(rsstatloc, ., by = c('station', 'source')) %>% 
   filter(var %in% vrs) %>% 
   filter(!station %in% nonbay) %>% 
-  select(station, date, lbs, val, inrng) %>% 
+  select(station, date, lbs, val, inrng, qual) %>% 
   st_intersection(ppsegbf) %>% 
+  filter(!qual %in% '(VOB)') %>% 
+  mutate(
+    qual = grepl('^U|^LOD', qual) # censored data
+  ) %>% 
   st_set_geometry(NULL)
 
 totab1 <- totab %>% 
@@ -147,13 +152,15 @@ totab2 <- totab %>%
   group_by(area, lbs) %>% 
   left_join(sigs, by = 'lbs') %>% 
   summarise(
-    medv = round(median(val, na.rm = T), unique(sigdig)), 
+    nondetect = sum(qual),
+    medv = round(median(ros(val, censored = qual, forwardT = NULL, reverseT = NULL), na.rm = T), unique(sigdig)),
     minv = round(min(val, na.rm = T), unique(sigdig)), 
     maxv = round(max(val, na.rm = T), unique(sigdig)), 
     cnt = n(), 
     .groups = 'drop'
   ) %>% 
   mutate(
+    medv = ifelse(medv < 0, minv, medv),
     minv = paste0(' (', minv, ', '), 
     maxv = paste0(maxv, ')')
   ) %>% 
@@ -164,7 +171,8 @@ totab2 <- totab %>%
   mutate(
     `in range` = round(100 * `in range` / cnt, 1),
     `above` = round(100 * `above` / cnt, 1),
-    `below` = round(100 * `below` / cnt, 1)
+    `below` = round(100 * `below` / cnt, 1), 
+    `Below detection` = round(100 * nondetect / cnt, 1)
   ) %>% 
   select(
     Area = area, 
@@ -173,7 +181,8 @@ totab2 <- totab %>%
     `N obs.` = cnt, 
     `in range`, 
     above, 
-    below
+    below, 
+    `Below detection`
   )
 
 wqsumtab <- totab2
@@ -229,7 +238,7 @@ cmps <- rswqsub %>%
       
       # adjust p-values using holm sequential bonferroni
       pval <- p.adjust(pval, method = 'holm')
-      
+      browser()
       # pval as t/f using bonferroni correction
       vecs <- rep(FALSE, ncol(grps))
       vecs[pval < 0.05] <- TRUE
