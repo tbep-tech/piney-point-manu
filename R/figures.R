@@ -16,6 +16,7 @@ library(ggord)
 library(lubridate)
 library(patchwork)
 library(tbeptools)
+library(NADA)
 box::use(
   scales = scales[muted], 
   units = units[set_units], 
@@ -382,7 +383,7 @@ dev.off()
 
 # PCA and correlations ----------------------------------------------------
 
-vrs <- c('chla', 'dosat', 'nh34', 'ph', 'secchi', 'temp', 'tn', 'no23', 'tp', 'sal')
+vrs <- c('chla', 'dosat', 'nh34', 'ph', 'secchi', 'temp', 'tn', 'tp', 'sal')
 nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
 
 cols <- c("#E16A86", "#50A315", "#009ADE")
@@ -402,10 +403,14 @@ rswqsub <- rswqdat %>%
   filter(var %in% vrs) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
+  filter(!grepl('VOB', qual)) %>% 
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(ppsegbf) %>% 
   st_set_geometry(NULL) %>% 
-  select(date, var, val, station, area) %>% 
+  mutate(
+    cens = grepl('U', qual)
+  ) %>% 
+  select(date, var, val, cens, station, area) %>% 
   mutate(
     var = case_when(
       var == 'chla' ~ 'Chl-a', 
@@ -415,7 +420,6 @@ rswqsub <- rswqdat %>%
       var == 'secchi' ~ 'Secchi', 
       var == 'temp' ~ 'Temp', 
       var == 'tn' ~ 'TN', 
-      var == 'no23' ~ 'NOx',
       var == 'tp' ~ 'TP', 
       var == 'sal' ~ 'Sal'
     ),
@@ -423,9 +427,10 @@ rswqsub <- rswqdat %>%
   ) %>% 
   group_by(date, var, area) %>% 
   summarise(
-    val = median(val, na.rm = T), 
+    val = ifelse(any(cens), median(cenfit(val, cens), na.rm = T), median(val, na.rm = T)),
     .groups = 'drop'
-  ) 
+  ) %>% 
+  na.omit()
 
 rswqtmp <- rswqsub %>% 
   complete(date, area, var) %>% 
@@ -436,7 +441,7 @@ rswqtmp <- rswqsub %>%
   ungroup() %>% 
   mutate(
     val = case_when(
-      var %in% c('Chl-a', 'NH3, NH4+', 'NOx', 'TN', 'TP') ~ log10(1 + val),
+      var %in% c('Chl-a', 'NH3, NH4+', 'TN', 'TP') ~ log10(1 + val),
       T ~ val
     )
   ) %>%
@@ -690,6 +695,7 @@ save(trnsum, file = here('data/trnsum.RData'))
 
 # all PCA and correlations ------------------------------------------------
 
+vrs <- c('chla', 'dosat', 'nh34', 'ph', 'sal', 'secchi', 'temp', 'tn', 'tp')
 mcrsel <- c("Red", "Green", "Brown", "Cyanobacteria")
 savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
 wqsel <- c('chla', 'dosat', 'nh34', 'ph', 'sal', 'secchi', 'temp', 'tn', 'tp')
@@ -789,7 +795,9 @@ rswqsum <- rswqdat %>%
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(areas) %>% 
   st_set_geometry(NULL) %>% 
-  select(date, var, val, station, area) %>% 
+  filter(!grepl('VOB', qual)) %>% 
+  mutate(cens = grepl('U', qual)) %>% 
+  select(date, var, val, cens, station, area) %>% 
   mutate(
     var = case_when(
       var == 'chla' ~ 'Chl-a', 
@@ -807,7 +815,10 @@ rswqsum <- rswqdat %>%
   ) %>% 
   group_by(date, var, area) %>% 
   summarise(
-    val = median(val, na.rm = T), 
+    val = ifelse(
+      any(cens), median(cenfit(val, cens), na.rm = T), 
+      median(val, na.rm = T)
+      ), 
     .groups = 'drop'
   ) %>% 
   complete(date, area, var) %>% 

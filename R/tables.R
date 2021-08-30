@@ -69,20 +69,24 @@ bssum <- bswqdat %>%
   filter(yr > 2005 & yr < 2021) %>% 
   filter(source == 'epchc') %>% 
   filter(var %in% unique(stkraw$var)) %>% 
+  filter(!is.na(val)) %>% 
   inner_join(bsstatloc, ., by = c('station')) %>% 
   .[ltb, ] %>% 
   st_set_geometry(NULL) %>% 
+  mutate(
+    cens = grepl('U', qual)
+  ) %>% 
   group_by(yr, var) %>% 
   summarise(
-    val = median(val, na.rm = T),
+    val = median(cenfit(val, censored = cens), na.rm = T),
     .groups = 'drop'
   ) %>%
   left_join(parms, by = 'var') %>% 
   group_by(var) %>% 
   summarise(
-    minv = round(min(val), unique(sigdig)),
-    maxv = round(max(val), unique(sigdig)),
-    avev = round(median(val), unique(sigdig)), 
+    minv = round(min(val, na.rm = T), unique(sigdig)),
+    maxv = round(max(val, na.rm = T), unique(sigdig)),
+    avev = round(median(val, na.rm = T), unique(sigdig)), 
     .groups = 'drop'
   ) %>% 
   mutate(
@@ -153,14 +157,14 @@ totab2 <- totab %>%
   left_join(sigs, by = 'lbs') %>% 
   summarise(
     nondetect = sum(qual),
-    medv = round(median(ros(val, censored = qual, forwardT = NULL, reverseT = NULL), na.rm = T), unique(sigdig)),
+    medv = round(median(cenfit(val, censored = qual), na.rm = T), unique(sigdig)),
     minv = round(min(val, na.rm = T), unique(sigdig)), 
     maxv = round(max(val, na.rm = T), unique(sigdig)), 
     cnt = n(), 
     .groups = 'drop'
   ) %>% 
   mutate(
-    medv = ifelse(medv < 0, minv, medv),
+    medv = ifelse(is.na(medv), '-', medv),
     minv = paste0(' (', minv, ', '), 
     maxv = paste0(maxv, ')')
   ) %>% 
@@ -207,11 +211,12 @@ rswqsub <- rswqdat %>%
   filter(var %in% vrs) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
+  filter(!qual %in% '(VOB)') %>% # no U quals in fldep tn, chla, secchi data
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(ppsegbf) %>% 
   st_set_geometry(NULL) %>% 
   left_join(parms, by = c('var', 'lbs')) %>% 
-  select(date, var, lbs, val, sigdig, station, area) %>% 
+  select(date, var, lbs, val, sigdig, station, area, qual) %>% 
   mutate(
     mo = month(date, label = T)
   ) %>% 
@@ -238,7 +243,7 @@ cmps <- rswqsub %>%
       
       # adjust p-values using holm sequential bonferroni
       pval <- p.adjust(pval, method = 'holm')
-      browser()
+
       # pval as t/f using bonferroni correction
       vecs <- rep(FALSE, ncol(grps))
       vecs[pval < 0.05] <- TRUE
