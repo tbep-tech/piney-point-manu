@@ -137,9 +137,9 @@ totab <- rswqdat %>%
   filter(!station %in% nonbay) %>% 
   select(station, date, lbs, val, inrng, qual) %>% 
   st_intersection(ppsegbf) %>% 
-  filter(!qual %in% '(VOB)') %>% 
+  filter(!qual %in% 'S') %>%  # remove secchi on bottom
   mutate(
-    qual = grepl('^U|^LOD', qual) # censored data
+    qual = grepl('U', qual) # censored data
   ) %>% 
   st_set_geometry(NULL)
 
@@ -211,7 +211,7 @@ rswqsub <- rswqdat %>%
   filter(var %in% vrs) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
-  filter(!qual %in% '(VOB)') %>% # no U quals in fldep tn, chla, secchi data
+  filter(!qual %in% 'S') %>% # remove secchi on bottom
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(ppsegbf) %>% 
   st_set_geometry(NULL) %>% 

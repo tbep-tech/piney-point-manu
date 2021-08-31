@@ -50,19 +50,28 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
       fillcl = as.character(fillcl)
     ) %>% 
     left_join(wklv, ., by = c('date', 'area', 'fillcl'))
-  
+
   # baseline data
   bswqtmp <- bswqdat %>% 
     select(-source, -uni) %>% 
-    filter(var == vr) %>% 
+    filter(var == vr) %>%
+    filter(!(var == 'secchi' & grepl('S', qual))) %>% # remove secchi on bottom
     filter(yr > 2005) %>% 
+    filter(!is.na(val)) %>% 
     inner_join(bsstatloc, ., by = 'station') %>% 
     st_intersection(ppseg) %>% 
     st_set_geometry(NULL) %>% 
+    mutate(cens = grepl('U', qual)) %>% 
     group_by(mo, var, area) %>% 
     summarise(   
-      avev = mean(val, na.rm = T), 
-      stdv = sd(val, na.rm = T), 
+      avev = ifelse(
+        any(cens), mean(cenfit(val, cens), na.rm = T),
+        mean(val, na.rm = T)
+      ),
+      stdv = ifelse(
+        any(cens), sd(cenfit(val, cens), na.rm = T),
+        sd(val, na.rm = T)
+      ),
       .groups = 'drop'
     ) %>%
     left_join(parms, by = 'var') %>% 
@@ -106,7 +115,7 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
       axis.title.x = element_blank(),
       panel.grid.minor = element_blank(),
       strip.text = element_text(size = 14), 
-      axis.text.x = element_text(size = 6.5, angle = 45, hjust = 1)
+      axis.text.x = element_text(size = 6.25, angle = 45, hjust = 1)
     )
   
   if(logtr)

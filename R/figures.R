@@ -232,12 +232,12 @@ thm <-  theme(
     legend.box= 'vertical'
   ) 
 
-#Secchi VOB and other qualified values should be filtered prior to use below, correct?
 # combine water quality data with locations
+# removed secchi on bottom and non-detect for tn, chla
 wqdat <- rswqdat %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
   filter(!station %in% nonbay) %>% 
-  filter(!qual %in% c('(VOB)', 'U')) %>% 
+  filter(!qual %in% c('S', 'U')) %>% 
   inner_join(rsstatloc, ., by = 'station') %>% 
   mutate(
     lng = st_coordinates(.)[, 1], 
@@ -278,8 +278,8 @@ toplo1 <- wqdat %>%
   mutate(val = pmin(2, val))
 
 # static plot
-brks <- c(0.1, 0.25, 0.5, 2)
-lbs <- c('0.1', '0.25', '0.5', '>2')
+brks <- c(0.25, 0.5, 1, 2)
+lbs <- c('0.25', '0.5', '1', '>2')
 p1 <- bsmap +
   geom_point(data = toplo1, aes(x = lng, y = lat, size = val, fill = val, group = dategrp, color = inrng), pch = 21, alpha = 0.8) +
   scale_fill_gradientn('mg/L', trans = 'log10', colours = vrscols, breaks = brks, labels = lbs) +
@@ -367,7 +367,7 @@ names(cols) <- levels(ppseg$area)
 
 datin <- rswqdat %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
-  filter(!qual %in% c('(VOB)', 'U'))
+  filter(!qual %in% c('S', 'U')) # remove secchi on bottom, nondetect for chla, tn
 
 p1 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
 p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
@@ -377,7 +377,7 @@ p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week
   plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.05)) & 
   theme(legend.position = 'top')
 
-jpeg(here('figs/wqtrnds.jpeg'), height = 6, width = 8, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/wqtrnds.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -403,7 +403,7 @@ rswqsub <- rswqdat %>%
   filter(var %in% vrs) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
-  filter(!grepl('VOB', qual)) %>% 
+  filter(!grepl('S', qual)) %>% # remove secchi on bottom
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(ppsegbf) %>% 
   st_set_geometry(NULL) %>% 
@@ -430,14 +430,9 @@ rswqsub <- rswqdat %>%
     val = ifelse(any(cens), median(cenfit(val, cens), na.rm = T), median(val, na.rm = T)),
     .groups = 'drop'
   ) %>% 
-  na.omit()
-
-rswqtmp <- rswqsub %>% 
+  na.omit() %>% 
   complete(date, area, var) %>% 
   group_by(area, var) %>% 
-  # mutate(
-  #   val = ifelse(is.na(val), median(val, na.rm = T), val)
-  # ) %>% 
   ungroup() %>% 
   mutate(
     val = case_when(
@@ -445,123 +440,84 @@ rswqtmp <- rswqsub %>%
       T ~ val
     )
   ) %>%
-  group_by(area) %>% 
-  nest %>% 
+  spread(var, val) %>% 
+  na.omit()
+
+pcadat <- rswqsub %>% 
+  select(-date, -area) %>%  
+  na.omit() %>% 
+  decostand(method = 'standardize') %>% 
+  PCA(scale.unit = F, graph = F) 
+      
+vec_ext <- 4
+coord_fix <- F
+size <- 2
+repel <- F
+arrow <- 0.2
+txt <- 3
+alpha <- 0.5
+max.overlaps <- 10
+force <- 1
+ext <- 1.2
+exp <- 0.1
+parse <- F
+ellipse <- F
+ord1 <- ggord(pcadat, axes = c('1', '2'), cols = cols, ellipse = ellipse, grp_in = rswqsub$area, parse = parse, exp = exp, force = force, ext = ext, max.overlaps = max.overlaps, alpha = alpha, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt)
+ord2 <- ggord(pcadat, axes = c('2', '3'), cols = cols, ellipse = ellipse, grp_in = rswqsub$area, parse = parse, exp = exp, force = force, ext = ext, max.overlaps = max.overlaps, alpha = alpha, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt)
+      
+pord <- ord1 + ord2 + plot_layout(ncol = 2, guides = 'collect') & theme(legend.position = 'top', legend.title = element_blank())
+      
+cormat <- rswqsub %>% 
+  select(-date, -area) %>% 
+  names %>% 
+  crossing(var1 = ., var2 = .) %>% 
+  filter(!var1 == var2) %>% 
   mutate(
-    data = purrr::map(data, function(x){
-      
-      out <- spread(x, var, val) %>% 
-        na.omit()
-      
-      return(out)
-      
-    }
-    ),
-    ord = purrr::pmap(list(area, data), function(area, data){
-      
-      toord <- data %>% 
-        select(-date) %>% 
-        decostand(method = 'standardize')
-      
-      ppp <- PCA(toord, scale.unit = F, graph = F) 
-      
-      if(area == 'Area 1')
-        ttl <- paste('(a)', area)
-      if(area == 'Area 2')
-        ttl <- paste('(b)', area)
-      if(area == 'Area 3')
-        ttl <- paste('(c)', area)
-      
-      vec_ext <- 3
-      coord_fix <- F
-      size <- 2
-      repel <- F
-      arrow <- 0.2
-      txt <- 3
-      alpha <- 0.5
-      lbcl <- cols[area]
-      max.overlaps <- 10
-      force <- 1
-      ext <- 1.2
-      exp <- 0.1
-      parse <- F
-      
-      p1 <- ggord(ppp, axes = c('1', '2'), parse = parse, exp = exp, force = force, ext = ext, max.overlaps = max.overlaps, alpha = alpha, veccol = lbcl, labcol = lbcl, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt) + 
-        labs(title = ttl)
-      p2 <- ggord(ppp, axes = c('2', '3'), parse = parse, exp = exp, force = force, ext = ext, max.overlaps = max.overlaps, alpha = alpha, veccol = lbcl, labcol = lbcl, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt)
-      
-      out <- p1 + p2 + plot_layout(ncol = 2)
-      
-      return(out)
-      
-    }
-    ), 
-    cormat = purrr::map(data, function(x){
-      
-      out <- x %>% 
-        select(-date) %>% 
-        names %>% 
-        crossing(var1 = ., var2 = .) %>% 
-        filter(!var1 == var2) %>% 
-        mutate(
-          corv = NA_real_, 
-          pval = NA_real_, 
-          pstr = NA_character_
-        )
-      
-      for(i in 1:nrow(out)){
-        
-        var1 <- out[[i, 'var1']]
-        var2 <- out[[i, 'var2']]
-        
-        tst <- cor.test(x[[var1]], x[[var2]], method = 'spearman')
-        
-        corv <- tst$estimate
-        pval <- tst$p.value
-        pstr <- p_ast(pval)
-        
-        cri <- data.frame(corv = corv, pval = pval, pstr = pstr)
-        
-        out[i, c('corv', 'pval', 'pstr')] <- cri
-        
-      }
-      
-      return(out)
-      
-    }
-    ), 
-    corplo = purrr::map(cormat, function(x){
-      
-      pbase <- theme(
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(), 
-        axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, size = 7), 
-        axis.text.y = element_text(size = 7),
-        legend.position = c(0.5, 1.12),
-        legend.direction = 'horizontal', 
-        panel.background = element_rect(fill = 'black')
-      ) 
-      
-      p <- ggplot(x) + 
-        geom_tile(aes(y = var1, x = var2, fill = corv), colour = 'black') + 
-        geom_text(aes(y = var1, x = var2, label = pstr), size = 3) +
-        pbase +
-        scale_y_discrete('', expand = c(0, 0)) + 
-        scale_x_discrete('', expand = c(0, 0)) + 
-        scale_fill_gradientn('Corr. ', colours = c(muted("blue"), "white", muted("red")), limits = c(-1, 1)) +
-        guides(fill = guide_colourbar(barheight = 0.25, barwidth = 4, label.theme = element_text(size = 6, angle = 0)))
-      
-      return(p)
-      
-    }
-    )
+    corv = NA_real_, 
+    pval = NA_real_, 
+    pstr = NA_character_
   )
 
-p <- (rswqtmp$ord[[1]] + rswqtmp$corplo[[1]] + plot_layout(ncol = 3)) / 
-  (rswqtmp$ord[[2]]  + rswqtmp$corplo[[2]] + plot_layout(ncol = 3)) / 
-  (rswqtmp$ord[[3]] + rswqtmp$corplo[[3]] + plot_layout(ncol = 3)) 
+for(i in 1:nrow(cormat)){
+  
+  var1 <- cormat[[i, 'var1']]
+  var2 <- cormat[[i, 'var2']]
+  
+  tst <- cor.test(rswqsub[[var1]], rswqsub[[var2]], method = 'spearman')
+  
+  corv <- tst$estimate
+  pval <- tst$p.value
+  pstr <- p_ast(pval)
+  
+  cri <- data.frame(corv = corv, pval = pval, pstr = pstr)
+  
+  cormat[i, c('corv', 'pval', 'pstr')] <- cri
+  
+}
 
-jpeg(here('figs/pcacors.jpeg'), height = 8, width = 7, units = 'in', res = 500, family = 'serif')
+pbase <- theme(
+  panel.grid.major = element_blank(), 
+  panel.grid.minor = element_blank(), 
+  axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, size = 8), 
+  axis.text.y = element_text(size = 8),
+  legend.position = c(0.5, 1.1),
+  legend.direction = 'horizontal',
+  plot.margin = unit(c(4,4,0,0), "lines"),
+  panel.background = element_rect(fill = 'black')
+) 
+
+corplo <- ggplot(cormat) + 
+  geom_tile(aes(y = var1, x = var2, fill = corv), colour = 'black') + 
+  geom_text(aes(y = var1, x = var2, label = pstr), size = 4) +
+  pbase +
+  scale_y_discrete('', expand = c(0, 0)) + 
+  scale_x_discrete('', expand = c(0, 0)) + 
+  scale_fill_gradientn('Corr. ', colours = c(muted("blue"), "white", muted("red")), limits = c(-1, 1)) +
+  guides(fill = guide_colourbar(barheight = 0.25, barwidth = 4, label.theme = element_text(size = 6, angle = 0)))
+
+p <- pord / corplo + plot_layout(ncol = 2, widths = c(1, 0.42))
+
+jpeg(here('figs/pcacors.jpeg'), height = 4.5, width = 9.75, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -795,7 +751,7 @@ rswqsum <- rswqdat %>%
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(areas) %>% 
   st_set_geometry(NULL) %>% 
-  filter(!grepl('VOB', qual)) %>% 
+  filter(!grepl('S', qual)) %>% # remove secchi on bottom
   mutate(cens = grepl('U', qual)) %>% 
   select(date, var, val, cens, station, area) %>% 
   mutate(
@@ -904,6 +860,14 @@ toord <- tocor %>%
   na.omit() %>% 
   decostand(method = 'standardize')
 
+grps <- tocor %>% 
+  na.omit() %>% 
+  pull(area) %>% 
+  fct_drop()
+
+cols <- c("#E16A86", "#009ADE")
+names(cols) <- levels(areas$area)
+
 vec_ext <- 5
 coord_fix <- F
 size <- 2
@@ -914,14 +878,16 @@ alpha <- 0.5
 ext <- 1.2
 exp <- 0.1
 parse <- F
+ellipse <- F
 
 ppp <- PCA(toord, scale.unit = F, graph = F) 
-p1 <- ggord(ppp, axes = c('1', '2'), parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
-p2 <- ggord(ppp, axes = c('2', '3'), parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
+p1 <- ggord(ppp, axes = c('1', '2'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
+p2 <- ggord(ppp, axes = c('2', '3'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
 
-p <- p1 + p2 + p3
+p <- (p1 + p2 + plot_layout(ncol = 2, guides = 'collect') & theme(legend.position = 'top', legend.title = element_blank())) / 
+  p3 + plot_layout(ncol = 2, widths = c(1, 0.45))
 
-jpeg(here('figs/allpcacors.jpeg'), height = 4, width = 10, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/allpcacors.jpeg'), height = 4.5, width = 10, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
