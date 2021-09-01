@@ -629,15 +629,17 @@ exp <- 0.1
 parse <- F
 ellipse <- F
 
-ppp <- PCA(toord, scale.unit = F, graph = F) 
-p1 <- ggord(ppp, axes = c('1', '2'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
-p2 <- ggord(ppp, axes = c('2', '3'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
+allpcadat <- PCA(toord, scale.unit = F, graph = F) 
+p1 <- ggord(allpcadat, axes = c('1', '2'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
+p2 <- ggord(allpcadat, axes = c('2', '3'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
 
 p <- p1 + p2 + plot_layout(ncol = 2, guides = 'collect') & theme(legend.position = 'top', legend.title = element_blank())
 
 jpeg(here('figs/allpca.jpeg'), height = 4, width = 7, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
+
+save(allpcadat, file = here('data/allpcadat.RData'))
 
 # all correlations --------------------------------------------------------
 
@@ -826,7 +828,7 @@ pbase <- theme(
   panel.grid.minor = element_blank(), 
   axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, size = 7), 
   axis.text.y = element_text(size = 7),
-  legend.position = c(0.5, 1.1),
+  legend.position = c(0.5, 1.07),
   legend.direction = 'horizontal',
   plot.margin = unit(c(4,4,0,0), "lines"),
   strip.background = element_blank(), 
@@ -840,14 +842,14 @@ p <- ggplot(prplo) +
   pbase +
   scale_y_discrete('', expand = c(0, 0)) + #, labels = parse(text = rev(labs))) + 
   scale_x_discrete('', expand = c(0, 0)) + #, labels = parse(text = rev(labs))) +
-  scale_fill_gradientn('Corr. ', colours = c(muted("blue"), "white", muted("red")), limits = c(-1, 1)) +
+  scale_fill_gradientn('Corr. ', colours = c('royalblue', "white", 'springgreen4'), limits = c(-1, 1)) +
   guides(fill = guide_colourbar(barheight = 0.25, barwidth = 5, label.theme = element_text(size = 7, angle = 0))) +
   geom_hline(yintercept = 9.5, size = 1) +
   geom_hline(yintercept = 13.5, size = 1) +
   geom_vline(xintercept = 9.5, size = 1) +
   geom_vline(xintercept = 13.5, size = 1)
 
-jpeg(here('figs/allcor.jpeg'), height = 4.5, width = 4.5, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/allcor.jpeg'), height = 4.4, width = 4.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
