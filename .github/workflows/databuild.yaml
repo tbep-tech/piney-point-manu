@@ -17,6 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
+      - name: Install R dependencies
+        run: Rscript -e 'install.packages(c("httr", "httpuv"))'
       - name: Copy data
         run: Rscript -e 'source("R/dat_copy.R")'
       - name: Commit results
