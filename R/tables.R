@@ -134,6 +134,7 @@ sigs <- parms %>%
 totab <- rswqdat %>% 
   left_join(rsstatloc, ., by = c('station', 'source')) %>% 
   filter(var %in% vrs) %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(!station %in% nonbay) %>% 
   select(station, date, lbs, val, inrng, qual) %>% 
   st_intersection(ppsegbf) %>% 
@@ -209,6 +210,7 @@ ppsegbf <- ppseg %>%
 
 rswqsub <- rswqdat %>% 
   filter(var %in% vrs) %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
   filter(!qual %in% 'S') %>% # remove secchi on bottom
@@ -340,6 +342,7 @@ areas <- ppseg %>%
 
 # add area
 trnsf <- rstrndat %>%
+  filter(date < as.Date('2021-08-01')) %>% 
   inner_join(rstrnpts, ., by = 'station') %>% 
   filter(taxa %in% c(mcrsel, savsel)) %>% 
   # filter(station %in% smpeff) %>% 

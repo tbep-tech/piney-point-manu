@@ -115,7 +115,7 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
       axis.title.x = element_blank(),
       panel.grid.minor = element_blank(),
       strip.text = element_text(size = 14), 
-      axis.text.x = element_text(size = 6.25, angle = 45, hjust = 1)
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1)
     )
   
   if(logtr)

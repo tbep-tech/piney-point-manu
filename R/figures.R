@@ -235,6 +235,7 @@ thm <-  theme(
 # combine water quality data with locations
 # removed secchi on bottom and non-detect for tn, chla
 wqdat <- rswqdat %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
   filter(!station %in% nonbay) %>% 
   filter(!qual %in% c('S', 'U')) %>% 
@@ -366,6 +367,7 @@ cols <- c("#E16A86", "#50A315", "#009ADE")
 names(cols) <- levels(ppseg$area)
 
 datin <- rswqdat %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
   filter(!qual %in% c('S', 'U')) # remove secchi on bottom, nondetect for chla, tn
 
@@ -387,11 +389,13 @@ trn <- 'S3T6b'
 rmdt <- as.Date('2021-04-07')
 
 mcrdat <- rstrndat %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(station %in% trn) %>% 
   filter(typ == 'mcr') %>% 
   filter(date != rmdt) %>% 
   mutate(taxa = fct_drop(taxa))
 savdat <- rstrndat %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(station %in% trn) %>% 
   filter(typ == 'sav') %>% 
   filter(date != rmdt) %>% 
@@ -459,6 +463,7 @@ areas <- ppseg %>%
 
 # add area
 trnsum <- rstrndat %>%
+  filter(date < as.Date('2021-08-01')) %>% 
   inner_join(rstrnpts, ., by = 'station') %>% 
   st_intersection(areas) %>% 
   st_set_geometry(NULL) %>%
@@ -534,6 +539,7 @@ areas <- ppseg %>%
 
 # add area
 trnsum <- rstrndat %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   mutate(
     date = floor_date(date, unit = 'week')
   ) %>% 
@@ -563,6 +569,7 @@ trnsum <- rstrndat %>%
 rswqsum <- rswqdat %>% 
   filter(var %in% vrs) %>% 
   filter(source == 'fldep') %>%
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(!station %in% nonbay) %>% 
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(areas) %>% 
@@ -668,6 +675,7 @@ areas <- ppseg %>%
 
 # add area
 trnsum <- rstrndat %>%
+  filter(date < as.Date('2021-08-01')) %>% 
   mutate(
     date = floor_date(date, unit = 'week')
   ) %>%
@@ -718,6 +726,7 @@ trncrs <- crossing(var1 = names(trncors), var2 = names(trncors)) %>%
 
 # add area
 trnsum <- rstrndat %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   mutate(
     date = floor_date(date, unit = 'week')
   ) %>% 
@@ -740,6 +749,7 @@ trnsum <- rstrndat %>%
 # water quality summary
 rswqsum <- rswqdat %>% 
   filter(var %in% vrs) %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
@@ -884,7 +894,8 @@ fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>%
       city %in% 'dunedin' ~ 'Dunedin',
       T ~ city
     )
-  )
+  ) %>% 
+  filter(date < as.Date('2021-08-01'))
 
 
 # levels for week, starts on first of week from jan through july
@@ -898,13 +909,14 @@ weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %
     lb = format(dt, '%b %d')
   ) %>%
   filter(yr > 2020) %>% 
-  filter(mo <= 8) %>% 
+  filter(mo < 8) %>% 
   pull(lb)
 
 # MTB subset
 toplo <- kbrdat %>%
   .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>%
   filter(var == 'kb') %>% 
+  filter(date < as.Date('2021-08-01')) %>% 
   mutate(
     dtgrp = quarter(date),
     yr = year(date)
@@ -952,6 +964,7 @@ toplo <- kbrdat %>%
   .[tbseg[tbseg$bay_segment %in% c('LTB', 'MTB'), ], ] %>%
   filter(var == 'kb') %>% 
   filter(year(date) >= 2021) %>%
+  filter(month(date) < 8) %>% 
   mutate(
     week = floor_date(date, unit = 'week'),
     week = factor(format(week, '%b %d')), 
