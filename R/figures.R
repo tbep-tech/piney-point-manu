@@ -35,8 +35,8 @@ data(rswqdat)
 data(rsstatloc)
 data(rstrndat)
 data(parms)
-data(kbrdat)
 data(rstrnpts)
+data(kbrdat)
 
 source(here('R/funcs.R'))
 
@@ -897,6 +897,25 @@ fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>%
   ) %>% 
   filter(date < as.Date('2021-08-01'))
 
+# k brevis data from CL
+habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
+  # filter(Segment %in% c('MTB', 'LTB')) %>% 
+  select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
+  mutate(date = mdy(date))
+
+# add k brevis data from HABSOS that are collected after last date in habdat
+kbrdat <- kbrdat %>% 
+  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
+  filter(var == 'kb') %>% 
+  filter(date > max(habdat$date)) %>% 
+  mutate(
+    lat = st_coordinates(.)[,2],
+    lng = st_coordinates(.)[,1]
+  ) %>% 
+  st_set_geometry(NULL) %>% 
+  select(date, val, lat, lng)
+
+habdat <- bind_rows(habdat, kbrdat)
 
 # levels for week, starts on first of week from jan through july
 weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %>% 
@@ -912,17 +931,13 @@ weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %
   filter(mo < 8) %>% 
   pull(lb)
 
-# MTB subset
-toplo <- kbrdat %>%
-  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>%
-  filter(var == 'kb') %>% 
+# habdat p1
+toplo <- habdat %>%
   filter(date < as.Date('2021-08-01')) %>% 
   mutate(
     dtgrp = quarter(date),
     yr = year(date)
   ) %>%
-  st_set_geometry(NULL) %>%
-  # filter(year(date) >= 1990) %>%
   mutate(
     yr = factor(yr, levels = seq(min(yr), max(yr)))
   ) %>%
@@ -936,7 +951,6 @@ toplo <- kbrdat %>%
     y100 = max(val, na.rm = T),
     .groups = 'drop'
   ) %>%
-  filter(cnt > quantile(cnt, 0.25, na.rm = T)) %>%
   complete(yr) %>% 
   filter(as.numeric(as.character(yr)) >= 1995)
 
@@ -959,10 +973,8 @@ p1 <- ggplot(toplo, aes(x = yr)) +
     subtitle = expression(paste('(a) ', italic('K. brevis'), ' concentrations by year, middle/lower Tampa Bay'))
   )
 
-# MTB subset
-toplo <- kbrdat %>%
-  .[tbseg[tbseg$bay_segment %in% c('LTB', 'MTB'), ], ] %>%
-  filter(var == 'kb') %>% 
+# habdat p2
+toplo <- habdat %>%
   filter(year(date) >= 2021) %>%
   filter(month(date) < 8) %>% 
   mutate(
@@ -970,7 +982,6 @@ toplo <- kbrdat %>%
     week = factor(format(week, '%b %d')), 
     week = factor(week, levels = weeklv)
   ) %>%
-  st_set_geometry(NULL) %>%
   group_by(week) %>%
   summarise(
     cnt = n(),
