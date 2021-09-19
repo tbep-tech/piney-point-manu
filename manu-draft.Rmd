@@ -396,7 +396,7 @@ knitr::include_graphics(here('figs/allpca.jpeg'))
 knitr::include_graphics(here('figs/allcor.jpeg'))
 ```
 
-```{r redtide, fig.cap = '*Karenia brevis* concentrations (100k cells/L) and number of fish kill reports for the contiguous record showing cell concentrations (a) by year and (b) by week in 2021 and reported fish kills by city (Tampa, St. Petersburg) (c) by year and (d) by week in 2021. Red tide concentrations show minimum, tenth percentile, median, 90th percentile, and maximum for each year or week for middle and lower Tampa Bay. *K. brevis* cell counts are from NOAA Harmful Algal BloomS Observing System (HABSOS, https://www.ncei.noaa.gov/maps/habsos), Fish kill reports are from Florida Fish and Wildlife Conservation Commission, Fish and Wildlife Research Insitute Fish Kill Database, attributed to *K. brevis* (https://public.myfwc.com/FWRI/FishKillReport/).'}
+```{r redtide, fig.cap = '*Karenia brevis* concentrations (100k cells/L) and number of fish kill reports for the contiguous record showing cell concentrations (a) by year and (b) by week in 2021 and reported fish kills by city (Tampa, St. Petersburg) (c) by year and (d) by week in 2021. Red tide concentrations show minimum, 25th percentile, median, 75th percentile, and maximum for each year or week for middle and lower Tampa Bay. *K. brevis* cell counts are from NOAA Harmful Algal BloomS Observing System (HABSOS, https://www.ncei.noaa.gov/maps/habsos), Fish kill reports are from Florida Fish and Wildlife Conservation Commission, Fish and Wildlife Research Insitute Fish Kill Database, attributed to *K. brevis* (https://public.myfwc.com/FWRI/FishKillReport/).'}
 knitr::include_graphics('figs/redtide.jpeg')
 ```
 

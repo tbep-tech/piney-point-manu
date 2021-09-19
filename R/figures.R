@@ -930,9 +930,9 @@ toplo <- kbrdat %>%
   summarise(
     cnt = n(),
     y0 = min(val, na.rm = T), 
-    y10 = quantile(val, prob = 0.25, na.rm = T),
+    y25 = quantile(val, prob = 0.25, na.rm = T),
     y50 = quantile(val, prob = 0.5, na.rm = T),
-    y90 = quantile(val, prob = 0.75, na.rm = T),
+    y75 = quantile(val, prob = 0.75, na.rm = T),
     y100 = max(val, na.rm = T),
     .groups = 'drop'
   ) %>%
@@ -943,7 +943,7 @@ toplo <- kbrdat %>%
 # plot
 p1 <- ggplot(toplo, aes(x = yr)) +
   geom_boxplot(
-    aes(ymin = y0, lower = y10, middle = y50, upper = y90, ymax = y100),
+    aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
     stat = "identity", width = 0.75, fill = '#00806E'
   ) +
   scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
@@ -975,9 +975,9 @@ toplo <- kbrdat %>%
   summarise(
     cnt = n(),
     y0 = min(val, na.rm = T), 
-    y10 = quantile(val, prob = 0.1, na.rm = T),
+    y25 = quantile(val, prob = 0.25, na.rm = T),
     y50 = quantile(val, prob = 0.5, na.rm = T),
-    y90 = quantile(val, prob = 0.9, na.rm = T),
+    y75 = quantile(val, prob = 0.75, na.rm = T),
     y100 = max(val, na.rm = T),
     .groups = 'drop'
   ) %>%
@@ -986,7 +986,7 @@ toplo <- kbrdat %>%
 # plot
 p2 <- ggplot(toplo, aes(x = week)) +
   geom_boxplot(
-    aes(ymin = y0, lower = y10, middle = y50, upper = y90, ymax = y100),
+    aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
     stat = "identity", width = 0.75, fill = '#00806E'
   ) +
   scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
