@@ -97,7 +97,7 @@ bswqtmp <- bswqdat %>%
 wqbyarea <- bind_rows(bswqtmp, rswqtmp) %>% 
   arrange(date, var, area)
 
-write.csv(wqbyarea, file = '~/Desktop/wqbyarea.csv')
+write.csv(wqbyarea, file = '~/Desktop/wqbyarea.csv', row.names = F)
 
 ggplot(wqbyarea, aes(x = date, y = avev)) +
   geom_line() + 
