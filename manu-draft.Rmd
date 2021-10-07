@@ -384,7 +384,7 @@ knitr::include_graphics(here('figs/wqtrnds.jpeg'))
 knitr::include_graphics(here('figs/trnex.jpeg'))
 ```
 
-```{r trnfrq, fig.cap = paste0('Frequency occurrence estimates for (a) area 1 and (b) area 3 (Figure \\@ref(fig:map)a) for seagrass (top) and macroalgae (bottom) rapid response transect surveys across all transects (n = ', ntrnscnt, ') near Piney Point.  Estimates are grouped by sample months in 2021. Frequency occurrences are absolute for each taxa based on presence/absence.')}
+```{r trnfrq, fig.cap = paste0('Frequency occurrence estimates for (a) area 1 and (b) area 3 (Figure \\@ref(fig:map)a) for seagrass (top) and macroalgae (bottom) rapid response transect surveys across all transects (n = ', ntrnscnt, ') near Piney Point.  Estimates are grouped by sample months in 2021. Frequency occurrences are absolute for each taxa based on presence/absence, whereas the total frequency occurrence applies to any taxa observed on each transect.')}
 knitr::include_graphics(here('figs/trnfrq.jpeg'))
 ```
 
