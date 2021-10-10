@@ -389,13 +389,13 @@ trn <- 'S3T6b'
 rmdt <- as.Date('2021-04-07')
 
 mcrdat <- rstrndat %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(station %in% trn) %>% 
   filter(typ == 'mcr') %>% 
   filter(date != rmdt) %>% 
   mutate(taxa = fct_drop(taxa))
 savdat <- rstrndat %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(station %in% trn) %>% 
   filter(typ == 'sav') %>% 
   filter(date != rmdt) %>% 
