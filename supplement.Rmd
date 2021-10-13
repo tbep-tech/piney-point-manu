@@ -1,0 +1,29 @@
+---
+title: "Supplement to Initial estuarine response to the nutrient dense Piney Point wastewater discharge into Tampa Bay, Florida"
+output: 
+  bookdown::word_document2:
+    reference_docx: my_styles.docx
+    number_sections: false
+always_allow_html: true
+bibliography: refs.bib
+author: "Marcus W. Beck (mbeck@tbep.org), Andrew Altieri (andrew.altieri@essie.ufl.edu), Christine Angelini (christine.angelini@essie.ufl.edu), Maya C. Burke (mburke@tbep.org), Jing Chen (jchen15@usf.edu), Diana W. Chin (diwchin@gmail.com), Emma E. Dontis (edontis@co.pinellas.fl.us), Jayne Gardiner (jgardiner@ncf.edu), Jessica Lewis (jlewis@tbep.org), Yonggang Liu (yliu@usf.edu),  Cary Lopez (cary.lopez@myfwc.com), Miles Medina (miles.medina@ufl.edu), Elise Morrison (elise.morrison@essie.ufl.edu), Edward J. Phlips (phlips@ufl.edu), Mark Rains (Mark.Rains@floridadep.gov), Gary E. Raulerson (graulerson@tbep.org), Sheila Scolaro (sscolar@tbep.org), Edward T. Sherwood (esherwood@tbep.org), David Tomasko (dave@sarasotabay.org), Bob Weisberg (weisberg@usf.edu), Nijole Wellendorf (nijole.wellendorf@floridadep.org), Joe Whalen (jwhalen@tbep.org)"
+urlcolor: blue
+csl: marine-pollution-bulletin.csl
+link-citations: true
+---
+  
+  
+```{r setup, echo = F, warning = F, message = F, results = 'hide'}
+# figure path, chunk options
+knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, cache = F, dev.args = list(family = 'serif'), dpi = 300, warning = F,
+  fig.process = function(x) {
+  x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+  if (file.rename(x, x2)) x2 else x
+  })
+```
+
+```{r windroses, fig.cap = 'Wind rose plots for 2021 by month. Data are from St. Petersburg, Florida.  Wind roses show relative counts of six minute observations in directional (30 degree bins, north is vertical) and speed (m/s) categories.'}
+knitr::include_graphics('figs/windroses.jpeg')
+```
+
+

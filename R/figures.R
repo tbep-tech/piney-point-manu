@@ -1110,17 +1110,17 @@ p4 <- ggplot(toplo, aes(x = xvals, y = precip_cm, group = yr, color = flvl, size
   )
 
 # wind roses
-winddat <- na.omit(winddat)
+toplo <- na.omit(winddat)
 
 dts <- as.Date(c('2021-01-01', '2021-07-03', '2021-07-05', '2021-07-07', '2021-10-01'))
 
-toplo1 <- winddat %>% 
+toplo1 <- toplo %>% 
   filter(as.Date(datetime) >= dts[1] & as.Date(datetime) < dts[2])
-toplo2 <- winddat %>% 
+toplo2 <- toplo %>% 
   filter(as.Date(datetime) >= dts[2] & as.Date(datetime) < dts[3])
-toplo3 <- winddat %>% 
+toplo3 <- toplo %>% 
   filter(as.Date(datetime) >= dts[3] & as.Date(datetime) < dts[4])
-toplo4 <- winddat %>% 
+toplo4 <- toplo %>% 
   filter(as.Date(datetime) >= dts[4] & as.Date(datetime) < dts[5])
 
 spdmin <- 0
@@ -1161,5 +1161,33 @@ p <- p1 + p2 + p3 + p4 + p5 +
 
 
 jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+# Supplement figures ------------------------------------------------------
+
+# wind roses
+toplo <- na.omit(winddat) %>% 
+  mutate(
+    mo = month(datetime, label = T)
+  ) %>% 
+  filter(mo != 'Oct')
+
+spdmin <- 0
+spdmax <- 14
+spdres = 3
+thm <- theme_minimal()
+
+p <- plot.windrose(data = winddat, spd = 'wind_ms', dir = 'wind_dir', spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
+  facet_wrap(~mo, ncol = 3) + 
+  theme_minimal() + 
+  theme(
+    axis.text = element_blank(), 
+    axis.title = element_blank(), 
+    axis.ticks.y = element_blank(), 
+    legend.position = 'right'
+  )
+
+jpeg(here('figs/windroses.jpeg'), height = 6, width = 7, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
