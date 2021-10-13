@@ -38,7 +38,7 @@
 fls <- c('bsstatloc', 'bstransect', 'bstransectocc', 'bswqdat', 'bswqdatsub', 'bswqrngs', 'kbrdat', 'lobodat', 'loboeco', 
          'mcrtmp', 'parms', 'ppseg', 'raindat', 'rsallpts', 'rsbntdat', 'rsbntpts', 'rscntdat', 'rscntthr', 'rsphydat', 'rsphypts', 
          'rsstatloc', 'rstrndat', 'rstrnlns', 'rstrnpts', 'rstrnwts', 'rswqdat', 'sbshed', 'segmask', 'tbhished', 'trnlns', 
-         'trnpts', 'wqrefmap')
+         'trnpts', 'winddat', 'wqrefmap')
 
 # download and save
 for(fl in fls){
