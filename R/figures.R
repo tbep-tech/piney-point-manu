@@ -17,6 +17,7 @@ library(lubridate)
 library(patchwork)
 library(tbeptools)
 library(NADA)
+library(RColorBrewer)
 box::use(
   scales = scales[muted], 
   units = units[set_units], 
@@ -37,6 +38,7 @@ data(rstrndat)
 data(parms)
 data(rstrnpts)
 data(kbrdat)
+data(winddat)
 
 source(here('R/funcs.R'))
 
@@ -881,10 +883,10 @@ jpeg(here('figs/allcor.jpeg'), height = 4.4, width = 4.5, units = 'in', res = 50
 print(p)
 dev.off()
 
-# red tide and fish kills -------------------------------------------------
+# red tide, fish kills, wind, precip --------------------------------------
 
 # data from https://public.myfwc.com/fwri/FishKillReport/searchresults.aspx
-# requested hillsborough, pinellas, manatee 1/1/95 to 8/13/21
+# requested hillsborough, pinellas, manatee 1/1/95 to early Oct
 fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>% 
   select(
     date = textBox6, 
@@ -988,7 +990,7 @@ p1 <- ggplot(toplo, aes(x = yr)) +
   labs(
     x = 'Year',
     y = 'Cells (100k / L)',
-    subtitle = expression(paste('(a) ', italic('K. brevis'), ' concentrations by year, middle/lower Tampa Bay'))
+    title = expression(paste('(a) ', italic('K. brevis'), ' concentrations by year, middle/lower Tampa Bay'))
   )
 
 # habdat p2
@@ -1028,44 +1030,10 @@ p2 <- ggplot(toplo, aes(x = week)) +
   labs(
     x= 'Week of',
     y = 'Cells (100k / L)',
-    subtitle = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
+    title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
   )
 
 toplo1 <- fishdat %>% 
-  filter(city %in% c('Tampa', 'St. Petersburg')) %>% 
-  mutate(
-    yr = factor(yr, levels = seq(min(yr), max(yr)))
-  ) %>%
-  group_by(yr, city) %>% 
-  summarise(
-    cnt = n(), 
-    .groups = 'drop'
-  ) %>% 
-  complete(yr)
-
-p3 <- ggplot(toplo1, aes(x = yr, fill = city, y = cnt)) + 
-  geom_bar(stat = 'identity', colour = 'darkgrey') + 
-  labs(
-    x = 'Year',
-    y = 'No. of reports',
-    subtitle = '(c) Fish kill reports for red tide across years'
-  ) +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_fill_brewer('City', palette = 'Pastel1') + 
-  theme_minimal() + 
-  theme(
-    axis.ticks.x = element_line(),
-    # axis.title.x = element_blank(), 
-    axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
-    legend.position = 'top', 
-    panel.grid.minor.y = element_blank(), 
-    panel.grid.minor.x = element_blank(), 
-    panel.grid.major.x = element_blank(), 
-    plot.caption = element_text(size = 10)
-  )
-
-
-toplo2 <- fishdat %>% 
   filter(city %in% c('Tampa', 'St. Petersburg')) %>% 
   filter(yr >= 2021) %>%  
   group_by(week, city) %>% 
@@ -1078,12 +1046,12 @@ toplo2 <- fishdat %>%
   ) %>% 
   complete(week)
 
-p4 <- ggplot(toplo2, aes(x = week, fill = city, y = cnt)) + 
+p3 <- ggplot(toplo1, aes(x = week, fill = city, y = cnt)) + 
   geom_bar(stat = 'identity', colour = 'darkgrey') + 
   labs(
     x = 'Week of',
     y = 'No. of reports', 
-    subtitle = '(d) Fish kill reports for red tide in 2021 by week'
+    title = '(c) Fish kill reports for red tide in 2021 by week'
   ) +
   scale_y_continuous(expand = c(0, 0)) +
   scale_fill_brewer('City', palette = 'Pastel1') + 
@@ -1092,14 +1060,63 @@ p4 <- ggplot(toplo2, aes(x = week, fill = city, y = cnt)) +
     axis.ticks.x = element_line(),
     # axis.title.x = element_blank(), 
     axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
-    legend.position = 'top', 
+    legend.position = 'right', 
     panel.grid.minor.y = element_blank(), 
     panel.grid.minor.x = element_blank(), 
     panel.grid.major.x = element_blank()
   )
 
-p <- p1 + p2 + (p3 + p4 + plot_layout(ncol = 1, guides = 'collect') & theme(legend.position = 'top')) + plot_layout(ncol = 1, heights = c(0.2, 0.2, 0.6))
+# wind roses
+winddat <- na.omit(winddat)
 
-jpeg(here('figs/redtide.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
+dts <- as.Date(c('2021-01-01', '2021-07-03', '2021-07-05', '2021-07-07', '2021-10-01'))
+
+toplo1 <- winddat %>% 
+  filter(as.Date(datetime) >= dts[1] & as.Date(datetime) < dts[2])
+toplo2 <- winddat %>% 
+  filter(as.Date(datetime) >= dts[2] & as.Date(datetime) < dts[3])
+toplo3 <- winddat %>% 
+  filter(as.Date(datetime) >= dts[3] & as.Date(datetime) < dts[4])
+toplo4 <- winddat %>% 
+  filter(as.Date(datetime) >= dts[4] & as.Date(datetime) < dts[5])
+
+spdmin <- 0
+spdmax <- 14
+thm <- theme_minimal()
+
+pa <- plot.windrose(spd = toplo1$wind_ms, dir = toplo1$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+  labs(
+    title = '(d) Wind rose plots for 2021',
+    subtitle ='Jan 1st - Jul 2nd'
+  )
+pb <- plot.windrose(spd = toplo2$wind_ms, dir = toplo2$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+  labs(
+    subtitle ='Pre-storm, Jul 3rd - 4th'
+  )
+pc <- plot.windrose(spd = toplo3$wind_ms, dir = toplo3$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+  labs(
+    subtitle ='Post-storm, Jul 5th - 6th'
+  )
+pd <- plot.windrose(spd = toplo4$wind_ms, dir = toplo4$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+  labs(
+    subtitle ='Jul 7th - Sep 30th'
+  )
+
+p4 <- pa + pb + pc + pd + plot_layout(ncol = 4, guides = 'collect') & 
+  theme_minimal() + 
+  theme(
+    axis.text = element_blank(), 
+    axis.title = element_blank(), 
+    axis.ticks.y = element_blank(), 
+    legend.position = 'right'
+  )
+
+
+
+p <- p1 + p2 + p3 + p4 + 
+  plot_layout(ncol = 1, heights = c(1, 1, 1, 1.5))
+
+
+jpeg(here('figs/redtide.jpeg'), height = 9, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
