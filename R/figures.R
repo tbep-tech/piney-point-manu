@@ -39,6 +39,7 @@ data(parms)
 data(rstrnpts)
 data(kbrdat)
 data(winddat)
+data(raindat)
 
 source(here('R/funcs.R'))
 
@@ -915,17 +916,17 @@ fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>%
       T ~ city
     )
   ) %>% 
-  filter(date < as.Date('2021-08-01'))
+  filter(date < as.Date('2021-10-01'))
 
 # k brevis data from CL
 habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
-  # filter(Segment %in% c('MTB', 'LTB')) %>% 
+  filter(Segment %in% c('MTB')) %>%
   select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
   mutate(date = mdy(date))
 
 # add k brevis data from HABSOS that are collected after last date in habdat
 kbrdat <- kbrdat %>% 
-  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
+  .[tbseg[tbseg$bay_segment %in% c('MTB'), ], ] %>% 
   filter(var == 'kb') %>% 
   filter(date > max(habdat$date)) %>% 
   mutate(
@@ -948,12 +949,12 @@ weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %
     lb = format(dt, '%b %d')
   ) %>%
   filter(yr > 2020) %>% 
-  filter(mo < 8) %>% 
+  filter(mo < 10) %>% 
   pull(lb)
 
 # habdat p1
 toplo <- habdat %>%
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   mutate(
     dtgrp = quarter(date),
     yr = year(date)
@@ -990,13 +991,13 @@ p1 <- ggplot(toplo, aes(x = yr)) +
   labs(
     x = 'Year',
     y = 'Cells (100k / L)',
-    title = expression(paste('(a) ', italic('K. brevis'), ' concentrations by year, middle/lower Tampa Bay'))
+    title = expression(paste('(a) ', italic('K. brevis'), ' concentrations by year, middle Tampa Bay'))
   )
 
 # habdat p2
 toplo <- habdat %>%
   filter(year(date) >= 2021) %>%
-  filter(month(date) < 8) %>% 
+  filter(month(date) < 10) %>% 
   mutate(
     week = floor_date(date, unit = 'week'),
     week = factor(format(week, '%b %d')), 
@@ -1030,7 +1031,7 @@ p2 <- ggplot(toplo, aes(x = week)) +
   labs(
     x= 'Week of',
     y = 'Cells (100k / L)',
-    title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
+    title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle Tampa Bay'))
   )
 
 toplo1 <- fishdat %>% 
@@ -1066,6 +1067,48 @@ p3 <- ggplot(toplo1, aes(x = week, fill = city, y = cnt)) +
     panel.grid.major.x = element_blank()
   )
 
+
+# precip 
+
+toplo <- raindat %>% 
+  filter(grepl('^Tampa', station)) %>% 
+  mutate(
+    doy = yday(date), 
+    yr = year(date), 
+    mo = month(date)
+  ) %>% 
+  group_by(yr) %>% 
+  arrange(yr, doy) %>% 
+  mutate(precip_cm = cumsum(precip_cm)) %>% 
+  ungroup() %>% 
+  filter(mo < 10) %>% 
+  mutate(
+    flvl = case_when(
+      yr == 2021 ~ '2021', 
+      T ~ '1995 - 2020'
+    ), 
+    xvals = ymd(paste('2021', month(date), day(date), sep = '-'))
+  )
+
+p4 <- ggplot(toplo, aes(x = xvals, y = precip_cm, group = yr, color = flvl, size = flvl)) + 
+  geom_line() + 
+  scale_size_manual(values = c(0.5, 1.5)) +
+  scale_color_manual(values = c('grey', '#00806E')) +
+  scale_x_date(date_breaks = 'month', date_labels = '%b %d', expand = c(0, 0)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    x = 'Day of year',
+    y = 'Cumulative precip. (cm)',
+    title = '(d) Cumulative precipitation by year for Tampa International Airport',
+    color = 'Year group', 
+    size = 'Year group'
+  )
+
 # wind roses
 winddat <- na.omit(winddat)
 
@@ -1082,27 +1125,28 @@ toplo4 <- winddat %>%
 
 spdmin <- 0
 spdmax <- 14
+spdres = 3
 thm <- theme_minimal()
 
-pa <- plot.windrose(spd = toplo1$wind_ms, dir = toplo1$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+pa <- plot.windrose(spd = toplo1$wind_ms, dir = toplo1$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
-    title = '(d) Wind rose plots for 2021',
+    title = '(e) Wind rose plots for 2021',
     subtitle ='Jan 1st - Jul 2nd'
   )
-pb <- plot.windrose(spd = toplo2$wind_ms, dir = toplo2$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+pb <- plot.windrose(spd = toplo2$wind_ms, dir = toplo2$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
     subtitle ='Pre-storm, Jul 3rd - 4th'
   )
-pc <- plot.windrose(spd = toplo3$wind_ms, dir = toplo3$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+pc <- plot.windrose(spd = toplo3$wind_ms, dir = toplo3$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
     subtitle ='Post-storm, Jul 5th - 6th'
   )
-pd <- plot.windrose(spd = toplo4$wind_ms, dir = toplo4$wind_dir, spdmin = spdmin, spdmax = spdmax) + 
+pd <- plot.windrose(spd = toplo4$wind_ms, dir = toplo4$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
     subtitle ='Jul 7th - Sep 30th'
   )
 
-p4 <- pa + pb + pc + pd + plot_layout(ncol = 4, guides = 'collect') & 
+p5 <- pa + pb + pc + pd + plot_layout(ncol = 4, guides = 'collect') & 
   theme_minimal() + 
   theme(
     axis.text = element_blank(), 
@@ -1111,12 +1155,11 @@ p4 <- pa + pb + pc + pd + plot_layout(ncol = 4, guides = 'collect') &
     legend.position = 'right'
   )
 
+# all plots together
+p <- p1 + p2 + p3 + p4 + p5 +  
+  plot_layout(ncol = 1, heights = c(1, 1, 1, 1, 1.5))
 
 
-p <- p1 + p2 + p3 + p4 + 
-  plot_layout(ncol = 1, heights = c(1, 1, 1, 1.5))
-
-
-jpeg(here('figs/redtide.jpeg'), height = 9, width = 9, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()

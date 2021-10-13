@@ -446,7 +446,7 @@ plot.windrose <- function(data,
   p.windrose <- ggplot(data = data,
                        aes(x = dir.binned,
                            fill = spd.binned)) +
-    geom_bar() + 
+    geom_bar(color = 'lightgrey') + 
     scale_x_discrete(drop = FALSE,
                      labels = waiver()) +
     coord_polar(start = -((dirres/2)/360) * 2*pi) +
