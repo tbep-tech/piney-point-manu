@@ -1090,21 +1090,33 @@ toplo <- raindat %>%
     xvals = ymd(paste('2021', month(date), day(date), sep = '-'))
   )
 
-p4 <- ggplot(toplo, aes(x = xvals, y = precip_cm, group = yr, color = flvl, size = flvl)) + 
-  geom_line() + 
-  scale_size_manual(values = c(0.5, 1.5)) +
-  scale_color_manual(values = c('grey', '#00806E')) +
+toplo1 <- toplo %>% 
+  filter(yr == 2021)
+toplo2 <- toplo %>% 
+  filter(yr < 2021) %>% 
+  group_by(xvals) %>% 
+  summarise(
+    lov = quantile(precip_cm, 0.25, na.rm = T),
+    hiv = quantile(precip_cm, 0.75, na.rm = T),
+  ) %>% 
+  ungroup()
+p4 <- ggplot() + 
+  geom_ribbon(data = toplo2, aes(x = xvals, ymin = lov, ymax = hiv, fill = '1995 - 2020\n25th - 75th %tile'), alpha = 0.7) +
+  geom_line(data = toplo1, aes(x = xvals, y = precip_cm, color = '2021'), size = 1.2) +
+  scale_color_manual(values = '#00806E') +
+  scale_fill_manual(values = 'grey') + 
   scale_x_date(date_breaks = 'month', date_labels = '%b %d', expand = c(0, 0)) +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
     panel.grid.minor.x = element_blank(),
-    panel.grid.major.x = element_blank()
+    panel.grid.major.x = element_blank(), 
+    legend.title = element_blank()
   ) +
   labs(
     x = 'Day of year',
     y = 'Cumulative precip. (cm)',
-    title = '(d) Cumulative precipitation by year for Tampa International Airport',
+    title = '(d) Cumulative precipitation in 2021 at Tampa International Airport',
     color = 'Year group', 
     size = 'Year group'
   )
@@ -1112,7 +1124,7 @@ p4 <- ggplot(toplo, aes(x = xvals, y = precip_cm, group = yr, color = flvl, size
 # wind roses
 toplo <- na.omit(winddat)
 
-dts <- as.Date(c('2021-01-01', '2021-07-03', '2021-07-05', '2021-07-07', '2021-10-01'))
+dts <- as.Date(c('2021-01-01', '2021-04-01', '2021-07-03', '2021-07-05', '2021-07-07', '2021-10-01'))
 
 toplo1 <- toplo %>% 
   filter(as.Date(datetime) >= dts[1] & as.Date(datetime) < dts[2])
@@ -1122,6 +1134,8 @@ toplo3 <- toplo %>%
   filter(as.Date(datetime) >= dts[3] & as.Date(datetime) < dts[4])
 toplo4 <- toplo %>% 
   filter(as.Date(datetime) >= dts[4] & as.Date(datetime) < dts[5])
+toplo5 <- toplo %>% 
+  filter(as.Date(datetime) >= dts[5] & as.Date(datetime) < dts[6])
 
 spdmin <- 0
 spdmax <- 14
@@ -1131,28 +1145,33 @@ thm <- theme_minimal()
 pa <- plot.windrose(spd = toplo1$wind_ms, dir = toplo1$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
     title = '(e) Wind rose plots for 2021',
-    subtitle ='Jan 1st - Jul 2nd'
+    subtitle ='Jan 1st - Mar 31st'
   )
 pb <- plot.windrose(spd = toplo2$wind_ms, dir = toplo2$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
-    subtitle ='Pre-storm, Jul 3rd - 4th'
+    subtitle ='Apr 1st - Jul 2nd'
   )
 pc <- plot.windrose(spd = toplo3$wind_ms, dir = toplo3$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
-    subtitle ='Post-storm, Jul 5th - 6th'
+    subtitle ='Pre-storm, Jul 3rd - 4th'
   )
 pd <- plot.windrose(spd = toplo4$wind_ms, dir = toplo4$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
+  labs(
+    subtitle ='Post-storm, Jul 5th - 6th'
+  )
+pe <- plot.windrose(spd = toplo5$wind_ms, dir = toplo5$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
     subtitle ='Jul 7th - Sep 30th'
   )
 
-p5 <- pa + pb + pc + pd + plot_layout(ncol = 4, guides = 'collect') & 
+p5 <- pa + pb + pc + pd + pe + plot_layout(ncol = 5, guides = 'collect') & 
   theme_minimal() + 
   theme(
     axis.text = element_blank(), 
     axis.title = element_blank(), 
     axis.ticks.y = element_blank(), 
-    legend.position = 'right'
+    legend.position = 'right', 
+    s
   )
 
 # all plots together
