@@ -238,7 +238,7 @@ thm <-  theme(
 # combine water quality data with locations
 # removed secchi on bottom and non-detect for tn, chla
 wqdat <- rswqdat %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
   filter(!station %in% nonbay) %>% 
   filter(!qual %in% c('S', 'U')) %>% 
@@ -370,7 +370,7 @@ cols <- c("#E16A86", "#50A315", "#009ADE")
 names(cols) <- levels(ppseg$area)
 
 datin <- rswqdat %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
   filter(!qual %in% c('S', 'U')) # remove secchi on bottom, nondetect for chla, tn
 
@@ -560,7 +560,7 @@ areas <- ppseg %>%
 
 # add area
 trnsum <- rstrndat %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   mutate(
     date = floor_date(date, unit = 'week')
   ) %>% 
@@ -590,7 +590,7 @@ trnsum <- rstrndat %>%
 rswqsum <- rswqdat %>% 
   filter(var %in% vrs) %>% 
   filter(source == 'fldep') %>%
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(!station %in% nonbay) %>% 
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(areas) %>% 
@@ -696,7 +696,7 @@ areas <- ppseg %>%
 
 # add area
 trnsum <- rstrndat %>%
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   mutate(
     date = floor_date(date, unit = 'week')
   ) %>%
@@ -747,7 +747,7 @@ trncrs <- crossing(var1 = names(trncors), var2 = names(trncors)) %>%
 
 # add area
 trnsum <- rstrndat %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   mutate(
     date = floor_date(date, unit = 'week')
   ) %>% 
@@ -770,7 +770,7 @@ trnsum <- rstrndat %>%
 # water quality summary
 rswqsum <- rswqdat %>% 
   filter(var %in% vrs) %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
@@ -1204,7 +1204,7 @@ spdmax <- 14
 spdres = 3
 thm <- theme_minimal()
 
-p <- plot.windrose(data = winddat, spd = 'wind_ms', dir = 'wind_dir', spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
+p <- plot.windrose(data = toplo, spd = 'wind_ms', dir = 'wind_dir', spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   facet_wrap(~mo, ncol = 3) + 
   theme_minimal() + 
   theme(
