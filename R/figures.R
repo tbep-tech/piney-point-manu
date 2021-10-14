@@ -40,6 +40,7 @@ data(rstrnpts)
 data(kbrdat)
 data(winddat)
 data(raindat)
+data(hydrodat)
 
 source(here('R/funcs.R'))
 
@@ -884,7 +885,8 @@ jpeg(here('figs/allcor.jpeg'), height = 4.4, width = 4.5, units = 'in', res = 50
 print(p)
 dev.off()
 
-# red tide, fish kills, wind, precip --------------------------------------
+# red tide, fish kills, wind, flow, precip --------------------------------
+
 
 # data from https://public.myfwc.com/fwri/FishKillReport/searchresults.aspx
 # requested hillsborough, pinellas, manatee 1/1/95 to early Oct
@@ -963,18 +965,18 @@ toplo <- habdat %>%
   mutate(
     yr = factor(yr, levels = seq(min(yr), max(yr)))
   ) #%>%
-  # group_by(yr) %>%
-  # summarise(
-  #   cnt = n(),
-  #   y0 = min(val, na.rm = T), 
-  #   y25 = quantile(val, prob = 0.25, na.rm = T),
-  #   y50 = quantile(val, prob = 0.5, na.rm = T),
-  #   y75 = quantile(val, prob = 0.75, na.rm = T),
-  #   y100 = max(val, na.rm = T),
-  #   .groups = 'drop'
-  # ) %>%
-  # complete(yr) %>% 
-  # filter(as.numeric(as.character(yr)) >= 1995)
+# group_by(yr) %>%
+# summarise(
+#   cnt = n(),
+#   y0 = min(val, na.rm = T), 
+#   y25 = quantile(val, prob = 0.25, na.rm = T),
+#   y50 = quantile(val, prob = 0.5, na.rm = T),
+#   y75 = quantile(val, prob = 0.75, na.rm = T),
+#   y100 = max(val, na.rm = T),
+#   .groups = 'drop'
+# ) %>%
+# complete(yr) %>% 
+# filter(as.numeric(as.character(yr)) >= 1995)
 
 # plot
 p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
@@ -1022,7 +1024,7 @@ toplo <- habdat %>%
 # plot
 p2 <- ggplot(toplo, aes(x = week, y =  1 + val)) +
   geom_point(position = position_jitter(width = 0.1), alpha = 0.6) + 
-    # geom_boxplot(
+  # geom_boxplot(
   #   aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
   #   stat = "identity", width = 0.75, fill = '#00806E'
   # ) +
@@ -1074,9 +1076,7 @@ p3 <- ggplot(toplo1, aes(x = week, fill = city, y = cnt)) +
     panel.grid.major.x = element_blank()
   )
 
-
 # precip 
-
 toplo <- raindat %>% 
   filter(grepl('^Tampa', station)) %>% 
   mutate(
@@ -1122,8 +1122,62 @@ p4 <- ggplot() +
   ) +
   labs(
     x = 'Day of year',
-    y = 'Cumulative precip. (cm)',
-    title = '(d) Cumulative precipitation in 2021 at Tampa International Airport',
+    y = 'Precip. (cm)',
+    title = '(d) Cumulative precipitation in 2021',
+    color = 'Year group', 
+    size = 'Year group'
+  )
+
+# flow data
+toplo <- hydrodat %>% 
+  mutate(
+    doy = yday(date), 
+    yr = year(date), 
+    mo = month(date)
+  ) %>% 
+  group_by(yr) %>% 
+  arrange(yr, doy) %>% 
+  mutate(
+    flow_m3 = cumsum(flow_m3),
+    flow_km3 = flow_m3 / 1e9
+  ) %>% 
+  ungroup() %>% 
+  filter(mo < 10) %>% 
+  mutate(
+    flvl = case_when(
+      yr == 2021 ~ '2021', 
+      T ~ '1995 - 2020'
+    ), 
+    xvals = ymd(paste('2021', month(date), day(date), sep = '-'))
+  )
+
+toplo1 <- toplo %>% 
+  filter(yr == 2021)
+toplo2 <- toplo %>% 
+  filter(yr < 2021) %>% 
+  group_by(xvals) %>% 
+  summarise(
+    lov = quantile(flow_km3, 0.25, na.rm = T),
+    hiv = quantile(flow_km3, 0.75, na.rm = T),
+  ) %>% 
+  ungroup()
+p5 <- ggplot() + 
+  geom_ribbon(data = toplo2, aes(x = xvals, ymin = lov, ymax = hiv, fill = '1995 - 2020\n25th - 75th %tile'), alpha = 0.7) +
+  geom_line(data = toplo1, aes(x = xvals, y = flow_km3, color = '2021'), size = 1.2) +
+  scale_color_manual(values = '#00806E') +
+  scale_fill_manual(values = 'grey') + 
+  scale_x_date(date_breaks = 'month', date_labels = '%b %d', expand = c(0, 0)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank(), 
+    legend.title = element_blank()
+  ) +
+  labs(
+    x = 'Day of year',
+    y = expression(paste('Inflow (', km^3, ')')),
+    title = '(e) Cumulative inflow in 2021',
     color = 'Year group', 
     size = 'Year group'
   )
@@ -1151,7 +1205,7 @@ thm <- theme_minimal()
 
 pa <- plot.windrose(spd = toplo1$wind_ms, dir = toplo1$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
   labs(
-    title = '(e) Wind rose plots for 2021',
+    title = '(f) Wind rose plots for 2021',
     subtitle ='Jan 1st - Mar 31st'
   )
 pb <- plot.windrose(spd = toplo2$wind_ms, dir = toplo2$wind_dir, spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
@@ -1171,7 +1225,7 @@ pe <- plot.windrose(spd = toplo5$wind_ms, dir = toplo5$wind_dir, spdres = spdres
     subtitle ='Jul 7th - Sep 30th'
   )
 
-p5 <- pa + pb + pc + pd + pe + plot_layout(ncol = 5, guides = 'collect') & 
+p6 <- pa + pb + pc + pd + pe + plot_layout(ncol = 5, guides = 'collect') & 
   theme_minimal() + 
   theme(
     axis.text = element_blank(), 
@@ -1182,9 +1236,11 @@ p5 <- pa + pb + pc + pd + pe + plot_layout(ncol = 5, guides = 'collect') &
   )
 
 # all plots together
-p <- p1 + p2 + p3 + p4 + p5 +  
-  plot_layout(ncol = 1, heights = c(1, 1, 1, 1, 1.5))
-
+p45 <- (p4 + p5 + plot_layout(ncol = 2, guides = 'collect')) 
+# & theme(axis.title.x = element_blank())) / wrap_elements(grid::textGrob('Day of year', gp = gpar(fontsize=11))) + 
+# plot_layout(ncol = 1, heights = c(1, 0.05))
+p <- p1 + p2 + p3 + p45 + p6 +
+  plot_layout(ncol = 1, heights = c(1, 1, 1, 1, 1))
 
 jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)

@@ -35,7 +35,7 @@
 
 # sync data files from piney-point
 
-fls <- c('bsstatloc', 'bstransect', 'bstransectocc', 'bswqdat', 'bswqdatsub', 'bswqrngs', 'kbrdat', 'lobodat', 'loboeco', 
+fls <- c('bsstatloc', 'bstransect', 'bstransectocc', 'bswqdat', 'bswqdatsub', 'bswqrngs', 'hydrodat', 'kbrdat', 'lobodat', 'loboeco', 
          'mcrtmp', 'parms', 'ppseg', 'raindat', 'rsallpts', 'rsbntdat', 'rsbntpts', 'rscntdat', 'rscntthr', 'rsphydat', 'rsphypts', 
          'rsstatloc', 'rstrndat', 'rstrnlns', 'rstrnpts', 'rstrnwts', 'rswqdat', 'sbshed', 'segmask', 'tbhished', 'trnlns', 
          'trnpts', 'winddat', 'wqrefmap')
