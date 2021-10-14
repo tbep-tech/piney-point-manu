@@ -920,13 +920,13 @@ fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>%
 
 # k brevis data from CL
 habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
-  filter(Segment %in% c('MTB')) %>%
+  filter(Segment %in% c('MTB','LTB')) %>%
   select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
   mutate(date = mdy(date))
 
 # add k brevis data from HABSOS that are collected after last date in habdat
 kbrdat <- kbrdat %>% 
-  .[tbseg[tbseg$bay_segment %in% c('MTB'), ], ] %>% 
+  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
   filter(var == 'kb') %>% 
   filter(date > max(habdat$date)) %>% 
   mutate(
@@ -955,33 +955,37 @@ weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %
 # habdat p1
 toplo <- habdat %>%
   filter(date < as.Date('2021-10-01')) %>% 
+  filter(month(date) > 3 & month(date) < 10) %>% 
   mutate(
     dtgrp = quarter(date),
     yr = year(date)
   ) %>%
   mutate(
     yr = factor(yr, levels = seq(min(yr), max(yr)))
-  ) %>%
-  group_by(yr) %>%
-  summarise(
-    cnt = n(),
-    y0 = min(val, na.rm = T), 
-    y25 = quantile(val, prob = 0.25, na.rm = T),
-    y50 = quantile(val, prob = 0.5, na.rm = T),
-    y75 = quantile(val, prob = 0.75, na.rm = T),
-    y100 = max(val, na.rm = T),
-    .groups = 'drop'
-  ) %>%
-  complete(yr) %>% 
-  filter(as.numeric(as.character(yr)) >= 1995)
+  ) #%>%
+  # group_by(yr) %>%
+  # summarise(
+  #   cnt = n(),
+  #   y0 = min(val, na.rm = T), 
+  #   y25 = quantile(val, prob = 0.25, na.rm = T),
+  #   y50 = quantile(val, prob = 0.5, na.rm = T),
+  #   y75 = quantile(val, prob = 0.75, na.rm = T),
+  #   y100 = max(val, na.rm = T),
+  #   .groups = 'drop'
+  # ) %>%
+  # complete(yr) %>% 
+  # filter(as.numeric(as.character(yr)) >= 1995)
 
 # plot
-p1 <- ggplot(toplo, aes(x = yr)) +
-  geom_boxplot(
-    aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
-    stat = "identity", width = 0.75, fill = '#00806E'
-  ) +
-  scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
+  geom_point(position = position_jitter(width = 0.1), alpha = 0.6) + 
+  # geom_boxplot(
+  #   aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
+  #   stat = "identity", width = 0.75, fill = '#00806E'
+  # ) +
+  # scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  # geom_hline(aes(yintercept = 1e5, color = 'Bloom\nconcentration')) +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
@@ -991,7 +995,7 @@ p1 <- ggplot(toplo, aes(x = yr)) +
   labs(
     x = 'Year',
     y = 'Cells (100k / L)',
-    title = expression(paste('(a) ', italic('K. brevis'), ' concentrations by year, middle Tampa Bay'))
+    title = expression(paste('(a) ', italic('K. brevis'), ' Apr - Sep concentrations by year, middle/lower Tampa Bay'))
   )
 
 # habdat p2
@@ -1003,25 +1007,28 @@ toplo <- habdat %>%
     week = factor(format(week, '%b %d')), 
     week = factor(week, levels = weeklv)
   ) %>%
-  group_by(week) %>%
-  summarise(
-    cnt = n(),
-    y0 = min(val, na.rm = T), 
-    y25 = quantile(val, prob = 0.25, na.rm = T),
-    y50 = quantile(val, prob = 0.5, na.rm = T),
-    y75 = quantile(val, prob = 0.75, na.rm = T),
-    y100 = max(val, na.rm = T),
-    .groups = 'drop'
-  ) %>%
+  # group_by(week)# %>%
+  # summarise(
+  #   cnt = n(),
+  #   y0 = min(val, na.rm = T), 
+  #   y25 = quantile(val, prob = 0.25, na.rm = T),
+  #   y50 = quantile(val, prob = 0.5, na.rm = T),
+  #   y75 = quantile(val, prob = 0.75, na.rm = T),
+  #   y100 = max(val, na.rm = T),
+  #   .groups = 'drop'
+  # ) %>%
   complete(week)
 
 # plot
-p2 <- ggplot(toplo, aes(x = week)) +
-  geom_boxplot(
-    aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
-    stat = "identity", width = 0.75, fill = '#00806E'
-  ) +
-  scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+p2 <- ggplot(toplo, aes(x = week, y =  1 + val)) +
+  geom_point(position = position_jitter(width = 0.1), alpha = 0.6) + 
+    # geom_boxplot(
+  #   aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
+  #   stat = "identity", width = 0.75, fill = '#00806E'
+  # ) +
+  # scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  # geom_hline(aes(yintercept = 1e5, color = 'Bloom\nconcentration')) +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
@@ -1031,7 +1038,7 @@ p2 <- ggplot(toplo, aes(x = week)) +
   labs(
     x= 'Week of',
     y = 'Cells (100k / L)',
-    title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle Tampa Bay'))
+    title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
   )
 
 toplo1 <- fishdat %>% 
@@ -1058,7 +1065,7 @@ p3 <- ggplot(toplo1, aes(x = week, fill = city, y = cnt)) +
   scale_fill_brewer('City', palette = 'Pastel1') + 
   theme_minimal() + 
   theme(
-    axis.ticks.x = element_line(),
+    # axis.ticks.x = element_line(),
     # axis.title.x = element_blank(), 
     axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
     legend.position = 'right', 
@@ -1170,8 +1177,7 @@ p5 <- pa + pb + pc + pd + pe + plot_layout(ncol = 5, guides = 'collect') &
     axis.text = element_blank(), 
     axis.title = element_blank(), 
     axis.ticks.y = element_blank(), 
-    legend.position = 'right', 
-    s
+    legend.position = 'right'
   )
 
 # all plots together
@@ -1185,7 +1191,8 @@ dev.off()
 
 # Supplement figures ------------------------------------------------------
 
-# wind roses
+## wind roses -------------------------------------------------------------
+
 toplo <- na.omit(winddat) %>% 
   mutate(
     mo = month(datetime, label = T)
@@ -1208,5 +1215,43 @@ p <- plot.windrose(data = winddat, spd = 'wind_ms', dir = 'wind_dir', spdres = s
   )
 
 jpeg(here('figs/windroses.jpeg'), height = 6, width = 7, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+## weekly plots - additional variables ------------------------------------
+
+# segments
+ppsegbf <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+cols <- c("#E16A86", "#50A315", "#009ADE")
+names(cols) <- levels(ppseg$area)
+
+datin <- rswqdat %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
+  filter(var %in% c('nh34', 'orthop', 'tp', 'dosat', 'turb', 'sal')) %>% 
+  filter(!qual %in% c('S', 'U')) %>% # remove secchi on bottom, nondetect for chla, tn
+  filter(!(var == 'sal' & source == 'ncf'))# there are some low salinity values in July in MR that skew the plots
+
+p1 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'nh34', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) NH3, NH4+', ylb = 'mg/L (log-scale)')
+p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'tp', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Total phosphorus', ylb = 'mg/L (log-scale)')
+p3 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'orthop', cols, logtr = TRUE, ttl = '(c) Ortho-phosphate', ylb = 'mg/L (log-scale)')
+p4 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'dosat', cols, logtr = FALSE, rmfacet = TRUE, ttl = '(d) Dissolved oxygen sat.', ylb = '%')
+p5 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'turb', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(e) Turbidity', ylb = 'NTU (log-scale)')
+p6 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'sal', cols, logtr = FALSE, ttl = '(f) Salinity', ylb = 'ppt')
+
+
+p <- (p1 + p2 + p3 + p4 + p5 + p6 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week of', gp = gpar(fontsize=14))) + 
+  plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.025)) & 
+  theme(legend.position = 'top')
+
+jpeg(here('figs/wqtrnds-supp.jpeg'), height = 9, width = 10.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
