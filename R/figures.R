@@ -1177,7 +1177,8 @@ p5 <- pa + pb + pc + pd + pe + plot_layout(ncol = 5, guides = 'collect') &
     axis.text = element_blank(), 
     axis.title = element_blank(), 
     axis.ticks.y = element_blank(), 
-    legend.position = 'right'
+    legend.position = 'right',
+    plot.subtitle = element_text(size = 9)
   )
 
 # all plots together

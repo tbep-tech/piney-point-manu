@@ -115,7 +115,7 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
       axis.title.x = element_blank(),
       panel.grid.minor = element_blank(),
       strip.text = element_text(size = 14), 
-      axis.text.x = element_text(size = 6, angle = 45, hjust = 1)
+      axis.text.x = element_text(size = 4.5, angle = 45, hjust = 1)
     )
   
   if(logtr)
@@ -446,7 +446,7 @@ plot.windrose <- function(data,
   p.windrose <- ggplot(data = data,
                        aes(x = dir.binned,
                            fill = spd.binned)) +
-    geom_bar(color = 'lightgrey') + 
+    geom_bar(color = 'grey') + 
     scale_x_discrete(drop = FALSE,
                      labels = waiver()) +
     coord_polar(start = -((dirres/2)/360) * 2*pi) +

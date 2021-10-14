@@ -134,7 +134,7 @@ sigs <- parms %>%
 totab <- rswqdat %>% 
   left_join(rsstatloc, ., by = c('station', 'source')) %>% 
   filter(var %in% vrs) %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(!station %in% nonbay) %>% 
   select(station, date, lbs, val, inrng, qual) %>% 
   st_intersection(ppsegbf) %>% 
@@ -210,7 +210,7 @@ ppsegbf <- ppseg %>%
 
 rswqsub <- rswqdat %>% 
   filter(var %in% vrs) %>% 
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   filter(source == 'fldep') %>%
   filter(!station %in% nonbay) %>% 
   filter(!qual %in% 'S') %>% # remove secchi on bottom
@@ -222,7 +222,7 @@ rswqsub <- rswqdat %>%
   mutate(
     mo = month(date, label = T)
   ) %>% 
-  filter(mo %in% c('Apr', 'May', 'Jun', 'Jul')) %>% 
+  filter(mo %in% c('Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep')) %>% 
   mutate(mo = fct_drop(mo))
 
 # multiple comparisons of time frames within sites, all nutrients
@@ -342,7 +342,7 @@ areas <- ppseg %>%
 
 # add area
 trnsf <- rstrndat %>%
-  filter(date < as.Date('2021-08-01')) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
   inner_join(rstrnpts, ., by = 'station') %>% 
   filter(taxa %in% c(mcrsel, savsel)) %>% 
   # filter(station %in% smpeff) %>% 
