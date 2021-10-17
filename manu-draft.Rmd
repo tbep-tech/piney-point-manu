@@ -400,6 +400,10 @@ knitr::include_graphics(here('figs/allcor.jpeg'))
 knitr::include_graphics('figs/redtide.jpeg')
 ```
 
+```{r nutrientflow, fig.cap = 'Weekly summarized observations (medians, 2.5th to 97.5th percentiles) across all sampled locations for (a) total nitrogen concentrations, (b) chlorophyll-a concentrations, (c) diatom cell concentrations, (d) *Karenia brevis* cell concentrations, and (e) cyanobacteria macroalgal abundances.  Values are summarized for all samples within each week.  The values suggest nutrient cycling between water column phytoplankton in the initial April diatom bloom, then to cyanobacteria macroalgae in May to June, and then to *K. brevis* peaking in early July. Quantitative cell counts for diatoms are missing for several weeks, but see supplementary figures for frequency occurence estimates across all dates.  Diatom concentrations are based on combined cell counts from *Asterionellopsis sp.* and *Skeletonema sp*.'}
+knitr::include_graphics('figs/nutrientflow.jpeg')
+```
+
 # Tables
 
 ```{r stktab}

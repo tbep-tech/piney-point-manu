@@ -41,6 +41,9 @@ data(kbrdat)
 data(winddat)
 data(raindat)
 data(hydrodat)
+data(rstrnwts)
+data(rsphydat)
+data(bstransect)
 
 source(here('R/funcs.R'))
 
@@ -887,7 +890,6 @@ dev.off()
 
 # red tide, fish kills, wind, flow, precip --------------------------------
 
-
 # data from https://public.myfwc.com/fwri/FishKillReport/searchresults.aspx
 # requested hillsborough, pinellas, manatee 1/1/95 to early Oct
 fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>% 
@@ -964,30 +966,13 @@ toplo <- habdat %>%
   ) %>%
   mutate(
     yr = factor(yr, levels = seq(min(yr), max(yr)))
-  ) #%>%
-# group_by(yr) %>%
-# summarise(
-#   cnt = n(),
-#   y0 = min(val, na.rm = T), 
-#   y25 = quantile(val, prob = 0.25, na.rm = T),
-#   y50 = quantile(val, prob = 0.5, na.rm = T),
-#   y75 = quantile(val, prob = 0.75, na.rm = T),
-#   y100 = max(val, na.rm = T),
-#   .groups = 'drop'
-# ) %>%
-# complete(yr) %>% 
-# filter(as.numeric(as.character(yr)) >= 1995)
+  )
 
 # plot
 p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
   geom_point(position = position_jitter(width = 0.1), alpha = 0.6) + 
-  # geom_boxplot(
-  #   aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
-  #   stat = "identity", width = 0.75, fill = '#00806E'
-  # ) +
-  # scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
   scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
-  # geom_hline(aes(yintercept = 1e5, color = 'Bloom\nconcentration')) +
+
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
@@ -1246,6 +1231,295 @@ jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500,
 print(p)
 dev.off()
 
+# nutrient flow -----------------------------------------------------------
+
+brks <- seq.Date(as.Date('2021-03-28'), as.Date('2021-09-26'), by = '1 week')
+vrs <- c('chla', 'tn')
+nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+
+# water quality summarized
+wqsum <- rswqdat %>% 
+  filter(var %in% vrs) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
+  filter(source == 'fldep') %>%
+  filter(!station %in% nonbay) %>% 
+  # inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
+  # st_intersection(areas) %>% 
+  # st_set_geometry(NULL) %>% 
+  mutate(cens = grepl('U', qual)) %>% 
+  select(date, var, val, cens, station) %>% 
+  mutate(
+    date = floor_date(date, unit = 'week')
+  ) %>% 
+  group_by(date, var) %>% 
+  summarise(
+    medv = ifelse(
+      any(cens), median(cenfit(val, cens), na.rm = T),
+      median(val, na.rm = T)
+    ),
+    hiv = ifelse(
+      any(cens), quantile(cenfit(val, cens), prob = 0.975, na.rm = T),
+      quantile(val, prob = 0.975, na.rm = T)
+    ),
+    lov = ifelse(
+      any(cens), quantile(cenfit(val, cens), prob = 0.025, na.rm = T),
+      quantile(val, prob = 0.025, na.rm = T)
+    ),
+    .groups = 'drop'
+  )
+
+toplo1 <- wqsum %>% filter(
+  var == 'tn'
+)
+p1 <- ggplot(toplo1, aes(x = date, y = medv)) + 
+  geom_point() + 
+  # geom_line() + 
+  geom_errorbar(aes(ymin = lov, ymax = hiv), width = 0) +
+  scale_x_date(breaks = brks, date_labels = '%b %d', limits = range(brks), expand = c(0.01, 0.01)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1), 
+    # axis.title.x = element_blank(), 
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    legend.title = element_blank()
+  ) + 
+  labs(
+    y = 'mg / L', 
+    x = NULL, 
+    title = '(a) Total nitrogen concentration'
+  )
+
+toplo2 <- wqsum %>% filter(
+  var == 'chla'
+)
+p2 <- ggplot(toplo2, aes(x = date, y = medv)) + 
+  geom_point() + 
+  # geom_line() + 
+  geom_errorbar(aes(ymin = lov, ymax = hiv), width = 0) +
+  scale_x_date(breaks = brks, date_labels = '%b %d', limits = range(brks), expand = c(0.01, 0.01)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1), 
+    # axis.title.x = element_blank(), 
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    legend.title = element_blank()
+  ) + 
+  labs(
+    y = expression(paste(mu, 'g / L')), 
+    x = NULL, 
+    title = '(b) Chlorophyll-a concentration'
+  )
+
+# phytoplankton summarized
+physum <- rsphydat %>%
+  filter(date < as.Date('2021-10-01')) %>% 
+  filter(source %in% c('epchc', 'pinco')) %>%
+  filter(!station %in% nonbay) %>% 
+  mutate(
+    species = case_when(
+      species %in% c('Skeletonema sp.', 'Skeletonema Costatum', 'Asterionellopsis glacialis', 'Asterionellopsis') ~ 'Diatoms', 
+      T ~ 'other'
+    ),
+    species = factor(species, levels = unique(species))
+  ) %>% 
+  select(date, station, species, val) %>% 
+  group_by(date, station) %>% 
+  complete(
+    species,
+    fill = list(val = 0)
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    week = floor_date(date, unit = 'week'), 
+    val = val / 1e5
+  ) %>% 
+  filter(species == 'Diatoms') %>% 
+  select(week, species, val)
+
+# k brevis data from CL
+habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
+  filter(Segment %in% c('MTB','LTB')) %>%
+  select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
+  mutate(date = mdy(date))
+
+# add k brevis data from HABSOS that are collected after last date in habdat
+kbrdat <- kbrdat %>% 
+  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
+  filter(var == 'kb') %>% 
+  filter(date > max(habdat$date)) %>% 
+  mutate(
+    lat = st_coordinates(.)[,2],
+    lng = st_coordinates(.)[,1]
+  ) %>% 
+  st_set_geometry(NULL) %>% 
+  select(date, val, lat, lng)
+
+habdat <- bind_rows(habdat, kbrdat) %>% 
+  filter(year(date) >= 2021) %>%
+  filter(month(date) < 10) %>% 
+  mutate(
+    week = floor_date(date, unit = 'week'), 
+    species = 'K. brevis'
+  ) %>%
+  complete(week) %>% 
+  select(week, species, val)
+
+# levels for week, starts on first of week
+toplo <- bind_rows(habdat, physum) %>% 
+  filter(week >= as.Date('2021-03-28')) %>% 
+  group_by(week, species) %>% 
+  summarise(
+    medv = quantile(val, 0.5, na.rm = T), 
+    lov = quantile(val, 0.025, na.rm = T), 
+    hiv = quantile(val, 0.975, na.rm = T), 
+    .groups = 'drop'
+  )
+
+toplo1 <- toplo %>% 
+  filter(species == 'Diatoms')
+toplo2 <- toplo %>% 
+  filter(species == 'K. brevis')
+# plot
+p3 <- ggplot(toplo1, aes(x = week, y = medv)) +
+  geom_point() + 
+  # geom_line() + 
+  geom_errorbar(aes(ymin = lov, ymax = hiv), width = 0) +
+  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  scale_x_date(breaks = brks, date_labels = '%b %d', limits = range(brks), expand = c(0.01, 0.01)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = 'Cells (100k / L)',
+    title = '(c) Diatom cell concentrations'
+  )
+
+# plot
+p4 <- ggplot(toplo2, aes(x = week, y = medv)) +
+  geom_point() + 
+  # geom_line() + 
+  geom_errorbar(aes(ymin = lov, ymax = hiv), width = 0) +
+  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  scale_x_date(breaks = brks, date_labels = '%b %d', limits = range(brks), expand = c(0.01, 0.01)) +
+  # geom_hline(aes(yintercept = 1e5, color = 'Bloom\nconcentration')) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = 'Cells (100k / L)',
+    title = expression(paste('(c) ', italic('K. brevis'), ' cell concentrations'))
+  )
+
+# macroalgal weight summarized
+rssub <- rstrndat %>% 
+  filter(typ == 'mcr') %>% 
+  select(station, location, date, taxa, bb)
+
+bssub <- bstransect %>% 
+  filter(var == 'Abundance') %>% 
+  select(
+    station = Transect, 
+    location = Site, 
+    date = Date,
+    taxa = Savspecies,
+    bb = aveval
+  ) %>% 
+  filter(date %in% rstrnwts$date & station %in% rstrnwts$station & location %in% rstrnwts$location) %>% 
+  filter(grepl('^DA', taxa)) %>% 
+  mutate(
+    location = as.numeric(location), 
+    taxa = case_when(
+      grepl('Red', taxa) ~ 'Red', 
+      grepl('Green', taxa) ~ 'Green', 
+      grepl('Macroalgae', taxa) ~ 'Red',
+      T ~ taxa
+    )
+  ) 
+
+tojn <- bind_rows(rssub, bssub)
+wtssub <- rstrnwts %>% 
+  select(-genus) %>% 
+  rename(taxa = group) %>% 
+  filter(!grepl('and', taxa)) %>% 
+  left_join(tojn, by = c('station', 'date', 'location', 'taxa')) %>% 
+  mutate(
+    weight = weight_g * 0.004 # g / 0.25m2 to kg / m2
+  )
+
+wtsmod <- wtssub %>% 
+  group_by(taxa) %>% 
+  nest() %>% 
+  mutate(
+    mod = purrr::map(data, lm, formula = weight ~ 0 + bb)
+  ) %>% 
+  select(taxa, mod)
+
+wtsest <- rstrndat %>% 
+  filter(taxa %in% c('Red', 'Green', 'Cyanobacteria')) %>% 
+  group_by(taxa) %>% 
+  nest %>% 
+  left_join(wtsmod, by = 'taxa') %>% 
+  mutate(
+    weight_kgm2 = purrr::pmap(list(object = mod, newdata = data), predict)
+  ) %>% 
+  select(-mod) %>% 
+  unnest(c('data', 'weight_kgm2')) %>% 
+  mutate(
+    week = floor_date(date, unit = 'week')
+  ) %>% 
+  group_by(taxa, week, station) %>%
+  summarise(
+    weight_kgm2 = mean(weight_kgm2, na.rm = T), 
+    .groups = 'drop'
+  ) %>%
+  group_by(taxa, week) %>% 
+  summarise(
+    medv = quantile(weight_kgm2, 0.5, na.rm = T), 
+    lov = quantile(weight_kgm2, 0.025, na.rm = T), 
+    hiv = quantile(weight_kgm2, 0.975, na.rm = T), 
+    .groups = 'drop'
+  ) %>% 
+  filter(taxa == 'Cyanobacteria')
+
+p5 <- ggplot(wtsest, aes(x = week, y = medv)) + 
+  geom_point() + 
+  # geom_line() + 
+  geom_errorbar(aes(ymin = lov, ymax = hiv), width = 0) +
+  scale_x_date(breaks = brks, date_labels = '%b %d', limits = range(brks), expand = c(0.01, 0.01)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1), 
+    # axis.title.x = element_blank(), 
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    legend.title = element_blank()
+  ) + 
+  labs(
+    y = expression(paste('kg / ', m^2)), 
+    x = 'Week of', 
+    title = '(e) Cyanobacteria macroalgae abundances'
+  )
+
+# combine all
+p <- p1 + p2 + p3 + p4 + p5 + plot_layout(ncol = 1)
+
+jpeg(here('figs/nutrientflow.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
 # Supplement figures ------------------------------------------------------
 
 ## wind roses -------------------------------------------------------------
@@ -1310,5 +1584,131 @@ p <- (p1 + p2 + p3 + p4 + p5 + p6 + plot_layout(ncol = 3)) / wrap_elements(grid:
   theme(legend.position = 'top')
 
 jpeg(here('figs/wqtrnds-supp.jpeg'), height = 9, width = 10.5, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+## phyto and macro frequency occurrence -----------------------------------
+
+brks <- seq.Date(as.Date('2021-03-28'), as.Date('2021-09-26'), by = '1 week')
+nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+
+# phytoplankton summarized
+physum <- rsphydat %>%
+  filter(date < as.Date('2021-10-01')) %>%
+  filter(source == c('fldep')) %>%
+  filter(!station %in% nonbay) %>%
+  # inner_join(rsphypts, ., by = c('station', 'source', 'typ')) %>%
+  # st_intersection(areas) %>%
+  # st_intersection(tbseg) %>%
+  # st_set_geometry(NULL) %>%
+  # filter(area %in% c('Area 1')) %>%
+  # filter(bay_segment %in% c('MTB', 'LTB')) %>%
+  mutate(
+    species = case_when(
+      species %in% c('Centric Diatoms', 'Skeletonema sp.', 'Skeletonema Costatum', 'Asterionellopsis glacialis', 'Asterionellopsis') ~ 'Diatoms',
+      T ~ species
+      ),
+    species = factor(species, levels = unique(species))
+  ) %>%
+  select(date, station, species) %>%
+  mutate(
+    pa = 1
+  ) %>%
+  group_by(date, station) %>%
+  complete(
+    species,
+    fill = list(pa = 0)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    date = floor_date(date, unit = 'week')
+  ) %>%
+  group_by(date, species) %>%
+  summarize(
+    foest = sum(pa) / length(pa),
+    .groups = 'drop'
+  ) %>%
+  filter(!species %in% c('mixed algae', 'Pyrodinium bahamense', 'Pseudo-nitzschia sp.'))
+
+lns <- physum %>%
+  group_by(date) %>%
+  summarize(
+    ymax = sum(foest)
+  )
+
+p1 <- ggplot() +
+  geom_area(data = physum, aes(x = date, y = foest, fill = species), stat = 'identity', color = 'lightgrey', alpha = 0.7) +
+  geom_segment(data = lns, aes(x = date, xend = date, y = 0, yend = ymax), color = 'grey') +
+  scale_fill_manual(values = c('#66c2a5', '#fc8d62')) +
+  scale_x_date(breaks = brks, date_labels = '%b %d', expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    # axis.title.x = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.title = element_blank()
+  ) +
+  labs(
+    y = 'Freq. Occ.',
+    x = NULL,
+    title = '(a) Phytoplankton frequency occurrence all locations'
+  )
+
+# transect summarized
+trnsum <- rstrndat %>%
+  filter(date < as.Date('2021-10-01')) %>%
+  # filter(station %in% c('S4T1c', 'S3T6b', 'S3T5b', 'S4T2b')) %>%
+  mutate(
+    date = floor_date(date, unit = 'week')
+  ) %>%
+  # inner_join(rstrnpts, ., by = 'station') %>%
+  # st_intersection(areas) %>%
+  # st_set_geometry(NULL) %>%
+  # filter(area == 'Area 1') %>%
+  dplyr::group_by(date, station, location, taxa) %>%
+  dplyr::summarise(
+    pa = as.numeric(any(bb > 0)),
+    .groups = 'drop'
+  ) %>%
+  group_by(date, taxa) %>%
+  summarize(
+    foest = sum(pa) / length(pa), # freq occ.
+    .groups = 'drop'
+  ) %>%
+  ungroup %>%
+  filter(taxa %in%  c('Red', 'Green', 'Cyanobacteria'))
+
+lns <- trnsum %>%
+  group_by(date) %>%
+  summarize(
+    ymax = sum(foest)
+  )
+
+brks <- seq.Date(min(physum$date), max(physum$date), by = '1 week')
+p2 <- ggplot() +
+  geom_area(data = trnsum, aes(x = date, y = foest, fill = taxa), stat = 'identity', color = 'lightgrey', alpha = 0.7) +
+  geom_segment(data = lns, aes(x = date, xend = date, y = 0, yend = ymax), color = 'grey') +
+  scale_fill_manual(values = c('tomato1', 'lightgreen', 'lightblue')) +
+  scale_x_date(breaks = brks, date_labels = '%b %d', expand = c(0, 0), limits = range(brks)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
+    # axis.title.x = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.title = element_blank()
+  ) +
+  labs(
+    y = 'Freq. Occ.',
+    x = 'Week of',
+    title = '(b) Macroalgae frequency occurrence all locations'
+  )
+
+p <- p1 + p2 + plot_layout(ncol = 1)
+
+jpeg(here('figs/phymcrfoest.jpeg'), height = 5, width = 7, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
