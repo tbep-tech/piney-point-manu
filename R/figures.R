@@ -21,7 +21,7 @@ library(RColorBrewer)
 box::use(
   scales = scales[muted], 
   units = units[set_units], 
-  vegan = vegan[decostand], 
+  vegan = vegan[decostand, metaMDS], 
   FactoMineR = FactoMineR[PCA], 
   ggnewscale[new_scale_fill], 
   grid[unit]
@@ -1517,6 +1517,259 @@ p5 <- ggplot(wtsest, aes(x = week, y = medv)) +
 p <- p1 + p2 + p3 + p4 + p5 + plot_layout(ncol = 1)
 
 jpeg(here('figs/nutrientflow.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+# nutrient flow ordination ------------------------------------------------
+
+vrs <- c('chla', 'tn')
+nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+
+# water quality summarized
+wqsum <- rswqdat %>% 
+  filter(var %in% vrs) %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
+  filter(source == 'fldep') %>%
+  filter(!station %in% nonbay) %>% 
+  # inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
+  # st_intersection(areas) %>% 
+  # st_set_geometry(NULL) %>% 
+  mutate(cens = grepl('U', qual)) %>% 
+  select(date, var, val, cens, station) %>% 
+  mutate(
+    date = floor_date(date, unit = 'week')
+  ) %>% 
+  group_by(date, var) %>% 
+  summarise(
+    medv = ifelse(
+      any(cens), median(cenfit(val, cens), na.rm = T),
+      median(val, na.rm = T)
+    ),
+    hiv = ifelse(
+      any(cens), quantile(cenfit(val, cens), prob = 0.975, na.rm = T),
+      quantile(val, prob = 0.975, na.rm = T)
+    ),
+    lov = ifelse(
+      any(cens), quantile(cenfit(val, cens), prob = 0.025, na.rm = T),
+      quantile(val, prob = 0.025, na.rm = T)
+    ),
+    .groups = 'drop'
+  )
+
+# phytoplankton summarized
+physum <- rsphydat %>%
+  filter(date < as.Date('2021-10-01')) %>% 
+  filter(source %in% c('epchc', 'pinco')) %>%
+  filter(!station %in% nonbay) %>% 
+  mutate(
+    species = case_when(
+      species %in% c('Skeletonema sp.', 'Skeletonema Costatum', 'Asterionellopsis glacialis', 'Asterionellopsis') ~ 'Diatoms', 
+      T ~ 'other'
+    ),
+    species = factor(species, levels = unique(species))
+  ) %>% 
+  select(date, station, species, val) %>% 
+  group_by(date, station) %>% 
+  complete(
+    species,
+    fill = list(val = 0)
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    week = floor_date(date, unit = 'week'), 
+    val = val / 1e5
+  ) %>% 
+  filter(species == 'Diatoms') %>% 
+  select(week, species, val)
+
+# k brevis data from CL
+habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
+  filter(Segment %in% c('MTB','LTB')) %>%
+  select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
+  mutate(date = mdy(date))
+
+# add k brevis data from HABSOS that are collected after last date in habdat
+kbrdat <- kbrdat %>% 
+  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
+  filter(var == 'kb') %>% 
+  filter(date > max(habdat$date)) %>% 
+  mutate(
+    lat = st_coordinates(.)[,2],
+    lng = st_coordinates(.)[,1]
+  ) %>% 
+  st_set_geometry(NULL) %>% 
+  select(date, val, lat, lng)
+
+habdat <- bind_rows(habdat, kbrdat) %>% 
+  filter(year(date) >= 2021) %>%
+  filter(month(date) < 10) %>% 
+  mutate(
+    week = floor_date(date, unit = 'week'), 
+    species = 'K. brevis'
+  ) %>%
+  complete(week) %>% 
+  select(week, species, val)
+
+# levels for week, starts on first of week
+physum <- bind_rows(habdat, physum) %>% 
+  filter(week >= as.Date('2021-03-28')) %>% 
+  group_by(week, species) %>% 
+  summarise(
+    medv = quantile(val, 0.5, na.rm = T), 
+    lov = quantile(val, 0.025, na.rm = T), 
+    hiv = quantile(val, 0.975, na.rm = T), 
+    .groups = 'drop'
+  )
+
+rssub <- rstrndat %>% 
+  filter(typ == 'mcr') %>% 
+  select(station, location, date, taxa, bb)
+
+bssub <- bstransect %>% 
+  filter(var == 'Abundance') %>% 
+  select(
+    station = Transect, 
+    location = Site, 
+    date = Date,
+    taxa = Savspecies,
+    bb = aveval
+  ) %>% 
+  filter(date %in% rstrnwts$date & station %in% rstrnwts$station & location %in% rstrnwts$location) %>% 
+  filter(grepl('^DA', taxa)) %>% 
+  mutate(
+    location = as.numeric(location), 
+    taxa = case_when(
+      grepl('Red', taxa) ~ 'Red', 
+      grepl('Green', taxa) ~ 'Green', 
+      grepl('Macroalgae', taxa) ~ 'Red',
+      T ~ taxa
+    )
+  ) 
+
+tojn <- bind_rows(rssub, bssub)
+wtssub <- rstrnwts %>% 
+  select(-genus) %>% 
+  rename(taxa = group) %>% 
+  filter(!grepl('and', taxa)) %>% 
+  left_join(tojn, by = c('station', 'date', 'location', 'taxa')) %>% 
+  mutate(
+    weight = weight_g * 0.004 # g / 0.25m2 to kg / m2
+  )
+
+wtsmod <- wtssub %>% 
+  group_by(taxa) %>% 
+  nest() %>% 
+  mutate(
+    mod = purrr::map(data, lm, formula = weight ~ 0 + bb)
+  ) %>% 
+  select(taxa, mod)
+
+wtsest <- rstrndat %>% 
+  filter(taxa %in% c('Red', 'Green', 'Cyanobacteria')) %>% 
+  group_by(taxa) %>% 
+  nest %>% 
+  left_join(wtsmod, by = 'taxa') %>% 
+  mutate(
+    weight_kgm2 = purrr::pmap(list(object = mod, newdata = data), predict)
+  ) %>% 
+  select(-mod) %>% 
+  unnest(c('data', 'weight_kgm2')) %>% 
+  mutate(
+    week = floor_date(date, unit = 'week')
+  ) %>% 
+  group_by(taxa, week, station) %>%
+  summarise(
+    weight_kgm2 = mean(weight_kgm2, na.rm = T), 
+    .groups = 'drop'
+  ) %>%
+  group_by(taxa, week) %>% 
+  summarise(
+    medv = quantile(weight_kgm2, 0.5, na.rm = T), 
+    lov = quantile(weight_kgm2, 0.025, na.rm = T), 
+    hiv = quantile(weight_kgm2, 0.975, na.rm = T), 
+    .groups = 'drop'
+  ) %>% 
+  filter(taxa == 'Cyanobacteria') 
+
+wqfrm <- wqsum %>% 
+  select(-medv, -lov) %>% 
+  group_by(var) %>%
+  mutate(
+    hiv = scales::rescale(hiv, to = c(0, 1)) 
+  ) %>%
+  spread(var, hiv) %>% 
+  rename(week = date)
+
+phyfrm <- physum %>% 
+  select(-medv, -lov) %>% 
+  group_by(species) %>% 
+  spread(species, hiv, fill = 0) %>% 
+  mutate(
+    Diatoms = scales::rescale(Diatoms, to = c(0, 1)), 
+    `K. brevis` = scales::rescale(`K. brevis`, to = c(0, 1))
+  ) 
+
+mcrfrm <- wtsest %>% 
+  select(week, Cyanobacteria = hiv) %>% 
+  mutate(
+    Cyanobacteria = scales::rescale(Cyanobacteria, to = c(0, 1)), 
+  )
+
+toord <- full_join(wqfrm, phyfrm, by = 'week') %>% 
+  full_join(mcrfrm, by = 'week') %>% 
+  gather('var', 'val', -week) %>% 
+  group_by(var) %>% 
+  mutate(
+    val = ifelse(is.na(val), median(val, na.rm = T), val)
+  ) %>% 
+  ungroup %>% 
+  spread(var, val) %>% 
+  mutate(
+    mogrp = month(week, label = T), 
+    mogrp = as.character(mogrp), 
+    mogrp = case_when(
+      mogrp %in% c('Mar', 'Apr') ~ 'Apr', 
+      mogrp %in% c('Aug', 'Sep')  ~ 'Aug, Sep', 
+      mogrp %in% c('May', 'Jun') ~ 'May, Jun',
+      T  ~ mogrp
+    ), 
+    mogrp = factor(mogrp, levels = c('Apr' ,'May, Jun', 'Jul', 'Aug, Sep'))
+  ) %>% 
+  rename(
+    TN = tn, 
+    `Chl-a` = chla
+  )
+
+grps <- toord$mogrp
+toord<- toord %>% 
+  select(-week, -mogrp)
+
+cols <- rev(RColorBrewer::brewer.pal(4, 'Set2'))
+names(cols) <- levels(grps)
+
+vec_ext <- 1
+coord_fix <- F
+size <- 3
+repel <- F
+arrow <- 0.2
+txt <- 3
+alpha <- 0.8
+ext <- 1.1
+exp <- 0.1
+parse <- F
+ellipse <- F
+
+allpcadat <- metaMDS(toord)
+p <- ggord(allpcadat, axes = c('1', '2'), grp_in = grps, ellipse = ellipse, cols = cols,
+            parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, 
+            repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, 
+            exp = exp) +
+  theme(
+    legend.title = element_blank(), 
+    legend.position = 'top'
+  )
+
+jpeg(here('figs/nutrientfloword.jpeg'), height = 4, width = 3.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 

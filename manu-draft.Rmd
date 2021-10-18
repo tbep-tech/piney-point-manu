@@ -404,6 +404,10 @@ knitr::include_graphics('figs/redtide.jpeg')
 knitr::include_graphics('figs/nutrientflow.jpeg')
 ```
 
+```{r nutrientfloword, fig.cap = 'Ordination results comparing weekly summarized observations across all sampled locations for total nitrogen concentrations, chlorophyll-a concentrations, diatom cell concentrations, *Karenia brevis* cell concentrations, and cyanobacteria macroalgal abundances.  Ordination results are from non-metric multi-dimensional scaling performed on the 97.5th percentile values of observations in each week for each parameter.  Observations are grouped by month periods based on phytoplankton (diatoms or *K. brevis*) or macroalgal dominance.'}
+knitr::include_graphics('figs/nutrientfloword.jpeg')
+```
+
 # Tables
 
 ```{r stktab}
