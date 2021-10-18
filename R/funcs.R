@@ -134,6 +134,178 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
   
 }
 
+# water quality plot fun using GAM predictions
+gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet = FALSE, ttl, ylb){
+  
+  nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
+  mindt <- ymd('2021-03-28')
+  dtrng <- ymd(c('2006-01-01', '2021-10-01'))
+  
+  # monitoring data
+  rswqtmp <- rswqdat %>% 
+    filter(var %in% vr) %>% 
+    filter(!station %in% nonbay) %>% 
+    inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
+    st_intersection(ppseg) %>% 
+    st_set_geometry(NULL) %>% 
+    select(-bswqstation, -nrmrng, -source, -source_lng, -uni, -lbunis) %>% 
+    mutate(
+      date = floor_date(date, unit = 'week'),
+      cens = grepl('U', qual)
+    ) %>% 
+    select(station, date, var, val, area)
+  
+  # baseline data
+  bswqtmp <- bswqdat %>% 
+    select(-source, -uni) %>% 
+    filter(var %in% vr) %>%
+    filter(!(var == 'secchi' & grepl('S', qual))) %>% # remove secchi on bottom
+    filter(date >= dtrng[1]) %>% 
+    filter(!is.na(val)) %>% 
+    inner_join(bsstatloc, ., by = 'station') %>% 
+    st_intersection(ppseg) %>% 
+    st_set_geometry(NULL) %>% 
+    mutate(
+      date = floor_date(date, unit = 'month'),
+      cens = grepl('U', qual)
+      ) %>% 
+    select(station, date, var, val, area)
+  
+  tomod <- bind_rows(bswqtmp, rswqtmp) %>% 
+    mutate(
+      yr = lubridate::year(date), 
+      doy = lubridate::yday(date),
+      cont_year = lubridate::decimal_date(date)
+    ) %>% 
+    arrange(date, var, area) %>% 
+    group_by(area) %>% 
+    nest()
+  
+  if(logtr)
+    mods <- tomod %>% 
+      mutate(
+        mod = purrr::map(data, function(x){
+          gam(log10(val) ~ s(cont_year, k = 20) + s(doy, bs = 'cc'), # + ti(cont_year, doy, bs = c('tp', 'cc')), 
+              data = x[x$date < mindt, ])
+        })
+      )
+  
+  if(!logtr)
+    mods <- tomod %>% 
+      mutate(
+        mod = purrr::map(data, function(x){
+          gam(val ~ s(cont_year, k = 20) + s(doy, bs = 'cc'), # + ti(cont_year, doy, bs = c('tp', 'cc')), 
+              data = x[x$date < mindt, ])
+        })
+      )
+  
+  # prediction data, daily time step, subset by doystr, doyend
+  fillData <- data.frame(date = seq.Date(dtrng[1], dtrng[2], by = 'day')) %>% 
+    dplyr::mutate(
+      yr = lubridate::year(date), 
+      doy = lubridate::yday(date),
+      cont_year = lubridate::decimal_date(date)
+    ) 
+  
+  mods <- mods %>% 
+    mutate(
+      prds = purrr::map(mod, function(x){
+        
+        out <- fillData %>% 
+          mutate(
+            val = predict(x, newdata = .),
+            sev = predict(x, newdata = ., se = T)$se.fit,
+            hiv = val + 1.96 * sev, 
+            lov = val - 1.96 * sev,
+            post = case_when(
+              date >=mindt ~ '2021', 
+              T ~ '2006 - 2020'
+            ), 
+            hiv = case_when(
+              post == '2021' ~ hiv,
+              T ~ NA_real_
+            ),
+            lov = case_when(
+              post == '2021' ~ lov,
+              T ~ NA_real_
+            ),
+            xvals = ymd(paste('2021', month(date), day(date), sep = '-'))
+          )
+        
+        return(out)
+        
+      })
+    )
+  
+  prds <- mods %>% 
+    select(area, prds) %>% 
+    unnest(prds)
+  
+  if(logtr)
+    prds <- prds %>% 
+      mutate(
+        val = 10^val,
+        hiv = 10^hiv,
+        lov = 10^lov
+      )
+  
+  prds1 <- prds %>% 
+    filter(date < mindt)
+  prds2 <- prds %>% 
+    filter(date >= mindt)
+  obs <- mods %>% 
+    select(area, data) %>% 
+    unnest('data') %>% 
+    filter(date >= mindt)
+
+  p1 <- ggplot(prds1, aes(x = xvals, group = yr)) + 
+    geom_line(aes(y = val, linetype = 'Baseline modelled'), size = 0.5, color = 'lightgrey') +
+    geom_line(data = prds2, aes(y = val, color = area, linetype = '2021 predicted'), size = 2) + 
+    geom_ribbon(data = prds2, aes(ymin = lov, ymax = hiv, fill = area), alpha = 0.3, color = NA) +
+    geom_point(data = obs, aes(x = date, y = val, color = area, shape = '2021 samples'), alpha = 0.8, size = 0.5, position = position_jitter()) +
+    scale_x_date(date_breaks = 'month', date_labels = '%b %d', expand = c(0, 0)) +
+    facet_grid(area ~ ., scales = 'free_y') + 
+    scale_color_manual(values = cols, guide = 'none') +
+    scale_fill_manual(values = cols, guide = 'none') +
+    scale_linetype_manual(values = c(1, 1)) + 
+    guides(
+      linetype = guide_legend(override.aes = list(size = c(2, 0.5), color = c('black', 'grey')))
+    ) +
+    labs(
+      color = 'Year', 
+      y = ylb,
+      x = NULL, 
+      linetype = NULL, 
+      title = ttl, 
+      shape = NULL
+    ) +
+    theme_minimal(base_size = 12) + 
+    theme(
+      legend.position = 'top', 
+      strip.background = element_blank(), 
+      axis.title.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(size = 14), 
+      axis.text.x = element_text(size = 7, angle = 45, hjust = 1)
+    )
+  
+  if(logtr)
+    p1 <- p1 + 
+      scale_y_log10()
+
+  if(rmfacet)
+    p1 <- p1 + 
+      theme(
+        strip.text = element_blank()
+      )
+  
+  out <- p1
+  
+  return(p1)
+  
+}
+
+
 # function for plotting rapid response transect data
 # modified from show_transect in tbpetools
 show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){

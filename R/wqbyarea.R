@@ -69,7 +69,7 @@ bswqtmp <- bswqdat %>%
     cens = grepl('U', qual)) %>% 
   group_by(date, var, area) %>% 
   summarise(   
-    avev = ifelse(
+    val = ifelse(
       any(cens), mean(cenfit(val, cens), na.rm = T),
       mean(val, na.rm = T)
     ),
@@ -102,7 +102,7 @@ rswqtmp <- rswqdat %>%
     cens = grepl('U', qual)
   ) %>% 
   left_join(parms, by = 'var') %>% 
-  select(station, date, var, val, area, uni)
+  select(station, date, var, val, area, lbs)
 
 # baseline data
 bswqtmp <- bswqdat %>% 
@@ -117,8 +117,8 @@ bswqtmp <- bswqdat %>%
   mutate(
     date = floor_date(date, unit = 'month'),
     cens = grepl('U', qual)) %>% 
-  left_join(parms, by = 'var') %>% 
-  select(station, date, var, val, area, uni)
+  left_join(parms, by = 'var')%>% 
+  select(station, date, var, val, area, lbs)
 
 wqbyarea <- bind_rows(bswqtmp, rswqtmp) %>% 
   arrange(date, var, area)

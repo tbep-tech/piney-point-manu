@@ -18,6 +18,7 @@ library(patchwork)
 library(tbeptools)
 library(NADA)
 library(RColorBrewer)
+library(mgcv)
 box::use(
   scales = scales[muted], 
   units = units[set_units], 
@@ -387,6 +388,37 @@ p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week
   theme(legend.position = 'top')
 
 jpeg(here('figs/wqtrnds.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+# seasonal trend plots ----------------------------------------------------
+
+# segments
+ppsegbf <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+cols <- c("#E16A86", "#50A315", "#009ADE")
+names(cols) <- c('Area 1', 'Area 2', 'Area 3')
+
+datin <- rswqdat %>% 
+  filter(!(var == 'secchi' & val >= 9.5)) # outlier secchi
+
+p1 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = T, rmfacet = T, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
+p2 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = T, rmfacet = T, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
+p3 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = F, rmfacet = F, ttl = '(c) Secchi', ylb = 'meters')
+
+p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Day of year', gp = gpar(fontsize=14))) + 
+  plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.05)) & 
+  theme(legend.position = 'top')
+
+jpeg(here('figs/wqgamtrnds.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
