@@ -22,8 +22,12 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
   })
 ```
 
-```{r wqtrnds-supp, fig.cap = 'Sampled water quality data by week for April to September 2021 in response to wastewater discharge from Piney Point for (a) total ammonia nitogen (mg/L), (b) orthophosphate (mg/L), (c) total phosphorus (mg/L), (d) dissolved oxygen saturation (%), (e) turbidity (NTU), and (f) salinity (ppt).  Observations are aggregated by week and within assessment areas shown in Figure 1a.  Normal ranges for the month of observation (monthly baseline) and area are shown by the blue shaded areas. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2020 for values collected at long-term monitoring sites within each area (Figure 1a). Values below detection limits are not shown.'}
+```{r wqtrnds-supp, fig.cap = 'Sampled water quality data by week for April to September 2021 in response to wastewater discharge from Piney Point for (a) total ammonia nitogen (mg/L), (b) orthophosphate (mg/L), (c) total phosphorus (mg/L), (d) dissolved oxygen saturation (%), (e) turbidity (NTU), and (f) salinity (ppt).  Observations are aggregated by week and within assessment areas shown in Figure 1a.  Normal ranges for the month of observation (monthly baseline) and area are shown by the blue shaded areas. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2020 for values collected at long-term monitoring sites within each area (Figure 1a).'}
 knitr::include_graphics('figs/wqtrnds-supp.jpeg')
+```
+
+```{r wqgamtrnds-supp, fig.cap = 'Predicted (a) total ammonia nitogen (mg/L), (b) orthophosphate (mg/L), (c) total phosphorus (mg/L), (d) dissolved oxygen saturation (%), (e) turbidity (NTU), and (f) salinity (ppt) by area based on historal seasonal models.  Estimated trends are based on Generalized Additve Models fit to historical basline data from 2006 to early 2021.  Predicted trends from the historical models for dates during and after the Piney Point discharge are shown in thick lines (+/- 95% confidence), with observed samples overlaid on the plots.  Results are grouped by assessment areas shown in Figure 1a.'}
+knitr::include_graphics('figs/wqgamtrnds-supp.jpeg')
 ```
 
 ```{r windroses, fig.cap = 'Wind rose plots for 2021 by month. Data are from St. Petersburg, Florida.  Wind roses show relative counts of six minute observations in directional (30 degree bins, north is vertical) and speed (m/s) categories.'}

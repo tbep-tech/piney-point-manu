@@ -376,7 +376,7 @@ knitr::include_graphics(here('figs/timeline.jpeg'))
 knitr::include_graphics(here('figs/wqmap.jpeg'))
 ```
 
-```{r wqtrnds, fig.cap = 'Sampled water quality data by week for April to July 2021 in response to wastewater discharge from Piney Point for (a) total nitrogen (mg/L), (b) chlorophyll-a (ug/L), and (c) secchi disk depth (meters).  Observations are aggregated by week and within assessment areas shown in Figure \\@ref(fig:map)a.  Normal ranges for the month of observation (monthly baseline) and area are shown by the blue shaded areas. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at long-term monitoring sites within each area (Figure \\@ref(fig:map)a). Values below detection limits (or secchi on bottom) are not shown.'}
+```{r wqtrnds, fig.cap = 'Sampled water quality data by week for April to July 2021 in response to wastewater discharge from Piney Point for (a) total nitrogen (mg/L), (b) chlorophyll-a (ug/L), and (c) secchi disk depth (meters).  Observations are aggregated by week and within assessment areas shown in Figure \\@ref(fig:map)a.  Normal ranges for the month of observation (monthly baseline) and area are shown by the blue shaded areas. Normal ranges are defined as within +/-1 standard deviation of the mean for the month of observation from 2006 to 2021 for values collected at long-term monitoring sites within each area (Figure \\@ref(fig:map)a).'}
 knitr::include_graphics(here('figs/wqtrnds.jpeg'))
 ```
 

@@ -1872,6 +1872,43 @@ jpeg(here('figs/wqtrnds-supp.jpeg'), height = 9, width = 10.5, units = 'in', res
 print(p)
 dev.off()
 
+## seasonal trend plots - additional variables ----------------------------
+
+# segments
+ppsegbf <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+cols <- c("#E16A86", "#50A315", "#009ADE")
+names(cols) <- c('Area 1', 'Area 2', 'Area 3')
+
+datin <- rswqdat %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
+  filter(var %in% c('nh34', 'orthop', 'tp', 'dosat', 'turb', 'sal')) %>% 
+  filter(!qual %in% c('S', 'U')) %>% # remove secchi on bottom, nondetect for chla, tn
+  filter(!(var == 'sal' & source == 'ncf'))# there are some low salinity values in July in MR that skew the plots
+
+p1 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'nh34', cols, logtr = T, rmfacet = T, ttl = '(a) NH3, NH4+', ylb = 'mg/L (log-scale)')
+p2 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'tp', cols, logtr = T, rmfacet = T, ttl = '(b) Total phosphorus', ylb = 'mg/L (log-scale)')
+p3 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'orthop', cols, logtr = T, ttl = '(c) Ortho-phosphate', ylb = 'mg/L (log-scale)')
+p4 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'dosat', cols, logtr = F, rmfacet = T, ttl = '(d) Dissolved oxygen sat.', ylb = '%')
+p5 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'turb', cols, logtr = T, rmfacet = T, ttl = '(e) Turbidity', ylb = 'NTU (log-scale)')
+p6 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'sal', cols, logtr = F, ttl = '(f) Salinity', ylb = 'ppt')
+
+p <- (p1 + p2 + p3 + p4 + p5 + p6 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Day of year', gp = gpar(fontsize=14))) + 
+  plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.025)) & 
+  theme(legend.position = 'top')
+
+jpeg(here('figs/wqgamtrnds-supp.jpeg'), height = 9, width = 10.5, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
 ## phyto and macro frequency occurrence -----------------------------------
 
 brks <- seq.Date(as.Date('2021-03-28'), as.Date('2021-09-26'), by = '1 week')
