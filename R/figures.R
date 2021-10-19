@@ -377,7 +377,8 @@ names(cols) <- levels(ppseg$area)
 datin <- rswqdat %>% 
   filter(date < as.Date('2021-10-01')) %>% 
   filter(var %in% c('tn', 'chla', 'secchi')) %>% 
-  filter(!qual %in% c('S', 'U')) # remove secchi on bottom, nondetect for chla, tn
+  filter(!qual %in% c('S', 'U')) %>% # remove secchi on bottom, nondetect for chla, tn
+  filter(!(var == 'secchi' & val >= 9.5)) # outlier secchi
 
 p1 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
 p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
@@ -570,140 +571,6 @@ print(p)
 dev.off()
 
 save(trnsum, file = here('data/trnsum.RData'))
-
-# all PCA -----------------------------------------------------------------
-
-vrs <- c('chla', 'dosat', 'nh34', 'ph', 'sal', 'secchi', 'temp', 'tn', 'tp')
-mcrsel <- c("Red", "Green", "Brown", "Cyanobacteria")
-savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
-wqsel <- c('chla', 'dosat', 'nh34', 'ph', 'sal', 'secchi', 'temp', 'tn', 'tp')
-wqlab <- c('Chl-a', 'DOsat', 'NH3, NH4+', 'pH', 'Sal', 'Secchi', 'Temp', 'TN', 'TP')
-
-nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
-
-# segments
-areas <- ppseg %>% 
-  rename(area = Name) %>% 
-  group_by(area) %>% 
-  summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
-  mutate(
-    area = factor(area)
-  )
-
-# combine water quality with transect data at aggregated scale
-
-# add area
-trnsum <- rstrndat %>% 
-  filter(date < as.Date('2021-10-01')) %>% 
-  mutate(
-    date = floor_date(date, unit = 'week')
-  ) %>% 
-  inner_join(rstrnpts, ., by = 'station') %>% 
-  st_intersection(areas) %>% 
-  st_set_geometry(NULL) %>% 
-  dplyr::group_by(area, date, station, location, taxa) %>%
-  dplyr::summarise(
-    pa = as.numeric(any(bb > 0))
-  ) %>%
-  group_by(area, date, taxa) %>% 
-  summarize(
-    val = sum(pa) / length(pa) # freq occ.
-  ) %>% 
-  ungroup %>% 
-  filter(taxa %in% c(savsel, mcrsel)) %>% 
-  rename(var = taxa) %>%
-  spread(var, val) %>% 
-  rename(
-    Cyano = Cyanobacteria, 
-    `H. wrightii` = `Halodule wrightii`, 
-    `T. testudinum` = `Thalassia testudinum`, 
-    `S. filiforme` = `Syringodium filiforme`
-  )
-
-# water quality summary
-rswqsum <- rswqdat %>% 
-  filter(var %in% vrs) %>% 
-  filter(source == 'fldep') %>%
-  filter(date < as.Date('2021-10-01')) %>% 
-  filter(!station %in% nonbay) %>% 
-  inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
-  st_intersection(areas) %>% 
-  st_set_geometry(NULL) %>% 
-  filter(!grepl('S', qual)) %>% # remove secchi on bottom
-  mutate(cens = grepl('U', qual)) %>% 
-  select(date, var, val, cens, station, area) %>% 
-  mutate(
-    var = case_when(
-      var == 'chla' ~ 'Chl-a', 
-      var == 'dosat' ~ 'DOsat', 
-      var == 'nh34' ~ 'NH3, NH4+', 
-      var == 'ph' ~ 'pH', 
-      var == 'secchi' ~ 'Secchi', 
-      var == 'temp' ~ 'Temp', 
-      var == 'tn' ~ 'TN', 
-      var == 'no23' ~ 'NOx',
-      var == 'tp' ~ 'TP', 
-      var == 'sal' ~ 'Sal'
-    ),
-    date = floor_date(date, unit = 'week')
-  ) %>% 
-  group_by(date, var, area) %>% 
-  summarise(
-    val = ifelse(
-      any(cens), median(cenfit(val, cens), na.rm = T), 
-      median(val, na.rm = T)
-      ), 
-    .groups = 'drop'
-  ) %>% 
-  complete(date, area, var) %>% 
-  group_by(area, var) %>% 
-  ungroup() %>% 
-  mutate(
-    val = case_when(
-      var %in% c('Chl-a', 'NH3, NH4+', 'NOx', 'TN', 'TP') ~ log10(1 + val),
-      T ~ val
-    )
-  ) %>% 
-  spread(var, val)
-
-toord <- full_join(trnsum, rswqsum, by = c('area', 'date')) %>% 
-  select(-date, -area) %>% 
-  na.omit() %>% 
-  decostand(method = 'standardize')
-
-grps <- full_join(trnsum, rswqsum, by = c('area', 'date')) %>% 
-  na.omit() %>% 
-  pull(area) %>% 
-  fct_drop()
-
-cols <- c("#E16A86", "#009ADE")
-names(cols) <- levels(grps)
-
-vec_ext <- 5
-coord_fix <- F
-size <- 2
-repel <- T
-arrow <- 0.2
-txt <- 2.5
-alpha <- 0.5
-ext <- 1.1
-exp <- 0.1
-parse <- F
-ellipse <- F
-
-allpcadat <- PCA(toord, scale.unit = F, graph = F) 
-p1 <- ggord(allpcadat, axes = c('1', '2'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
-p2 <- ggord(allpcadat, axes = c('2', '3'), grp_in = grps, ellipse = ellipse, cols = cols, parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, repel = repel, arrow = arrow, txt = txt, alpha = alpha, ext = ext, exp = exp)
-
-p <- p1 + p2 + plot_layout(ncol = 2, guides = 'collect') & theme(legend.position = 'top', legend.title = element_blank())
-
-jpeg(here('figs/allpca.jpeg'), height = 4, width = 7, units = 'in', res = 500, family = 'serif')
-print(p)
-dev.off()
-
-save(allpcadat, file = here('data/allpcadat.RData'))
 
 # all correlations --------------------------------------------------------
 
