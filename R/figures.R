@@ -358,40 +358,6 @@ jpeg(here('figs/wqmap.jpeg'), height = 7, width = 12, units = 'in', res = 500, f
 print(p)
 dev.off()
 
-# weekly plots ------------------------------------------------------------
-
-# segments
-ppsegbf <- ppseg %>% 
-  rename(area = Name) %>% 
-  group_by(area) %>% 
-  summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
-  mutate(
-    area = factor(area)
-  )
-
-cols <- c("#E16A86", "#50A315", "#009ADE")
-names(cols) <- levels(ppseg$area)
-
-datin <- rswqdat %>% 
-  filter(date < as.Date('2021-10-01')) %>% 
-  filter(var %in% c('tn', 'chla', 'secchi')) %>% 
-  filter(!qual %in% c('S', 'U')) %>% # remove secchi on bottom, nondetect for chla, tn
-  filter(!(var == 'secchi' & val >= 9.5)) # outlier secchi
-
-p1 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
-p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
-p3 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = FALSE, ttl = '(c) Secchi', ylb = 'meters')
-
-p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week of', gp = gpar(fontsize=14))) + 
-  plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.05)) & 
-  theme(legend.position = 'top')
-
-jpeg(here('figs/wqtrnds.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
-print(p)
-dev.off()
-
 # seasonal trend plots ----------------------------------------------------
 
 # segments
