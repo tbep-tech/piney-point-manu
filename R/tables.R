@@ -208,6 +208,32 @@ ppsegbf <- ppseg %>%
     area = factor(area)
   )
 
+# monthly baseline averages by station
+bswqtmp <- bswqdat %>% 
+  select(-source, -uni) %>% 
+  filter(var %in% vrs) %>%
+  filter(!(var == 'secchi' & grepl('S', qual))) %>% # remove secchi on bottom
+  filter(yr > 2005) %>% 
+  filter(!is.na(val)) %>% 
+  inner_join(bsstatloc, ., by = 'station') %>% 
+  st_intersection(ppsegbf) %>% 
+  st_set_geometry(NULL) %>% 
+  mutate(
+    cens = grepl('U', qual), 
+    mo = month(date, label = T)
+  ) %>% 
+  group_by(mo, var, area) %>% 
+  summarise(   
+    avev = ifelse(
+      any(cens), mean(cenfit(val, cens), na.rm = T),
+      mean(val, na.rm = T)
+    ),
+    .groups = 'drop'
+  ) %>% 
+  filter(mo %in% c('Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep')) %>% 
+  mutate(mo = fct_drop(mo))
+
+# prep response data for mult comp
 rswqsub <- rswqdat %>% 
   filter(var %in% vrs) %>% 
   filter(date < as.Date('2021-10-01')) %>% 
@@ -217,10 +243,15 @@ rswqsub <- rswqdat %>%
   inner_join(rsstatloc, ., by = c('station', 'source')) %>% 
   st_intersection(ppsegbf) %>% 
   st_set_geometry(NULL) %>% 
-  left_join(parms, by = c('var', 'lbs')) %>% 
-  select(date, var, lbs, val, sigdig, station, area, qual) %>% 
+  left_join(parms, by = c('var', 'lbs', 'uni')) %>% 
+  select(date, var, lbs, val, sigdig, station, area, qual, nrmrng) %>% 
+  separate(nrmrng, into = c('minv', 'maxv'), sep = '-') %>% 
   mutate(
-    mo = month(date, label = T)
+    mo = month(date, label = T), 
+    minv = as.numeric(minv), 
+    maxv = as.numeric(maxv),
+    avev = minv + (maxv - minv) / 2, 
+    valcr = val - avev
   ) %>% 
   filter(mo %in% c('Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep')) %>% 
   mutate(mo = fct_drop(mo))
@@ -231,14 +262,14 @@ cmps <- rswqsub %>%
   nest %>% 
   mutate(
     ests = map(data, function(x){
-      
+
       # pairwise comparisons with mann-whitney (wilcox)
       grps <- unique(x$mo)
       grps <- combn(grps, 2)
       pval <- rep(NA, ncol(grps))
       for(col in 1:ncol(grps)){
         grp <- x$mo %in% grps[, col, drop = TRUE]
-        res <- wilcox.test(val ~ mo, data = x[grp, ], exact = FALSE, 
+        res <- wilcox.test(valcr ~ mo, data = x[grp, ], exact = FALSE, 
                            alternative = 'two.sided')
         pval[col] <- res$p.value
       }
@@ -255,24 +286,30 @@ cmps <- rswqsub %>%
       lets <- multcompLetters(vecs)$Letters
       
       # kruskal test
-      tst <- kruskal.test(val ~ mo, x)
+      tst <- kruskal.test(valcr ~ mo, x)
       
       # standard summary stats
       sums <- group_by(x, mo) %>%
         summarise(
           length = length(na.omit(val)),
+          medvalcr = round(median(valcr, na.rm = TRUE), unique(sigdig)),
+          # minvalcr = round(min(valcr, na.rm = TRUE), unique(sigdig)),
+          # maxvalcr = round(max(valcr, na.rm = TRUE), unique(sigdig)), 
           medval = round(median(val, na.rm = TRUE), unique(sigdig)),
-          minval = round(min(val, na.rm = TRUE), unique(sigdig)),
-          maxval = round(max(val, na.rm = TRUE), unique(sigdig)), 
+          # minval = round(min(val, na.rm = TRUE), unique(sigdig)),
+          # maxval = round(max(val, na.rm = TRUE), unique(sigdig)), 
           .groups = 'drop'
         ) %>% 
         mutate(
-          minval = paste0(' (', minval, ', '),
-          maxval = paste0(maxval, ')'), 
+          # minvalcr = paste0(' (', minvalcr, ', '),
+          # maxvalcr = paste0(maxvalcr, ')'), 
+          # minval = paste0(' (', minval, ', '),
+          # maxval = paste0(maxval, ')'), 
           krusk_pval = p_ast(tst$p.value),
           krusk_chis = round(tst$statistic, 2)
         ) %>% 
-        unite('sumv', medval, minval, maxval, sep = '') %>% 
+        # unite('sumvcr', medvalcr minvalcr, maxvalcr, sep = '') %>% 
+        # unite('sumv', medval, minval, maxval, sep = '') %>% 
         unite('krusk', krusk_chis, krusk_pval, sep = '')
       
       data.frame(lets, sums, stringsAsFactors = FALSE)
@@ -300,7 +337,10 @@ cmps <- rswqsub %>%
     `Comp.` = lets, 
     Month = mo, 
     `N obs.` = length, 
-    `Med. (Min., Max.)` = sumv
+    `Observed median` = medval, 
+    `Seasonally-corrected median` = medvalcr
+    # `Med. (Min., Maxv.)*` = sumvcr,
+    # `Med. (Min., Max.)` = sumv
   )
 
 wqcmptab <- cmps
