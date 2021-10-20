@@ -346,11 +346,11 @@ cmps <- rswqsub %>%
 wqcmptab <- cmps
 save(wqcmptab, file = here('tables/wqcmptab.RData'))
 
-# sav and mcr trends by month ---------------------------------------------
+# fo sav and mcr trends by month ------------------------------------------
 
 mcrsel <- c("Red", "Green", "Cyanobacteria")
 savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
-
+  
 # segments
 areas <- ppseg %>% 
   rename(area = Name) %>% 
@@ -505,8 +505,173 @@ mcrests <- ests %>%
     `Med. (Min., Max.)` = sumv
   )
 
-mcrtab <- mcrests
-savtab <- savests
+mcrfotab <- mcrests
+savfotab <- savests
 
-save(mcrtab, file = here('tables/mcrtab.RData'))
-save(savtab, file = here('tables/savtab.RData'))
+save(mcrfotab, file = here('tables/mcrfotab.RData'))
+save(savfotab, file = here('tables/savfotab.RData'))
+
+# abundance sav and mcr trends by month -----------------------------------
+
+mcrsel <- c("Red", "Green", "Cyanobacteria")
+savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
+
+# segments
+areas <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+# # view sample effort by transect, area, month
+# smpeff <- rstrndat %>%
+#   mutate(
+#     mo = month(date)
+#   ) %>%
+#   group_by(station, mo) %>%
+#   summarise(
+#     obs = (any(bb > 0)),
+#     .groups = 'drop'
+#   ) %>% 
+#   group_by(station) %>% 
+#   summarise(
+#     cnt = n(), 
+#     .groups = 'drop'
+#   ) %>% 
+#   filter(cnt >= 4) %>% 
+#   pull(station)
+
+# add area
+trnsf <- rstrndat %>%
+  filter(date < as.Date('2021-10-01')) %>% 
+  inner_join(rstrnpts, ., by = 'station') %>% 
+  filter(taxa %in% c(mcrsel, savsel)) %>% 
+  # filter(station %in% smpeff) %>% 
+  st_intersection(areas) %>% 
+  st_set_geometry(NULL) %>% 
+  select(station, date, location, typ, taxa, bb, area)
+
+trnsum <- trnsf %>% 
+  mutate(
+    mo = month(date, label = T),
+  ) %>%
+  dplyr::group_by(area, typ, mo, date, station, taxa) %>%
+  dplyr::summarise(
+    bb = mean(bb, na.rm = TRUE), 
+    .groups = 'drop'
+  ) %>% 
+  group_by(area, taxa) %>% 
+  nest %>% 
+  mutate(
+    ests = map(data, function(x){
+      
+      # pairwise comparisons with mann-whitney (wilcox)
+      grps <- unique(x$mo)
+      grps <- combn(grps, 2)
+      pval <- rep(NA, ncol(grps))
+      for(col in 1:ncol(grps)){
+        grp <- x$mo %in% grps[, col, drop = TRUE]
+        res <- wilcox.test(bb ~ mo, data = x[grp, ], exact = FALSE, 
+                           alternative = 'two.sided')
+        pval[col] <- res$p.value
+      }
+      
+      # adjust p-values using holm sequential bonferroni
+      pval <- p.adjust(pval, method = 'holm')
+      
+      # pval as t/f using bonferroni correction
+      vecs <- rep(FALSE, ncol(grps))
+      vecs[pval < 0.05] <- TRUE
+      names(vecs) <- paste(grps[1, ], grps[2, ], sep = '-')
+      
+      # group membership based on multiple comparisons
+      lets <- multcompLetters(vecs)$Letters
+      
+      # kruskal test
+      tst <- kruskal.test(bb ~ mo, x)
+      
+      # standard summary stats
+      sums <- group_by(x, mo) %>%
+        summarise(
+          length = length(na.omit(bb)),
+          medval = round(median(bb, na.rm = TRUE), 3),
+          minval = round(min(bb, na.rm = TRUE), 3),
+          maxval = round(max(bb, na.rm = TRUE), 3), 
+          .groups = 'drop'
+        ) %>% 
+        mutate(
+          minval = paste0(' (', minval, ', '),
+          maxval = paste0(maxval, ')'), 
+          pval = tst$p.value,
+          krusk_pval = p_ast(tst$p.value),
+          krusk_chis = round(tst$statistic, 2)
+        ) %>% 
+        unite('sumv', medval, minval, maxval, sep = '') %>% 
+        unite('krusk', krusk_chis, krusk_pval, sep = '')
+      
+      data.frame(lets, sums, stringsAsFactors = FALSE)
+      
+    })
+  )
+
+ests <- trnsum %>%
+  select(-data) %>% 
+  unnest('ests') %>% 
+  ungroup()  
+
+savests <- ests %>% 
+  filter(taxa %in% savsel) %>% 
+  mutate(taxa = factor(taxa, levels = savsel)) %>% 
+  arrange(area, taxa, mo) %>% 
+  group_by(area) %>%  
+  mutate(
+    area = ifelse(duplicated(area), '', area), 
+    taxa = ifelse(duplicated(taxa), '', as.character(taxa)), 
+    krusk = ifelse(duplicated(krusk), '', krusk),
+    pval = ifelse(duplicated(pval), '', pval)
+  ) %>% 
+  ungroup() %>% 
+  select(
+    Area = area, 
+    `Seagrass species` = taxa, 
+    `Chi-Sq.` = krusk,
+    pval,
+    `Comp.` = lets, 
+    Month = mo, 
+    `N obs.` = length, 
+    `Med. (Min., Max.)` = sumv
+  )
+
+mcrests <- ests %>% 
+  filter(taxa %in% mcrsel) %>% 
+  mutate(taxa = factor(taxa, levels = mcrsel)) %>% 
+  arrange(area, taxa, mo) %>% 
+  group_by(area) %>%  
+  mutate(
+    area = ifelse(duplicated(area), '', area), 
+    taxa = ifelse(duplicated(taxa), '', as.character(taxa)), 
+    krusk = ifelse(duplicated(krusk), '', krusk),
+    pval = ifelse(duplicated(pval), '', pval)
+  ) %>% 
+  ungroup() %>% 
+  select(
+    Area = area, 
+    `Macroalgae group` = taxa, 
+    `Chi-Sq.` = krusk,
+    pval,
+    `Comp.` = lets, 
+    Month = mo, 
+    `N obs.` = length, 
+    `Med. (Min., Max.)` = sumv
+  )
+
+mcrabutab <- mcrests
+savabutab <- savests
+
+save(mcrabutab, file = here('tables/mcrabutab.RData'))
+save(savabutab, file = here('tables/savabutab.RData'))
+
