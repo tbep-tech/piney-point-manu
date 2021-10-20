@@ -418,7 +418,7 @@ savsel <- savdat %>%
   unique %>% 
   as.character()
 
-p <- show_rstransect(savdat, mcrdat, savsel, mcrsel)
+p <- show_rstransect(savdat, mcrdat, savsel, mcrsel, rev = T, sclloc = T)
 
 jpeg(here('figs/trnex.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
 print(p)

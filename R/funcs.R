@@ -308,7 +308,7 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
 
 # function for plotting rapid response transect data
 # modified from show_transect in tbpetools
-show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
+show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12, rev = F, sclloc = T){
   
   savlevs <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme', 'Ruppia maritima', 'Halophila engelmannii', 'Halophila decipiens')
   grplevs <- c('Red', 'Green', 'Brown', 'Cyanobacteria')
@@ -332,6 +332,14 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
   
   xlms <- range(savxlms, mcrxlms)
   
+  # x axis text labels, scaling location to zero if sclloc
+  savxlbs <- savxlms
+  mcrxlbs <- mcrxlms
+  if(sclloc){
+    savxlbs <- savxlbs - min(savxlbs)
+    mcrxlbs <- mcrxlbs - min(mcrxlbs)
+  }
+  
   # get dates for factor levels
   # this makes sure that y values on plots are shared
   dts1 <- savdat %>% 
@@ -342,6 +350,9 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
     unique %>%
     sort %>% 
     format('%b %d')
+  
+  if(rev)
+    dts <- rev(dts)
   
   # prep sav plot data
   savdatfrm <- savdat %>%
@@ -401,10 +412,10 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
     ggplot2::geom_point(data = toplo2a, alpha = 1, colour = 'black', size = 2) +
     ggplot2::geom_point(aes(size = bb, fill = taxa), alpha = 0.8, pch = 21) +
     ggplot2::scale_fill_manual(values = savcol) +
-    ggplot2::scale_radius(limits = range(abubrks), labels = abulabs, breaks = abubrks, range = szrng) +
+    ggplot2::scale_radius(limits = range(abubrks), labels = abulabs, breaks = abubrks, range = szrng, guide = 'none') +
     ggplot2::theme_minimal(base_size = base_size) +
     ggplot2::scale_y_discrete(limits = dts, breaks = dts) + 
-    ggplot2::scale_x_continuous(breaks = savxlms) +
+    ggplot2::scale_x_continuous(breaks = savxlms, labels = savxlbs) +
     ggplot2::coord_cartesian(xlim = xlms) +
     ggplot2::theme(
       panel.grid.major.y = ggplot2::element_blank(),
@@ -418,7 +429,7 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
     ggplot2::labs(
       
       x = 'Transect distance (m)',
-      title = '(a) Seagrasses'
+      title = '(b) Seagrasses'
     ) + 
     guides(fill = guide_legend(override.aes = list(size = 7), order = 1))
   
@@ -481,10 +492,10 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
     ggplot2::geom_point(aes(size = bb, fill = taxa), alpha = 0.8, pch = 21) +
     ggplot2::scale_fill_manual(values = mcrcol) +
     ggplot2::scale_colour_manual(values = 'black') +
-    ggplot2::scale_radius(limits = range(abubrks), labels = abulabs, breaks = abubrks, range = szrng, guide = F) +
+    ggplot2::scale_radius(limits = range(abubrks), labels = abulabs, breaks = abubrks, range = szrng) +
     ggplot2::theme_minimal(base_size = base_size) +
     ggplot2::scale_y_discrete(limits = dts, breaks = dts) + 
-    ggplot2::scale_x_continuous(breaks = mcrxlms) +
+    ggplot2::scale_x_continuous(breaks = mcrxlms, labels = mcrxlbs) +
     ggplot2::coord_cartesian(xlim = xlms) +
     ggplot2::theme(
       panel.grid.major.y = ggplot2::element_blank(),
@@ -496,7 +507,7 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
     ) +
     ggplot2::labs(
       x = 'Transect distance (m)', 
-      title = '(b) Macroalgae groups'
+      title = '(a) Macroalgae groups'
     ) +
     guides(
       fill = guide_legend(override.aes = list(size = 7), order = 1), 
@@ -504,7 +515,7 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12){
     )
   
   # out
-  p <- pa + pb + plot_layout(ncol = 1, heights = c(0.9, 1), guides = 'collect')
+  p <- pb + pa + plot_layout(ncol = 1, heights = c(0.9, 1), guides = 'collect')
   
   return(p)
   

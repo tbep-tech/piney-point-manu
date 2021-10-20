@@ -376,7 +376,7 @@ knitr::include_graphics(here('figs/wqmap.jpeg'))
 knitr::include_graphics(here('figs/wqgamtrnds.jpeg'))
 ```
 
-```{r trnex, fig.cap = 'Results for (a) seagrass and (b) macroalgae rapid response transect surveys at a site (S3T6, -82.55866 W longitude, 27.64483 N latitude) near Piney Point.  Sample dates in 2021 are shown in rows with transect meter results shown in columns. Results show dominance of manatee grass (*Syringodium filiforme*) and red macroalgae groups, with abundances of *Dapis sp.* (cyanobacteria) peaking in June and green macroalgae (*Ulva spp.*) increasing in July.  Abundances are Braun-Blanquet coverage estimates.'}
+```{r trnex, fig.cap = 'Results for (a) macroalgae and (b) seagrass rapid response transect surveys at a site (S3T6, -82.55866 W longitude, 27.64483 N latitude) near Piney Point.  Sample dates in 2021 are shown in rows with transect meter results shown in columns. Results show dominance of manatee grass (*Syringodium filiforme*) and red macroalgae groups, with abundances of *Dapis sp.* (cyanobacteria) peaking in June and green macroalgae (*Ulva spp.*) increasing in July.  Abundances are Braun-Blanquet coverage estimates.'}
 knitr::include_graphics(here('figs/trnex.jpeg'))
 ```
 
