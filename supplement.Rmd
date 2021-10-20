@@ -27,6 +27,8 @@ box::use(
   dplyr[...]
 )
 
+load(file = here('tables/mcrfotab.RData'))
+load(file = here('tables/savfotab.RData'))
 load(file = here('tables/mcrabutab.RData'))
 load(file = here('tables/savabutab.RData'))
 ```
@@ -54,6 +56,20 @@ knitr::include_graphics('figs/phymcrfoest.jpeg')
 ```
 
 # Tables
+
+```{r mcrfotab}
+cap.val <- 'Comparison of macroalgae frequency occurrence by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of frequency occurrence between months for macroalgae groups and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp. column) were used to evaluate pairwise monthly frequency occurrences for each macroalgae group in each area.  Rows that share a letter within each area and macroalgae group combination have frequency occurrences that are not significantly different between month pairs. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not significant at $\\alpha$ = 0.05.'
+totab <- mcrfotab %>% 
+  select(-pval)
+knitr::kable(totab, booktabs = T, caption = cap.val)
+```
+
+```{r savfotab}
+cap.val <- 'Comparison of seagrass species frequency occurrence by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of frequency occurrence between months for seagrass species and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp. column) were used to evaluate pairwise monthly frequency occurrences for each seagrass species in each area.  Rows that share a letter within each area and seagrass species combination have frequency occurrences that are not significantly different between month pairs. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not significant at $\\alpha$ = 0.05.'
+totab <- savfotab %>% 
+  select(-pval)
+knitr::kable(totab, booktabs = T, caption = cap.val)
+```
 
 ```{r mcrabutab}
 cap.val <- 'Comparison of macroalgae Braun-Blanquet abundances by areas of interest (Figure \\@ref(fig:map)a) and month.  Overall signifance of differences of abundances between months for macroalgae groups and area combination are shown with Chi-squared statistics based on Kruskall-Wallis rank sum tests.  Multiple comparisons with Mann-Whitney U tests (Comp. column) were used to evaluate pairwise monthly abundances for each macroalgae group in each area.  Rows that share a letter within each area and macroalgae group combination have abundances that are not significantly different between month pairs. Probability values were adjusted for the pairwise comparisons using the Bonferroni method in @Holm79. ** p < 0.005, * p < 0.05, blank is not significant at $\\alpha$ = 0.05.'
