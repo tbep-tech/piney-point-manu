@@ -346,7 +346,9 @@ cmps <- rswqsub %>%
 wqcmptab <- cmps
 save(wqcmptab, file = here('tables/wqcmptab.RData'))
 
-# fo sav and mcr trends by month ------------------------------------------
+# Supplement tables -------------------------------------------------------
+
+## fo sav and mcr trends by month -----------------------------------------
 
 mcrsel <- c("Red", "Green", "Cyanobacteria")
 savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
@@ -505,13 +507,13 @@ mcrests <- ests %>%
     `Med. (Min., Max.)` = sumv
   )
 
-mcrfotab <- mcrests
-savfotab <- savests
+mcrfotabsupp <- mcrests
+savfotabsupp <- savests
 
-save(mcrfotab, file = here('tables/mcrfotab.RData'))
-save(savfotab, file = here('tables/savfotab.RData'))
+save(mcrfotabsupp, file = here('tables/mcrfotabsupp.RData'))
+save(savfotabsupp, file = here('tables/savfotabsupp.RData'))
 
-# abundance sav and mcr trends by month -----------------------------------
+## abundance sav and mcr trends by month ----------------------------------
 
 mcrsel <- c("Red", "Green", "Cyanobacteria")
 savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
@@ -669,9 +671,9 @@ mcrests <- ests %>%
     `Med. (Min., Max.)` = sumv
   )
 
-mcrabutab <- mcrests
-savabutab <- savests
+mcrabutabsupp <- mcrests
+savabutabsupp <- savests
 
-save(mcrabutab, file = here('tables/mcrabutab.RData'))
-save(savabutab, file = here('tables/savabutab.RData'))
+save(mcrabutabsupp, file = here('tables/mcrabutabsupp.RData'))
+save(savabutabsupp, file = here('tables/savabutabsupp.RData'))
 

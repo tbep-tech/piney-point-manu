@@ -385,7 +385,7 @@ p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Day 
   plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.05)) & 
   theme(legend.position = 'top')
 
-jpeg(here('figs/wqgamtrnds.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/wqgam.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -548,142 +548,6 @@ print(p)
 dev.off()
 
 save(trnsum, file = here('data/trnsum.RData'))
-
-# transect abundance ------------------------------------------------------
-
-mcrsel <- c("Red", "Green", "Brown", "Cyanobacteria")
-savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
-
-colpal <- colorRampPalette(RColorBrewer::brewer.pal(n = 8, name = 'Dark2'))
-savlevs <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme', 'Ruppia maritima', 'Halophila engelmannii', 'Halophila decipiens')
-savcol <- colpal(length(savlevs))
-names(savcol) <- savlevs
-savcol <- savcol[savsel]
-mcrcol <- c('tomato1', 'lightgreen', 'burlywood3', 'lightblue')
-names(mcrcol) <- mcrsel
-mcrcol <- mcrcol[mcrsel]
-cols <- c(mcrcol, savcol)
-cols <- c(cols, Total = 'white')
-
-# segments
-areas <- ppseg %>% 
-  rename(area = Name) %>% 
-  group_by(area) %>% 
-  summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
-  mutate(
-    area = factor(area)
-  )
-
-# # view sample effort by transect, area, month
-# smpeff <- rstrndat %>%
-#   inner_join(rstrnpts, ., by = 'station') %>%
-#   select(-source, -type, -lng, -lat) %>%
-#   st_intersection(areas) %>%
-#   st_set_geometry(NULL) %>%
-#   mutate(
-#     mo = month(date)
-#   ) %>%
-#   group_by(station, area, mo) %>%
-#   summarise(
-#     obs = (any(bb > 0)),
-#     .groups = 'drop'
-#   ) %>%
-#   spread(mo, obs) %>% 
-#   arrange(area, station)
-# View(smpeff)
-
-# tokp <- smpeff %>%
-#   gather('var', 'val', -station, -area) %>%
-#   na.omit() %>%
-#   group_by(station, area) %>%
-#   summarise(cnt = sum(val), .groups= 'drop') %>%
-#   filter(cnt >= 4) %>%
-#   pull(station)
-
-# add area
-trnsum <- rstrndat %>%
-  # filter(station %in% tokp) %>%
-  inner_join(rstrnpts, ., by = 'station') %>% 
-  st_intersection(areas) %>% 
-  st_set_geometry(NULL) %>%
-  dplyr::group_by(area, typ, date, station, taxa, location) %>%
-  dplyr::summarise(
-    bb = mean(bb, na.rm = T)
-  ) %>% 
-  dplyr::group_by(area, typ, date, station, taxa) %>%
-  dplyr::summarise(
-    bb = mean(bb, na.rm = T)
-  ) %>% 
-  mutate(
-    date = floor_date(date, unit = 'month'), 
-    typ = factor(typ, levels = c('mcr', 'sav'), labels = c('Macroalgae', 'Seagrass'))
-  ) %>% 
-  group_by(area, typ, date, taxa) %>% 
-  dplyr::summarise(
-    bbave = mean(bb, na.rm = T),
-    bbhiv = t.test(bb)$conf.int[2], 
-    bblov = t.test(bb)$conf.int[1]
-  ) %>% 
-  filter(taxa %in% c(mcrsel, savsel))
-
-trnsumtots <- rstrndat %>%
-  # filter(station %in% tokp) %>% 
-  inner_join(rstrnpts, ., by = 'station') %>% 
-  st_intersection(areas) %>% 
-  st_set_geometry(NULL) %>%
-  dplyr::group_by(area, typ, date, station, taxa, location) %>%
-  dplyr::summarise(
-    bb = mean(bb, na.rm = T)
-  ) %>% 
-  dplyr::group_by(area, typ, date, station, taxa) %>%
-  dplyr::summarise(
-    bb = mean(bb, na.rm = T)
-  ) %>%  
-  mutate(
-    date = floor_date(date, unit = 'month'), 
-    typ = factor(typ, levels = c('mcr', 'sav'), labels = c('Macroalgae', 'Seagrass'))
-  ) %>% 
-  group_by(area, typ, date) %>% 
-  dplyr::summarise(
-    bbave = mean(bb, na.rm = T),
-    bbhiv = t.test(bb)$conf.int[2], 
-    bblov = t.test(bb)$conf.int[1]
-  ) %>% 
-  mutate(taxa = 'Total')
-
-toplo <- bind_rows(trnsum)#, trnsumtots)
-
-dodge <- position_dodge(width=7) 
-
-p <- ggplot(toplo, aes(x = date, y = bbave)) + 
-  geom_line(aes(group = taxa), position = dodge) +
-  geom_errorbar(aes(ymin = bblov, ymax = bbhiv, group = taxa), width = 0, position = dodge) +
-  geom_point(aes(fill = taxa, group = taxa), pch = 21, stat = 'identity', color = 'black', size = 3, position = dodge, stroke = 1) +
-  facet_grid(typ ~ area, scales = 'free_y') +
-  theme_minimal(base_size = 14) + 
-  coord_cartesian(ylim = c(0, NA)) +
-  scale_fill_manual(values = cols) +
-  labs(
-    y = 'Freq. occurrence'
-  ) +
-  theme(
-    legend.position = 'top', 
-    legend.title = element_blank(),
-    strip.background = element_blank(), 
-    strip.text = element_text(size = 14), 
-    axis.title.x = element_blank(), 
-    axis.ticks.x = element_line(), 
-    panel.grid.minor = element_blank(),
-    # panel.spacing=unit(2, "lines"), 
-    panel.background = element_rect(fill = 'grey95', color = 'white'), 
-    panel.grid.major = element_line(color = 'grey90')
-  )
-
-jpeg(here('figs/trnabu.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
-print(p)
-dev.off()
 
 # red tide, fish kills, wind, flow, precip --------------------------------
 
@@ -1573,30 +1437,37 @@ dev.off()
 
 # Supplement figures ------------------------------------------------------
 
-## wind roses -------------------------------------------------------------
+## weekly plots -----------------------------------------------------------
 
-toplo <- na.omit(winddat) %>% 
+# segments
+ppsegbf <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
   mutate(
-    mo = month(datetime, label = T)
-  ) %>% 
-  filter(mo != 'Oct')
-
-spdmin <- 0
-spdmax <- 14
-spdres = 3
-thm <- theme_minimal()
-
-p <- plot.windrose(data = toplo, spd = 'wind_ms', dir = 'wind_dir', spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
-  facet_wrap(~mo, ncol = 3) + 
-  theme_minimal() + 
-  theme(
-    axis.text = element_blank(), 
-    axis.title = element_blank(), 
-    axis.ticks.y = element_blank(), 
-    legend.position = 'right'
+    area = factor(area)
   )
 
-jpeg(here('figs/windroses.jpeg'), height = 6, width = 7, units = 'in', res = 500, family = 'serif')
+cols <- c("#E16A86", "#50A315", "#009ADE")
+names(cols) <- levels(ppseg$area)
+
+datin <- rswqdat %>% 
+  filter(date < as.Date('2021-10-01')) %>% 
+  filter(var %in% c('tn', 'chla', 'secchi')) %>% 
+  filter(!qual %in% c('S', 'U')) %>% # remove secchi on bottom, nondetect for chla, tn
+  filter(!(var == 'secchi' & val >= 9.5)) # outlier secchi
+
+p1 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
+p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
+p3 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = FALSE, ttl = '(c) Secchi', ylb = 'meters')
+
+p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week of', gp = gpar(fontsize=14))) + 
+  plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.05)) & 
+  theme(legend.position = 'top')
+
+jpeg(here('figs/wqtrnds-supp.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -1634,7 +1505,7 @@ p <- (p1 + p2 + p3 + p4 + p5 + p6 + plot_layout(ncol = 3)) / wrap_elements(grid:
   plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.025)) & 
   theme(legend.position = 'top')
 
-jpeg(here('figs/wqtrnds-supp.jpeg'), height = 9, width = 10.5, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/wqtrndsadd-supp.jpeg'), height = 9, width = 10.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -1671,7 +1542,170 @@ p <- (p1 + p2 + p3 + p4 + p5 + p6 + plot_layout(ncol = 3)) / wrap_elements(grid:
   plot_layout(ncol = 1, guides = 'collect', height = c(1, 0.025)) & 
   theme(legend.position = 'top')
 
-jpeg(here('figs/wqgamtrnds-supp.jpeg'), height = 9, width = 10.5, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/wqgamadd-supp.jpeg'), height = 9, width = 10.5, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+## transect abundance -----------------------------------------------------
+
+mcrsel <- c("Red", "Green", "Brown", "Cyanobacteria")
+savsel <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme')
+
+colpal <- colorRampPalette(RColorBrewer::brewer.pal(n = 8, name = 'Dark2'))
+savlevs <- c('Thalassia testudinum', 'Halodule wrightii', 'Syringodium filiforme', 'Ruppia maritima', 'Halophila engelmannii', 'Halophila decipiens')
+savcol <- colpal(length(savlevs))
+names(savcol) <- savlevs
+savcol <- savcol[savsel]
+mcrcol <- c('tomato1', 'lightgreen', 'burlywood3', 'lightblue')
+names(mcrcol) <- mcrsel
+mcrcol <- mcrcol[mcrsel]
+cols <- c(mcrcol, savcol)
+cols <- c(cols, Total = 'white')
+
+# segments
+areas <- ppseg %>% 
+  rename(area = Name) %>% 
+  group_by(area) %>% 
+  summarise() %>% 
+  st_buffer(dist = set_units(0.0001, degree)) %>% 
+  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  mutate(
+    area = factor(area)
+  )
+
+# # view sample effort by transect, area, month
+# smpeff <- rstrndat %>%
+#   inner_join(rstrnpts, ., by = 'station') %>%
+#   select(-source, -type, -lng, -lat) %>%
+#   st_intersection(areas) %>%
+#   st_set_geometry(NULL) %>%
+#   mutate(
+#     mo = month(date)
+#   ) %>%
+#   group_by(station, area, mo) %>%
+#   summarise(
+#     obs = (any(bb > 0)),
+#     .groups = 'drop'
+#   ) %>%
+#   spread(mo, obs) %>% 
+#   arrange(area, station)
+# View(smpeff)
+
+# tokp <- smpeff %>%
+#   gather('var', 'val', -station, -area) %>%
+#   na.omit() %>%
+#   group_by(station, area) %>%
+#   summarise(cnt = sum(val), .groups= 'drop') %>%
+#   filter(cnt >= 4) %>%
+#   pull(station)
+
+# add area
+trnsum <- rstrndat %>%
+  # filter(station %in% tokp) %>%
+  inner_join(rstrnpts, ., by = 'station') %>% 
+  st_intersection(areas) %>% 
+  st_set_geometry(NULL) %>%
+  dplyr::group_by(area, typ, date, station, taxa, location) %>%
+  dplyr::summarise(
+    bb = mean(bb, na.rm = T)
+  ) %>% 
+  dplyr::group_by(area, typ, date, station, taxa) %>%
+  dplyr::summarise(
+    bb = mean(bb, na.rm = T)
+  ) %>% 
+  mutate(
+    date = floor_date(date, unit = 'month'), 
+    typ = factor(typ, levels = c('mcr', 'sav'), labels = c('Macroalgae', 'Seagrass'))
+  ) %>% 
+  group_by(area, typ, date, taxa) %>% 
+  dplyr::summarise(
+    bbave = mean(bb, na.rm = T),
+    bbhiv = t.test(bb)$conf.int[2], 
+    bblov = t.test(bb)$conf.int[1]
+  ) %>% 
+  filter(taxa %in% c(mcrsel, savsel))
+
+trnsumtots <- rstrndat %>%
+  # filter(station %in% tokp) %>% 
+  inner_join(rstrnpts, ., by = 'station') %>% 
+  st_intersection(areas) %>% 
+  st_set_geometry(NULL) %>%
+  dplyr::group_by(area, typ, date, station, taxa, location) %>%
+  dplyr::summarise(
+    bb = mean(bb, na.rm = T)
+  ) %>% 
+  dplyr::group_by(area, typ, date, station, taxa) %>%
+  dplyr::summarise(
+    bb = mean(bb, na.rm = T)
+  ) %>%  
+  mutate(
+    date = floor_date(date, unit = 'month'), 
+    typ = factor(typ, levels = c('mcr', 'sav'), labels = c('Macroalgae', 'Seagrass'))
+  ) %>% 
+  group_by(area, typ, date) %>% 
+  dplyr::summarise(
+    bbave = mean(bb, na.rm = T),
+    bbhiv = t.test(bb)$conf.int[2], 
+    bblov = t.test(bb)$conf.int[1]
+  ) %>% 
+  mutate(taxa = 'Total')
+
+toplo <- bind_rows(trnsum)#, trnsumtots)
+
+dodge <- position_dodge(width=7) 
+
+p <- ggplot(toplo, aes(x = date, y = bbave)) + 
+  geom_line(aes(group = taxa), position = dodge) +
+  geom_errorbar(aes(ymin = bblov, ymax = bbhiv, group = taxa), width = 0, position = dodge) +
+  geom_point(aes(fill = taxa, group = taxa), pch = 21, stat = 'identity', color = 'black', size = 3, position = dodge, stroke = 1) +
+  facet_grid(typ ~ area, scales = 'free_y') +
+  theme_minimal(base_size = 14) + 
+  coord_cartesian(ylim = c(0, NA)) +
+  scale_fill_manual(values = cols) +
+  labs(
+    y = 'Freq. occurrence'
+  ) +
+  theme(
+    legend.position = 'top', 
+    legend.title = element_blank(),
+    strip.background = element_blank(), 
+    strip.text = element_text(size = 14), 
+    axis.title.x = element_blank(), 
+    axis.ticks.x = element_line(), 
+    panel.grid.minor = element_blank(),
+    # panel.spacing=unit(2, "lines"), 
+    panel.background = element_rect(fill = 'grey95', color = 'white'), 
+    panel.grid.major = element_line(color = 'grey90')
+  )
+
+jpeg(here('figs/trnabu-supp.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+## wind roses -------------------------------------------------------------
+
+toplo <- na.omit(winddat) %>% 
+  mutate(
+    mo = month(datetime, label = T)
+  ) %>% 
+  filter(mo != 'Oct')
+
+spdmin <- 0
+spdmax <- 14
+spdres = 3
+thm <- theme_minimal()
+
+p <- plot.windrose(data = toplo, spd = 'wind_ms', dir = 'wind_dir', spdres = spdres, spdmin = spdmin, spdmax = spdmax) + 
+  facet_wrap(~mo, ncol = 3) + 
+  theme_minimal() + 
+  theme(
+    axis.text = element_blank(), 
+    axis.title = element_blank(), 
+    axis.ticks.y = element_blank(), 
+    legend.position = 'right'
+  )
+
+jpeg(here('figs/windroses-supp.jpeg'), height = 6, width = 7, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -1797,6 +1831,6 @@ p2 <- ggplot() +
 
 p <- p1 + p2 + plot_layout(ncol = 1)
 
-jpeg(here('figs/phymcrfoest.jpeg'), height = 5, width = 7, units = 'in', res = 500, family = 'serif')
+jpeg(here('figs/phymcrfoest-supp.jpeg'), height = 5, width = 7, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
