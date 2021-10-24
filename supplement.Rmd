@@ -51,7 +51,7 @@ knitr::include_graphics(here('figs/wqtrnds-supp.jpeg'))
 knitr::include_graphics('figs/wqtrndsadd-supp.jpeg')
 ```
 
-```{r wqgamadd-supp, fig.cap = 'Predicted (a) total ammonia nitogen (mg/L), (b) orthophosphate (mg/L), (c) total phosphorus (mg/L), (d) dissolved oxygen saturation (%), (e) turbidity (NTU), and (f) salinity (ppt) by area based on historal seasonal models.  Estimated trends are based on Generalized Additve Models fit to historical basline data from 2006 to early 2021.  Predicted trends from the historical models for dates during and after the Piney Point discharge are shown in thick lines (+/- 95% confidence), with observed samples overlaid on the plots.  Results are grouped by assessment areas shown in Figure 1a.'}
+```{r wqgamadd-supp, fig.cap = 'Forecasted 2021 (a) total ammonia nitogen (mg/L), (b) orthophosphate (mg/L), (c) total phosphorus (mg/L), (d) dissolved oxygen saturation (%), (e) turbidity (NTU), and (f) salinity (ppt) by area based on historal seasonal models. Forecasts from the historical models for dates during and after the Piney Point discharge are shown in thick lines (+/- 95% confidence), with observed samples overlaid on the plots to emphasize deviation of 2021 data from historical seasonal estimates.  Forecasted values are based on Generalized Additive Models fit to historical baseline data from 2006 to early 2021. Results are grouped by assessment areas shown in Figure 1a.'}
 knitr::include_graphics('figs/wqgamadd-supp.jpeg')
 ```
 

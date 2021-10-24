@@ -260,9 +260,9 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
 
   p1 <- ggplot(prds1, aes(x = xvals, group = yr)) + 
     geom_line(aes(y = val, linetype = 'Baseline modelled'), size = 0.5, color = 'lightgrey') +
-    geom_line(data = prds2, aes(y = val, color = area, linetype = '2021 predicted'), size = 2) + 
+    geom_line(data = prds2, aes(y = val, color = area, linetype = '2021 forecasted by area'), size = 2) + 
     geom_ribbon(data = prds2, aes(ymin = lov, ymax = hiv, fill = area), alpha = 0.3, color = NA) +
-    geom_point(data = obs, aes(x = date, y = val, color = area, shape = '2021 samples'), alpha = 0.8, size = 0.5, position = position_jitter()) +
+    geom_point(data = obs, aes(x = date, y = val, shape = '2021 samples'), color = 'black', alpha = 0.8, size = 0.5, position = position_jitter()) +
     scale_x_date(date_breaks = 'month', date_labels = '%b %d', expand = c(0, 0)) +
     facet_grid(area ~ ., scales = 'free_y') + 
     scale_color_manual(values = cols, guide = 'none') +
