@@ -24,7 +24,7 @@ box::use(
   units = units[set_units], 
   vegan = vegan[decostand, metaMDS], 
   FactoMineR = FactoMineR[PCA], 
-  ggnewscale[new_scale_fill], 
+  ggnewscale[new_scale_fill, new_scale_color], 
   grid[unit]
 )
 

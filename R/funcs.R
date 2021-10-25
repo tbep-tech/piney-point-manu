@@ -258,8 +258,12 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
     unnest('data') %>% 
     filter(date >= mindt)
 
+  colyrs <- c(rep('lightgrey', 3), brewer.pal(9, 'Greys')[1:7])
+  
   p1 <- ggplot(prds1, aes(x = xvals, group = yr)) + 
-    geom_line(aes(y = val, linetype = 'Baseline modelled'), size = 0.5, color = 'lightgrey') +
+    geom_line(aes(y = val, linetype = '2006 - 2020 Baseline modelled (darker more recent)', color = yr), size = 0.5) +
+    scale_color_gradientn(colors = colyrs, guide = F) + 
+    new_scale_color() + 
     geom_line(data = prds2, aes(y = val, color = area, linetype = '2021 forecasted by area'), size = 2) + 
     geom_ribbon(data = prds2, aes(ymin = lov, ymax = hiv, fill = area), alpha = 0.3, color = NA) +
     geom_point(data = obs, aes(x = date, y = val, shape = '2021 samples'), color = 'black', alpha = 0.8, size = 0.5, position = position_jitter()) +
@@ -269,7 +273,7 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
     scale_fill_manual(values = cols, guide = 'none') +
     scale_linetype_manual(values = c(1, 1)) + 
     guides(
-      linetype = guide_legend(override.aes = list(size = c(2, 0.5), color = c('black', 'grey')))
+      linetype = guide_legend(override.aes = list(size = c(0.5, 2), color = c('grey', 'black')))
     ) +
     labs(
       color = 'Year', 
