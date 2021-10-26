@@ -264,7 +264,7 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
     geom_line(aes(y = val, linetype = '2006 - 2020 Baseline modelled (darker more recent)', color = yr), size = 0.5) +
     scale_color_gradientn(colors = colyrs, guide = F) + 
     new_scale_color() + 
-    geom_line(data = prds2, aes(y = val, color = area, linetype = '2021 forecasted by area'), size = 2) + 
+    geom_line(data = prds2, aes(y = val, color = area, linetype = '2021 forecasted +/- 95% CI (colored by area)'), size = 2) + 
     geom_ribbon(data = prds2, aes(ymin = lov, ymax = hiv, fill = area), alpha = 0.3, color = NA) +
     geom_point(data = obs, aes(x = date, y = val, shape = '2021 samples'), color = 'black', alpha = 0.8, size = 0.5, position = position_jitter()) +
     scale_x_date(date_breaks = 'month', date_labels = '%b %d', expand = c(0, 0)) +
@@ -273,7 +273,7 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
     scale_fill_manual(values = cols, guide = 'none') +
     scale_linetype_manual(values = c(1, 1)) + 
     guides(
-      linetype = guide_legend(override.aes = list(size = c(0.5, 2), color = c('grey', 'black')))
+      linetype = guide_legend(override.aes = list(size = c(0.5, 2), color = c('grey', cols[1])))
     ) +
     labs(
       color = 'Year', 

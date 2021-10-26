@@ -25,7 +25,8 @@ box::use(
   vegan = vegan[decostand, metaMDS], 
   FactoMineR = FactoMineR[PCA], 
   ggnewscale[new_scale_fill, new_scale_color], 
-  grid[unit]
+  grid[unit], 
+  readxl[read_excel]
 )
 
 data(rsallpts)
@@ -38,7 +39,6 @@ data(rsstatloc)
 data(rstrndat)
 data(parms)
 data(rstrnpts)
-data(kbrdat)
 data(winddat)
 data(raindat)
 data(hydrodat)
@@ -47,6 +47,17 @@ data(rsphydat)
 data(bstransect)
 
 source(here('R/funcs.R'))
+
+# k brevis data from CL
+habdat <- read_excel(
+    here('data-raw/Tampa Bay Karenia brevis to 2021.10.15 within coordinate box_modified.xlsx'),
+    sheet = 'subsetData_originalSegments'
+  ) %>% 
+  filter(Segment %in% c('MTB','LTB')) %>%
+  select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
+  mutate(
+    date = ymd(date),
+    val = val / 1e5)
 
 # map ---------------------------------------------------------------------
 
@@ -583,26 +594,6 @@ fishdat <- read.csv(here('data-raw/FishKillResultReport.csv')) %>%
   ) %>% 
   filter(date < as.Date('2021-10-01'))
 
-# k brevis data from CL
-habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
-  filter(Segment %in% c('MTB','LTB')) %>%
-  select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
-  mutate(date = mdy(date))
-
-# add k brevis data from HABSOS that are collected after last date in habdat
-kbrdat <- kbrdat %>% 
-  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
-  filter(var == 'kb') %>% 
-  filter(date > max(habdat$date)) %>% 
-  mutate(
-    lat = st_coordinates(.)[,2],
-    lng = st_coordinates(.)[,1]
-  ) %>% 
-  st_set_geometry(NULL) %>% 
-  select(date, val, lat, lng)
-
-habdat <- bind_rows(habdat, kbrdat)
-
 # levels for week, starts on first of week from jan through july
 weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %>% 
   lubridate::floor_date(unit = 'week') %>% 
@@ -622,18 +613,16 @@ toplo <- habdat %>%
   filter(date < as.Date('2021-10-01')) %>% 
   filter(month(date) > 3 & month(date) < 10) %>% 
   mutate(
-    dtgrp = quarter(date),
-    yr = year(date)
-  ) %>%
-  mutate(
+    yr = year(date),
     yr = factor(yr, levels = seq(min(yr), max(yr)))
-  )
+  ) %>% 
+  complete(yr)
 
 # plot
 p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
   geom_point(position = position_jitter(width = 0.1), alpha = 0.6) + 
   scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
-
+  scale_x_discrete(breaks = seq(1950, 2025, by = 5)) + 
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
@@ -1002,25 +991,7 @@ physum <- rsphydat %>%
   filter(species == 'Diatoms') %>% 
   select(week, species, val)
 
-# k brevis data from CL
-habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
-  filter(Segment %in% c('MTB','LTB')) %>%
-  select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
-  mutate(date = mdy(date))
-
-# add k brevis data from HABSOS that are collected after last date in habdat
-kbrdat <- kbrdat %>% 
-  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
-  filter(var == 'kb') %>% 
-  filter(date > max(habdat$date)) %>% 
-  mutate(
-    lat = st_coordinates(.)[,2],
-    lng = st_coordinates(.)[,1]
-  ) %>% 
-  st_set_geometry(NULL) %>% 
-  select(date, val, lat, lng)
-
-habdat <- bind_rows(habdat, kbrdat) %>% 
+habsum <- habdat %>% 
   filter(year(date) >= 2021) %>%
   filter(month(date) < 10) %>% 
   mutate(
@@ -1031,7 +1002,7 @@ habdat <- bind_rows(habdat, kbrdat) %>%
   select(week, species, val)
 
 # levels for week, starts on first of week
-phyplo <- bind_rows(habdat, physum) %>% 
+phyplo <- bind_rows(habsum, physum) %>% 
   filter(week >= as.Date('2021-03-28')) %>% 
   group_by(week, species) %>% 
   summarise(
@@ -1646,25 +1617,8 @@ physum <- rsphydat %>%
   filter(species == 'Diatoms') %>% 
   select(week, species, val)
 
-# k brevis data from CL
-habdat <- read.csv(here('data-raw/KB_LowMid_1995-2021.csv')) %>% 
-  filter(Segment %in% c('MTB','LTB')) %>%
-  select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
-  mutate(date = mdy(date))
-
-# add k brevis data from HABSOS that are collected after last date in habdat
-kbrdat <- kbrdat %>% 
-  .[tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ], ] %>% 
-  filter(var == 'kb') %>% 
-  filter(date > max(habdat$date)) %>% 
-  mutate(
-    lat = st_coordinates(.)[,2],
-    lng = st_coordinates(.)[,1]
-  ) %>% 
-  st_set_geometry(NULL) %>% 
-  select(date, val, lat, lng)
-
-habdat <- bind_rows(habdat, kbrdat) %>% 
+# kbrevis
+habsum <- habdat %>% 
   filter(year(date) >= 2021) %>%
   filter(month(date) < 10) %>% 
   mutate(
@@ -1675,7 +1629,7 @@ habdat <- bind_rows(habdat, kbrdat) %>%
   select(week, species, val)
 
 # levels for week, starts on first of week
-physum <- bind_rows(habdat, physum) %>% 
+physum <- bind_rows(habsum, physum) %>% 
   filter(week >= as.Date('2021-03-28')) %>% 
   group_by(week, species) %>% 
   summarise(
