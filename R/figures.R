@@ -48,16 +48,18 @@ data(bstransect)
 
 source(here('R/funcs.R'))
 
-# k brevis data from CL
+# k brevis data from CL (not created in piney-point repo)
 habdat <- read_excel(
-    here('data-raw/Tampa Bay Karenia brevis to 2021.10.15 within coordinate box_modified.xlsx'),
-    sheet = 'subsetData_originalSegments'
+    here('data-raw/TB_Karenia_brevis_to_2021-10-15_coord_box_mod_TBsegments_cl.xlsx'),
+    sheet = 'subsetData_originalSegments', 
+    na = 'NA'
   ) %>% 
-  filter(Segment %in% c('MTB','LTB')) %>%
+  filter(BaySegment %in% c('MTB','LTB')) %>%
   select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
   mutate(
     date = ymd(date),
-    val = val / 1e5)
+    val = val / 1e5
+  )
 
 # map ---------------------------------------------------------------------
 
