@@ -174,20 +174,20 @@ totab2 <- totab %>%
   left_join(totab1, by = c('area', 'lbs')) %>% 
   mutate(area = ifelse(duplicated(area), '', area)) %>% 
   mutate(
-    `in range` = round(100 * `in range` / cnt, 1),
-    `above` = round(100 * `above` / cnt, 1),
-    `below` = round(100 * `below` / cnt, 1), 
-    `Below detection` = round(100 * nondetect / cnt, 1)
+    `% in range` = round(100 * `in range` / cnt, 0),
+    `% above` = round(100 * `above` / cnt, 0),
+    `% below` = round(100 * `below` / cnt, 0), 
+    `% below detection` = round(100 * nondetect / cnt, 0)
   ) %>% 
   select(
     Area = area, 
     `Water quality variable` = lbs, 
     `Med. (Min., Max.)` = sumv, 
     `N obs.` = cnt, 
-    `in range`, 
-    above, 
-    below, 
-    `Below detection`
+    `% in range`, 
+    `% above`, 
+    `% below`, 
+    `% below detection`
   )
 
 wqsumtab <- totab2
