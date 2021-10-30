@@ -57,8 +57,7 @@ habdat <- read_excel(
   filter(BaySegment %in% c('MTB','LTB')) %>%
   select(date = Sample_Dat, val = Karenia_br, lat = Latitude, lng = Longitude) %>% 
   mutate(
-    date = ymd(date),
-    val = val / 1e5
+    date = ymd(date)
   )
 
 # map ---------------------------------------------------------------------
@@ -633,7 +632,7 @@ p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
   ) +
   labs(
     x = 'Year',
-    y = 'Cells (100k / L)',
+    y = 'Cells / L',
     title = expression(paste('(a) ', italic('K. brevis'), ' Apr - Sep concentrations by year, middle/lower Tampa Bay'))
   )
 
@@ -676,7 +675,7 @@ p2 <- ggplot(toplo, aes(x = week, y =  1 + val)) +
   ) +
   labs(
     x= 'Week of',
-    y = 'Cells (100k / L)',
+    y = 'Cells / L',
     title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
   )
 
@@ -987,8 +986,7 @@ physum <- rsphydat %>%
   ) %>% 
   ungroup() %>% 
   mutate(
-    week = floor_date(date, unit = 'week'), 
-    val = val / 1e5
+    week = floor_date(date, unit = 'week')
   ) %>% 
   filter(species == 'Diatoms') %>% 
   select(week, species, val)
@@ -1022,7 +1020,7 @@ p3 <- ggplot(toplo1, aes(x = week, y = medv)) +
   geom_point() + 
   # geom_line() + 
   geom_errorbar(aes(ymin = lov, ymax = hiv), width = 0) +
-  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = F))) +
   scale_x_date(breaks = brks, date_labels = '%b %d', limits = range(brks), expand = c(0.01, 0.01)) +
   theme_minimal() +
   theme(
@@ -1032,7 +1030,7 @@ p3 <- ggplot(toplo1, aes(x = week, y = medv)) +
   ) +
   labs(
     x = NULL,
-    y = 'Cells (100k / L)',
+    y = 'Cells / L',
     title = '(c) Diatom cell concentrations'
   )
 
@@ -1146,7 +1144,7 @@ p5 <- ggplot(toplo2, aes(x = week, y = medv)) +
   ) +
   labs(
     x = NULL,
-    y = 'Cells (100k / L)',
+    y = 'Cells / L',
     title = expression(paste('(e) ', italic('K. brevis'), ' cell concentrations'))
   )
 

@@ -97,9 +97,10 @@ wqplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet =
   
   p1 <- ggplot() + 
     geom_rect(data = bswqtmp, aes(xmin = datestr, xmax = dateend, ymin = minv, ymax = maxv, group = mo, fill = 'Monthly baseline (mean +/- 1 sd)'), alpha = 0.2) +
-    geom_boxplot(data = rswqtmp, aes(x = date, y = val, group = date), fill = bxcls$fillcl, outlier.colour = NA, lwd = 0.5, alpha = 0.8, show.legend = F) + 
-    geom_jitter(data = rswqtmp, aes(x = date, y = val, group = date), alpha = 0.4, size = 0.5) + 
+    # geom_boxplot(data = rswqtmp, aes(x = date, y = val, group = date), fill = bxcls$fillcl, outlier.colour = NA, lwd = 0.5, alpha = 0.8, show.legend = F) + 
+    geom_jitter(data = rswqtmp, aes(x = date, y = val, group = date, color = area), alpha = 0.7, size = 0.5, width = 2) + 
     scale_fill_manual(NULL, values = 'blue') +
+    scale_color_manual(values = cols, guide = F) + 
     scale_linetype_manual(values = 'dashed') + 
     facet_grid(area ~ ., scales = 'free_y') + 
     scale_x_date(breaks = unique(rswqtmp$date), date_labels = '%b %d', expand = c(0.05, 0.05)) +
