@@ -423,6 +423,7 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12, rev 
     ggplot2::scale_x_continuous(breaks = savxlms, labels = savxlbs) +
     ggplot2::coord_cartesian(xlim = xlms) +
     ggplot2::theme(
+      legend.text = ggplot2::element_text(face = 'italic'), 
       panel.grid.major.y = ggplot2::element_blank(),
       panel.grid.minor.y = ggplot2::element_blank(),
       panel.grid.minor.x = ggplot2::element_blank(),
@@ -490,7 +491,7 @@ show_rstransect <- function(savdat, mcrdat, savsel, mcrsel, base_size = 12, rev 
     ungroup() %>%
     select(date, location) %>%
     unique()
-  
+
   pb <- ggplot2::ggplot(toplo1b, ggplot2::aes(y = date, x = location)) +
     ggplot2::geom_point(data = toplo2b, colour = 'black', alpha = 1, size = 2) +
     ggplot2::geom_point(inherit.aes = F, aes(colour = 'Empty sample'), x = NA, y = NA) +

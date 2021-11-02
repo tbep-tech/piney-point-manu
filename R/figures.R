@@ -538,11 +538,17 @@ p <- ggplot(toplo, aes(x = date, y = foest)) +
   facet_grid(typ ~ area) +
   theme_minimal(base_size = 14) + 
   scale_y_continuous(limits = c(0, 1))+
-  scale_fill_manual(values = cols) +
+  scale_fill_manual(
+    values = cols,
+    labels = c('Red', 'Green', 'Brown', 'Cyanobacteria', expression(italic('Thalassia testudinum')), 
+               expression(italic('Halodule wrightii')), expression(italic('Syringodium filiforme')),
+               'Total')
+  ) +
   labs(
     y = 'Freq. occurrence'
   ) +
   theme(
+    legend.text.align = 0,
     legend.position = 'top', 
     legend.title = element_blank(),
     strip.background = element_blank(), 
@@ -1381,12 +1387,18 @@ p <- ggplot(toplo, aes(x = date, y = bbave)) +
   facet_grid(typ ~ area, scales = 'free_y') +
   theme_minimal(base_size = 14) + 
   coord_cartesian(ylim = c(0, NA)) +
-  scale_fill_manual(values = cols) +
+  scale_fill_manual(
+    values = cols,
+    labels = c('Red', 'Green', 'Brown', 'Cyanobacteria', expression(italic('Thalassia testudinum')), 
+               expression(italic('Halodule wrightii')), expression(italic('Syringodium filiforme')),
+               'Total')
+    ) +
   labs(
     y = 'Freq. occurrence'
   ) +
   theme(
     legend.position = 'top', 
+    legend.text.align = 0,
     legend.title = element_blank(),
     strip.background = element_blank(), 
     strip.text = element_text(size = 14), 
@@ -1481,11 +1493,15 @@ lns <- physum %>%
 p1 <- ggplot() +
   geom_area(data = physum, aes(x = date, y = foest, fill = species), stat = 'identity', color = 'lightgrey', alpha = 0.7) +
   geom_segment(data = lns, aes(x = date, xend = date, y = 0, yend = ymax), color = 'grey') +
-  scale_fill_manual(values = c('#66c2a5', '#fc8d62')) +
+  scale_fill_manual(
+    values = c('#66c2a5', '#fc8d62'), 
+    labels = c('Diatoms', expression(italic('K. brevis')))
+    ) +
   scale_x_date(breaks = brks, date_labels = '%b %d', expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   theme_minimal() +
   theme(
+    legend.text.align = 0,
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
     # axis.title.x = element_blank(),
     panel.grid.major.x = element_blank(),
@@ -1774,9 +1790,10 @@ txt <- 3
 alpha <- 0.8
 ext <- 1.1
 exp <- 0.1
-parse <- F
+parse <- T
 ellipse <- F
 
+names(toord)[names(toord) %in% 'K. brevis'] <- 'italic("K. brevis")'
 allpcadat <- metaMDS(toord)
 p <- ggord(allpcadat, axes = c('1', '2'), grp_in = grps, ellipse = ellipse, cols = cols,
            parse = parse, vec_ext = vec_ext, coord_fix = coord_fix, size = size, 
