@@ -160,7 +160,8 @@ tomap <- rsallpts %>%
     type = case_when(
       grepl('\\,', type) ~ 'mixed monitoring', 
       T ~ type
-    )
+    ), 
+    type = factor(type, levels = c('water quality', 'algae', 'mixed monitoring', 'seagrass and macroalgae'))
   ) %>% 
   .[areas, ]
 
