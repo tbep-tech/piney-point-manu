@@ -105,7 +105,7 @@ tab <- full_join(stkraw, bssum, by = 'var') %>%
     `Water quality variable` = lbs, 
     `2019 stack value` = stkval, 
     `2021 end-of-pipe value` = effval,
-    `Bay median (min, max)` = sumv
+    `2006 - 20202 Bay median (min, max)` = sumv
   ) 
 
 stktab <- tab
@@ -140,7 +140,7 @@ totab <- rswqdat %>%
   st_intersection(ppsegbf) %>% 
   filter(!qual %in% 'S') %>%  # remove secchi on bottom
   mutate(
-    qual = grepl('U', qual) # censored data
+    qual = grepl('^U$|^S$', qual) # censored data
   ) %>% 
   st_set_geometry(NULL)
 
@@ -158,9 +158,12 @@ totab2 <- totab %>%
   left_join(sigs, by = 'lbs') %>% 
   summarise(
     nondetect = sum(qual),
-    medv = round(median(cenfit(val, censored = qual), na.rm = T), unique(sigdig)),
-    minv = round(min(val, na.rm = T), unique(sigdig)), 
-    maxv = round(max(val, na.rm = T), unique(sigdig)), 
+    medv = case_when(
+      grepl('Secchi', unique(lbs)) ~ round(median(val, na.rm = T), unique(sigdig)),
+      T ~ round(median(cenfit(val, censored = qual), na.rm = T), unique(sigdig)),
+    ), 
+    minv = round(min(val, na.rm = T), unique(sigdig)),
+    maxv = round(max(val, na.rm = T), unique(sigdig)),
     cnt = n(), 
     .groups = 'drop'
   ) %>% 
@@ -174,20 +177,20 @@ totab2 <- totab %>%
   left_join(totab1, by = c('area', 'lbs')) %>% 
   mutate(area = ifelse(duplicated(area), '', area)) %>% 
   mutate(
-    `% in range` = round(100 * `in range` / cnt, 0),
-    `% above` = round(100 * `above` / cnt, 0),
-    `% below` = round(100 * `below` / cnt, 0), 
-    `% below detection` = round(100 * nondetect / cnt, 0)
+    `% In range` = round(100 * `in range` / cnt, 0),
+    `% Above` = round(100 * `above` / cnt, 0),
+    `% Below` = round(100 * `below` / cnt, 0), 
+    `% Outside detection` = round(100 * nondetect / cnt, 0)
   ) %>% 
   select(
     Area = area, 
     `Water quality variable` = lbs, 
     `Med. (Min., Max.)` = sumv, 
     `N obs.` = cnt, 
-    `% in range`, 
-    `% above`, 
-    `% below`, 
-    `% below detection`
+    `% In range`, 
+    `% Above`, 
+    `% Below`, 
+    `% Outside detection`
   )
 
 wqsumtab <- totab2
