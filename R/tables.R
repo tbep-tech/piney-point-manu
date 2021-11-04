@@ -138,7 +138,7 @@ totab <- rswqdat %>%
   filter(!station %in% nonbay) %>% 
   select(station, date, lbs, val, inrng, qual) %>% 
   st_intersection(ppsegbf) %>% 
-  filter(!qual %in% 'S') %>%  # remove secchi on bottom
+  # filter(!qual %in% 'S') %>%  # remove secchi on bottom
   mutate(
     qual = grepl('^U$|^S$', qual) # censored data
   ) %>% 
