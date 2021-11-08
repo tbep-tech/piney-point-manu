@@ -105,7 +105,7 @@ tab <- full_join(stkraw, bssum, by = 'var') %>%
     `Water quality variable` = lbs, 
     `2019 stack value` = stkval, 
     `2021 end-of-pipe value` = effval,
-    `2006 - 20202 Bay median (min, max)` = sumv
+    `2006 - 2020 lower Tampa Bay median (min, max)` = sumv
   ) 
 
 stktab <- tab
