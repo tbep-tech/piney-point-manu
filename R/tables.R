@@ -471,6 +471,7 @@ savests <- ests %>%
   group_by(area) %>%  
   mutate(
     area = ifelse(duplicated(area), '', area), 
+    taxa = paste0('*', taxa, '*'), 
     taxa = ifelse(duplicated(taxa), '', as.character(taxa)), 
     krusk = ifelse(duplicated(krusk), '', krusk),
     pval = ifelse(duplicated(pval), '', pval)
@@ -635,6 +636,7 @@ savests <- ests %>%
   group_by(area) %>%  
   mutate(
     area = ifelse(duplicated(area), '', area), 
+    taxa = paste0('*', taxa, '*'), 
     taxa = ifelse(duplicated(taxa), '', as.character(taxa)), 
     krusk = ifelse(duplicated(krusk), '', krusk),
     pval = ifelse(duplicated(pval), '', pval)

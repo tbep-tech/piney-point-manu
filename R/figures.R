@@ -1128,7 +1128,7 @@ p4 <- ggplot(wtsest, aes(x = week, y = medv)) +
   ) + 
   labs(
     y = expression(paste('kg / ', m^2)), 
-    x = 'Week of', 
+    x = NULL, 
     title = '(d) Cyanobacteria macroalgae abundances'
   )
 
@@ -1150,7 +1150,7 @@ p5 <- ggplot(toplo2, aes(x = week, y = medv)) +
     panel.grid.major.x = element_blank()
   ) +
   labs(
-    x = NULL,
+    x = 'Week of',
     y = 'Cells / L',
     title = expression(paste('(e) ', italic('K. brevis'), ' cell concentrations'))
   )
@@ -1287,7 +1287,7 @@ mcrcol <- c('tomato1', 'lightgreen', 'burlywood3', 'lightblue')
 names(mcrcol) <- mcrsel
 mcrcol <- mcrcol[mcrsel]
 cols <- c(mcrcol, savcol)
-cols <- c(cols, Total = 'white')
+# cols <- c(cols, Total = 'white')
 
 # segments
 areas <- ppseg %>% 
@@ -1391,11 +1391,11 @@ p <- ggplot(toplo, aes(x = date, y = bbave)) +
   scale_fill_manual(
     values = cols,
     labels = c('Red', 'Green', 'Brown', 'Cyanobacteria', expression(italic('Thalassia testudinum')), 
-               expression(italic('Halodule wrightii')), expression(italic('Syringodium filiforme')),
-               'Total')
+               expression(italic('Halodule wrightii')), expression(italic('Syringodium filiforme')))#,
+               #'Total')
     ) +
   labs(
-    y = 'Freq. occurrence'
+    y = 'Braun-Blanquet abundance'
   ) +
   theme(
     legend.position = 'top', 
