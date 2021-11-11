@@ -1,5 +1,5 @@
 ---
-title: "Initial estuarine response to the nutrient-rich Piney Point discharge into Tampa Bay, Florida"
+title: "Initial estuarine response to the nutrient-rich Piney Point release into Tampa Bay, Florida"
 output: 
   bookdown::word_document2:
     reference_docx: my_styles.docx
