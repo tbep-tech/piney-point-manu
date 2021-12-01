@@ -33,6 +33,14 @@ load(file = here('tables/mcrabutabsupp.RData'))
 load(file = here('tables/savabutabsupp.RData'))
 ```
 
+# Data, source materials, and dashboard
+
+All datasets used in this study are provided online in an open access data archive hosted on the Knowledge Network for Biocomplexity as part of the DataOne federated network.  This includes full metadata documentation.  The repository is available and citable at: 
+
+Materials for reproducing the analyses, figures, tables, and other content in this paper are provided in a GitHub repository. This includes a source RMarkdown file [@Xie20] used for the manuscript text.  The repository is available at https://github.com/tbep-tech/piney-point-manu. 
+
+The Piney Point Environmental Monitoring Dashboard can be used to view all data together through an interactive, online application.  It provides a synthesis of data to assess baseline conditions prior to April 2021 and to evaluate changing water quality conditions as new data become available. The dashboard is available at https://shiny.tbep.org and citable at @Beck21c.  
+
 # History of Piney Point 
 
 The Piney Point facility in Palmetto, Florida was established in 1966 by the now defunct Borden Chemicals company near Port Manatee on the southeast shore of lower Tampa Bay. Port operations were primarily for export of phosphate production by the plant.  Numerous environmental issues were observed in these early years, including suspected surface water contamination from Piney Point in nearby Bishop Harbor, groundwater contamination from industrial solvents, and air pollution from plant emissions [@Henderson04].  Ownership of the facility was transferred to different companies over the course of operation and in 1993 the plant was acquired by Mulberry Phosphates, Inc., which also owned a mining facility in Mulberry, Florida to the north.  In 1997, 204 million liters of phosphate mining process water from the Mulberry plant spilled into the Alafia River, the second largest tributary to Tampa Bay, killing 1.3 million fishes [@DiPinto01]. 
