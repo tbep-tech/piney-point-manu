@@ -119,8 +119,7 @@ ppsegbf <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
@@ -205,8 +204,7 @@ ppsegbf <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>%  
   mutate(
     area = factor(area)
   )
@@ -361,8 +359,7 @@ areas <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
@@ -527,8 +524,7 @@ areas <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )

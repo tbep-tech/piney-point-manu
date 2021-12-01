@@ -141,7 +141,7 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
   nonbay <- c('BH01', 'P Port 2', 'P Port 3', 'PM Out', '20120409-01', 'PPC41', 'P Port 4', 'PMB01', 'NGS-S Pond')
   mindt <- ymd('2021-03-28')
   dtrng <- ymd(c('2006-01-01', '2021-10-01'))
-  
+
   # monitoring data
   rswqtmp <- rswqdat %>% 
     filter(var %in% vr) %>% 
@@ -232,7 +232,7 @@ gamplo_fun <- function(rswqdat, bswqdat, ppseg, vr, cols, logtr = TRUE, rmfacet 
             ),
             xvals = ymd(paste('2021', month(date), day(date), sep = '-'))
           )
-        
+
         return(out)
         
       })

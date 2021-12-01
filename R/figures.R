@@ -74,8 +74,7 @@ areas <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>%
   mutate(
     area = factor(area)
   ) %>% 
@@ -86,9 +85,7 @@ areas <- ppseg %>%
     acres = set_units(acres, 'acres'), 
     acres = as.numeric(acres)
   ) %>% 
-  dplyr::filter(acres > 1e4) %>% 
-  st_buffer(dist = set_units(0.0005, degree)) %>% 
-  st_buffer(dist = set_units(-0.0005, degree)) 
+  dplyr::filter(acres > 1e4)
 
 cols <- c("#E16A86", "#50A315", "#009ADE")
 names(cols) <- levels(areas$area)
@@ -378,8 +375,7 @@ ppsegbf <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
@@ -458,8 +454,7 @@ areas <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
@@ -1171,8 +1166,7 @@ ppsegbf <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
@@ -1205,8 +1199,7 @@ ppsegbf <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
@@ -1243,8 +1236,7 @@ ppsegbf <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
@@ -1294,8 +1286,7 @@ areas <- ppseg %>%
   rename(area = Name) %>% 
   group_by(area) %>% 
   summarise() %>% 
-  st_buffer(dist = set_units(0.0001, degree)) %>% 
-  st_buffer(dist = set_units(-0.0001, degree)) %>% 
+  st_make_valid() %>% 
   mutate(
     area = factor(area)
   )
