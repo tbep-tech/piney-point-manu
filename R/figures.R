@@ -623,8 +623,8 @@ toplo <- habdat %>%
 
 # plot
 p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
-  geom_point(position = position_jitter(width = 0.1), alpha = 0.6) + 
-  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  geom_point(position = position_jitter(width = 0.1), alpha = 0.6) +
+  scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE)), limits = c(1000, NA)) +
   scale_x_discrete(breaks = seq(1950, 2025, by = 5)) + 
   theme_minimal() +
   theme(
@@ -634,7 +634,7 @@ p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
   ) +
   labs(
     x = 'Year',
-    y = 'Cells / L',
+    y = 'Cells / L (log-scale)',
     title = expression(paste('(a) ', italic('K. brevis'), ' Apr - Sep concentrations by year, middle/lower Tampa Bay'))
   )
 
@@ -666,8 +666,8 @@ p2 <- ggplot(toplo, aes(x = week, y =  1 + val)) +
   #   aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
   #   stat = "identity", width = 0.75, fill = '#00806E'
   # ) +
-  # scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
-  scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
+  scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE)), limits = c(1000, NA)) +
+  # scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
   # geom_hline(aes(yintercept = 1e5, color = 'Bloom\nconcentration')) +
   theme_minimal() +
   theme(
@@ -677,7 +677,7 @@ p2 <- ggplot(toplo, aes(x = week, y =  1 + val)) +
   ) +
   labs(
     x= 'Week of',
-    y = 'Cells / L',
+    y = 'Cells / L  (log-scale)',
     title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
   )
 
