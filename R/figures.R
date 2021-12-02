@@ -613,33 +613,47 @@ weeklv <- seq.Date(from = as.Date('2021-01-01'), to = Sys.Date(), by = 'days') %
 
 # habdat p1
 toplo <- habdat %>%
+  st_as_sf(coords = c('lng', 'lat'), crs = 4326) %>% 
+  st_intersection(tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ]) %>% 
+  st_set_geometry(NULL) %>% 
   filter(date < as.Date('2021-10-01')) %>% 
   filter(month(date) > 3 & month(date) < 10) %>% 
   mutate(
     yr = year(date),
-    yr = factor(yr, levels = seq(min(yr), max(yr)))
+    yr = factor(yr, levels = seq(min(yr), max(yr))), 
+    long_name = factor(long_name, levels = c('Lower Tampa Bay', 'Middle Tampa Bay'))
   ) %>% 
-  complete(yr)
+  complete(yr, long_name)
 
 # plot
-p1 <- ggplot(toplo, aes(x = yr, y = 1 + val)) +
-  geom_point(position = position_jitter(width = 0.1), alpha = 0.6) +
+p1 <- ggplot(toplo, aes(x = yr, y = 1 + val, group = long_name)) +
+  geom_hline(aes(yintercept = 1e4), linetype = 'dotted') +
+  geom_hline(aes(yintercept = 1e5), linetype = 'dotted') +
+  geom_hline(aes(yintercept = 1e6), linetype = 'dotted') +
+  geom_text(aes(y = 1e4, x = 1), label = 'Low', vjust = 0, hjust = 0, size = 3, nudge_y = 0.1) +
+  geom_text(aes(y = 1e5, x = 1 ), label = 'Medium', vjust = 0, hjust = 0, size = 3, nudge_y = 0.1) +
+  geom_text(aes(y = 1e6, x = 1 ), label = 'High', vjust = 0, hjust = 0, size = 3, nudge_y = 0.1) +
+  geom_point(position = position_jitter(width = 0.1), alpha = 0.9, aes(color = long_name)) +
   scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE)), limits = c(1000, NA)) +
   scale_x_discrete(breaks = seq(1950, 2025, by = 5)) + 
+  scale_color_brewer('Location', palette = 'Pastel1') + 
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
-    panel.grid.minor.x = element_blank(),
-    panel.grid.major.x = element_blank()
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank()
   ) +
   labs(
     x = 'Year',
     y = 'Cells / L (log-scale)',
-    title = expression(paste('(a) ', italic('K. brevis'), ' Apr - Sep concentrations by year, middle/lower Tampa Bay'))
+    title = expression(paste('(a) ', italic('K. brevis'), ' Apr - Sep concentrations by year, lower/middle Tampa Bay'))
   )
 
 # habdat p2
 toplo <- habdat %>%
+  st_as_sf(coords = c('lng', 'lat'), crs = 4326) %>% 
+  st_intersection(tbseg[tbseg$bay_segment %in% c('MTB', 'LTB'), ]) %>% 
+  st_set_geometry(NULL) %>% 
   filter(year(date) >= 2021) %>%
   filter(month(date) < 10) %>% 
   mutate(
@@ -657,28 +671,36 @@ toplo <- habdat %>%
   #   y100 = max(val, na.rm = T),
   #   .groups = 'drop'
   # ) %>%
-  complete(week)
+  complete(week, long_name)
 
 # plot
 p2 <- ggplot(toplo, aes(x = week, y =  1 + val)) +
-  geom_point(position = position_jitter(width = 0.1), alpha = 0.6) + 
+  geom_hline(aes(yintercept = 1e4), linetype = 'dotted') +
+  geom_hline(aes(yintercept = 1e5), linetype = 'dotted') +
+  geom_hline(aes(yintercept = 1e6), linetype = 'dotted') +
+  geom_text(aes(y = 1e4), x = 1, label = 'Low', vjust = 0, hjust = 0, size = 3, nudge_y = 0.1) +
+  geom_text(aes(y = 1e5), x = 1, label = 'Medium', vjust = 0, hjust = 0, size = 3, nudge_y = 0.1) +
+  geom_text(aes(y = 1e6), x = 1, label = 'High', vjust = 0, hjust = 0, size = 3, nudge_y = 0.1) +
+  geom_point(position = position_jitter(width = 0.1), alpha = 0.9, aes(color = long_name)) + 
   # geom_boxplot(
   #   aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
   #   stat = "identity", width = 0.75, fill = '#00806E'
   # ) +
   scale_y_log10(labels = function(x) as.numeric(format(x, scientific = FALSE)), limits = c(1000, NA)) +
+  scale_color_brewer('Location', palette = 'Pastel1') + 
   # scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
   # geom_hline(aes(yintercept = 1e5, color = 'Bloom\nconcentration')) +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),
-    panel.grid.minor.x = element_blank(),
-    panel.grid.major.x = element_blank()
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    legend.position = 'right'
   ) +
   labs(
     x= 'Week of',
     y = 'Cells / L  (log-scale)',
-    title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, middle/lower Tampa Bay'))
+    title = expression(paste('(b) ', italic('K. brevis'), ' concentrations in 2021 by week, lower/middle Tampa Bay'))
   )
 
 # precip 
@@ -875,11 +897,12 @@ p6 <- pa + pb + pc + pd + pe + plot_layout(ncol = 5, guides = 'collect') &
   )
 
 # all plots together
+p12 <- (p1 + p2 + plot_layout(ncol = 1, guides = 'keep'))
 p34 <- (p3 + p4 + plot_layout(ncol = 2, guides = 'collect')) 
 # & theme(axis.title.x = element_blank())) / wrap_elements(grid::textGrob('Day of year', gp = gpar(fontsize=11))) + 
 # plot_layout(ncol = 1, heights = c(1, 0.05))
-p <- p1 + p2 + p34 + p5 + p6 +
-  plot_layout(ncol = 1, heights = c(1, 1, 1, 1, 1))
+p <- p12 + p34 + p5 + p6 +
+  plot_layout(ncol = 1, heights = c(1, 1, 1, 1, 1), guides = 'keep')
 
 jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
