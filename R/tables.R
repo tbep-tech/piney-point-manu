@@ -62,7 +62,8 @@ effraw <- tibble(
   var = c('no23', 'nh34', 'tn', 'tp', 'orthop', 'dosat', 'ph', 'chla'),
   lbs = c("Nitrate/Nitrite (mg/L)", "NH3, NH4+ (mg/L)", "TN (mg/L)", 
           "TP (mg/L)", "Ortho-P (mg/L)", "DO (% sat.)", "pH", "Chl-a (ug/L)"),
-  effval = c(0.292, 210, 220, mean(c(140, 161)), mean(c(140, 155)), NA, NA, 105)
+  effval = c(0.004, 210, 220, 140, 140, NA, NA, NA), 
+  stkval2 = c(0.292, NA, NA, 161, 155, NA, NA, 105)
 )
 
 bssum <- bswqdat %>% 
@@ -99,12 +100,14 @@ tab <- full_join(stkraw, bssum, by = 'var') %>%
   full_join(effraw, by = c('var', 'lbs')) %>% 
   mutate(
     stkval = ifelse(is.na(stkval), '-', as.character(stkval)),
-    effval = ifelse(is.na(effval), '-', as.character(effval))
+    effval = ifelse(is.na(effval), '-', as.character(effval)), 
+    stkval2 = ifelse(is.na(stkval2), '-', as.character(stkval2)), 
   ) %>% 
   select(
     `Water quality variable` = lbs, 
-    `2019 stack value` = stkval, 
-    `2021 end-of-pipe value` = effval,
+    `2019 stack value` = stkval,
+    `2021 stack value` = stkval2,
+    `2021 pipe value` = effval,
     `2006 - 2020 lower Tampa Bay median (min, max)` = sumv
   ) 
 
