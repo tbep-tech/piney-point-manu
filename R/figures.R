@@ -387,7 +387,7 @@ datin <- rswqdat %>%
   filter(!(var == 'secchi' & val >= 9.5)) # outlier secchi
 
 p1 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = T, rmfacet = T, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
-p2 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = T, rmfacet = T, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
+p2 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = T, rmfacet = T, ttl = '(b) Chlorophyll-a', ylb = expression(paste(mu, 'g/L (log-scale)')))
 p3 <- gamplo_fun(datin, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = F, rmfacet = F, ttl = '(c) Secchi', ylb = 'meters')
 
 p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Day of year', gp = gpar(fontsize=14))) + 
@@ -1204,7 +1204,7 @@ datin <- rswqdat %>%
   filter(!(var == 'secchi' & val >= 9.5)) # outlier secchi
 
 p1 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'tn', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(a) Total Nitrogen', ylb = 'mg/L (log-scale)')
-p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = 'ug/L (log-scale)')
+p2 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'chla', cols, logtr = TRUE, rmfacet = TRUE, ttl = '(b) Chlorophyll-a', ylb = expression(paste(mu, 'g/L (log-scale)')))
 p3 <- wqplo_fun(datin, bswqdat, ppsegbf, vr = 'secchi', cols, logtr = FALSE, ttl = '(c) Secchi', ylb = 'meters')
 
 p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Week of', gp = gpar(fontsize=14))) + 

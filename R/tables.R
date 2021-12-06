@@ -52,7 +52,7 @@ stkraw <- read.csv(here('data-raw/stack_samples.csv')) %>%
   bind_rows(
     tibble(
       var = 'chla', 
-      lbs = c('Chl-a (ug/L)'), 
+      lbs = c('Chl-a ($\\mu$g/L)'), 
       stkval = NA
     )
   )
@@ -61,7 +61,7 @@ stkraw <- read.csv(here('data-raw/stack_samples.csv')) %>%
 effraw <- tibble(
   var = c('no23', 'nh34', 'tn', 'tp', 'orthop', 'dosat', 'ph', 'chla'),
   lbs = c("Nitrate/Nitrite (mg/L)", "NH3, NH4+ (mg/L)", "TN (mg/L)", 
-          "TP (mg/L)", "Ortho-P (mg/L)", "DO (% sat.)", "pH", "Chl-a (ug/L)"),
+          "TP (mg/L)", "Ortho-P (mg/L)", "DO (% sat.)", "pH", "Chl-a ($\\mu$g/L)"),
   effval = c(0.004, 210, 220, 140, 140, NA, NA, NA), 
   stkval2 = c(0.292, NA, NA, 161, 155, NA, NA, 105)
 )
@@ -182,7 +182,11 @@ totab2 <- totab %>%
     `% In range` = round(100 * `in range` / cnt, 0),
     `% Above` = round(100 * `above` / cnt, 0),
     `% Below` = round(100 * `below` / cnt, 0), 
-    `% Outside detection` = round(100 * nondetect / cnt, 0)
+    `% Outside detection` = round(100 * nondetect / cnt, 0), 
+    lbs = case_when(
+      lbs == 'Chl-a (ug/L)' ~ 'Chl-a ($\\mu$g/L)', 
+      T ~ lbs
+    )
   ) %>% 
   select(
     Area = area, 
@@ -324,7 +328,7 @@ cmps <- rswqsub %>%
   unnest('ests') %>% 
   ungroup() %>% 
   mutate(
-    lbs = factor(lbs, levels = c('TN (mg/L)', 'Chl-a (ug/L)', 'Secchi (m)'))
+    lbs = factor(lbs, levels = c('TN (mg/L)', 'Chl-a (ug/L)', 'Secchi (m)'), labels = c('TN (mg/L)', 'Chl-a ($\\mu$g/L)', 'Secchi (m)'))
   ) %>% 
   arrange(area, lbs, mo) %>% 
   group_by(area) %>%  
