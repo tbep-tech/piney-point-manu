@@ -21,7 +21,6 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
   if (file.rename(x, x2)) x2 else x
   })
 
-
 box::use(
   here[here],
   dplyr[...]
@@ -35,11 +34,11 @@ load(file = here('tables/savabutabsupp.RData'))
 
 # Data, source materials, and dashboard
 
-All datasets used in this study are provided online in an open access data archive hosted on the Knowledge Network for Biocomplexity as part of the DataOne federated network.  This includes full metadata documentation.  The repository is available and citable at: 
+All datasets used in this study are provided online in an open access data archive hosted on the Knowledge Network for Biocomplexity as part of the DataOne federated network.  This includes full metadata documentation.  The repository is available at https://knb.ecoinformatics.org/view/doi:10.5063/F1959G05 and citable as @Beck21d.
 
 Materials for reproducing the analyses, figures, tables, and other content in this paper are provided in a GitHub repository. This includes a source RMarkdown file [@Xie20] used for the manuscript text.  The repository is available at https://github.com/tbep-tech/piney-point-manu. 
 
-The Piney Point Environmental Monitoring Dashboard can be used to view all data together through an interactive, online application.  It provides a synthesis of data to assess baseline conditions prior to April 2021 and to evaluate changing water quality conditions as new data become available. The dashboard is available at https://shiny.tbep.org and citable at @Beck21c.  
+The Piney Point Environmental Monitoring Dashboard can be used to view all data together through an interactive, online application.  It provides a synthesis of data to assess baseline conditions prior to April 2021 and all 2021 monitoring data collected in response to the Piney Point event. The dashboard is available at https://shiny.tbep.org and citable as @Beck21c.  
 
 # History of Piney Point 
 
