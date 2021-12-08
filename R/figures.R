@@ -1056,7 +1056,7 @@ p3 <- ggplot(toplo1, aes(x = week, y = medv)) +
   labs(
     x = NULL,
     y = 'Cells / L',
-    title = '(c) Diatom cell concentrations'
+    title = '(c) Diatom cell concentration'
   )
 
 # macroalgal weight summarized
@@ -1147,7 +1147,7 @@ p4 <- ggplot(wtsest, aes(x = week, y = medv)) +
   labs(
     y = expression(paste('kg / ', m^2)), 
     x = NULL, 
-    title = '(d) Cyanobacteria macroalgae abundances'
+    title = '(d) Filamentous cyanobacteria abundance'
   )
 
 # k brevis plot
@@ -1170,7 +1170,7 @@ p5 <- ggplot(toplo2, aes(x = week, y = medv)) +
   labs(
     x = 'Week of',
     y = 'Cells / L',
-    title = expression(paste('(e) ', italic('K. brevis'), ' cell concentrations'))
+    title = expression(paste('(e) ', italic('K. brevis'), ' cell concentration'))
   )
 
 # combine all
