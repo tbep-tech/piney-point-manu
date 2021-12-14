@@ -232,6 +232,14 @@ jpeg(here('figs/map.jpeg'), height = 4.2, width = 9, family = 'serif', units = '
 print(pout)
 dev.off()
 
+jpeg(here('submission/Fig1.jpeg'), height = 4.2, width = 9, family = 'serif', units = 'in', res = 500)
+print(pout)
+dev.off()
+
+# timeline copy -----------------------------------------------------------
+
+file.copy(here('figs/timeline.jpg'), here('submission/Fig2.jpg'))
+
 # nutrients, chloropyll, secchi map ---------------------------------------
 
 # nonbay stations
@@ -368,6 +376,10 @@ jpeg(here('figs/wqmap.jpeg'), height = 7, width = 12, units = 'in', res = 500, f
 print(p)
 dev.off()
 
+jpeg(here('submission/Fig3.jpeg'), height = 7, width = 12, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
 # seasonal trend plots ----------------------------------------------------
 
 # segments
@@ -395,6 +407,10 @@ p <- (p1 + p2 + p3 + plot_layout(ncol = 3)) / wrap_elements(grid::textGrob('Day 
   theme(legend.position = 'top')
 
 jpeg(here('figs/wqgam.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+jpeg(here('submission/Fig4.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -430,6 +446,10 @@ savsel <- savdat %>%
 p <- show_rstransect(savdat, mcrdat, savsel, mcrsel, rev = T, sclloc = T)
 
 jpeg(here('figs/trnex.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+jpeg(here('submission/Fig5.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -558,6 +578,10 @@ p <- ggplot(toplo, aes(x = date, y = foest)) +
   )
 
 jpeg(here('figs/trnfrq.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+jpeg(here('submission/Fig6.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -908,6 +932,10 @@ jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500,
 print(p)
 dev.off()
 
+jpeg(here('submission/Fig7.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
 # nutrient flow -----------------------------------------------------------
 
 brks <- seq.Date(as.Date('2021-03-28'), as.Date('2021-09-26'), by = '1 week')
@@ -1177,6 +1205,10 @@ p5 <- ggplot(toplo2, aes(x = week, y = medv)) +
 p <- p1 + p2 + p3 + p4 + p5 + plot_layout(ncol = 1)
 
 jpeg(here('figs/nutrientflow.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
+print(p)
+dev.off()
+
+jpeg(here('submission/Fig8.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
