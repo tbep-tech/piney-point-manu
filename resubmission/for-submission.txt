@@ -1,0 +1,8 @@
+For MPB submission:
+
+* remove line numbers from manu and supp
+* remove date compiled from manu
+* remove figures from manu, title as fig captions
+* format tables so no page breaks
+* manuscript main text double space
+* Add S prefix to figure and table captions in supplement
