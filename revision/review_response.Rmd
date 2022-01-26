@@ -23,7 +23,11 @@ We sincerely thank the reviewers for providing comments on our manuscript.  We p
 
 The authors (a very long list of authors) have described the sequence of events that followed a phosphate mining spill. The paper is long and tedious- and in the end cannot conclude any strong relationships with red tide occurrence. I wish I could be more positive about this paper, but it has the feeling that authors were rushing to get something in press, rather than taking the time to write a well crafted manuscript. There are some very good writers on the list of authors- so I am a bit surprised that they all agreed to this final version.
 
+Thank you for your comments. We have made revisions to improve the writing, by reducing length in many locations and making additional edits where noted. Please see the details below. 
+
 graphic abstract- much too complicated; fonts too tiny, too much text
+
+* __Response__: The graphical abstract was simplified and the font size increased.
 
 highlights- the term Piney Point is meaningless except for locals
 

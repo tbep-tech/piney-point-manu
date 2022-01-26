@@ -66,7 +66,7 @@ habdat <- read_excel(
 pineypoint <- tibble(
   lon = -82.52469352586753, 
   lat = 27.629819505234703
-  ) %>% 
+) %>% 
   st_as_sf(coords = c('lon', 'lat'), crs = 4326)
 
 # segments
@@ -165,6 +165,8 @@ tomap <- rsallpts %>%
 p2a <- ggmap(bsmap1_transparent) +
   geom_sf(data = tomap, aes(color = type), inherit.aes = F) +
   geom_sf(data = pineypoint, fill = 'black', pch = 24, color = 'black', size = 3, inherit.aes= F) + 
+  geom_sf(data = tbseglines[1, ], aes(fill = 'middle/lower Tampa\nBay boundary'), color = 'black', inherit.aes = F) + 
+  # scale_fill_manual(values = 'grey') +
   theme_bw() + 
   theme(
     panel.grid = element_blank(), 
@@ -178,6 +180,7 @@ p2a <- ggmap(bsmap1_transparent) +
     legend.position = 'right'
   ) +
   labs(
+    fill = NULL,
     color = 'Response monitoring',
     title = '(b) Sample locations'
   ) +
@@ -208,9 +211,9 @@ lbs2 <- tibble(
 
 p2b <- ggplot() + 
   geom_sf(data = states, fill = 'grey', colour = 'grey') +
-  geom_sf(data = insetbb, fill = NA, color = 'blue', size = 1.5) +
-  geom_sf_text(data = lbs1, aes(label = label), size = 5) + 
-  geom_sf_text(data = lbs2, aes(label = label), size = 5, angle = -65) + 
+  geom_sf(data = insetbb, fill = NA, color = 'blue', size = 1.25) +
+  geom_sf_text(data = lbs1, aes(label = label), size = 3.75) + 
+  geom_sf_text(data = lbs2, aes(label = label), size = 4, angle = -65) + 
   coord_sf(ylim = insetylim, xlim = insetxlim) +
   theme_void() +
   theme( 
@@ -219,26 +222,26 @@ p2b <- ggplot() +
   ) 
 
 p2 <- p2a + 
-  inset(ggplotGrob(p2b), xmin = -82.33, xmax = -82.02, ymin = 27.345, ymax = 27.57)
+  inset(ggplotGrob(p2b), xmin = -82.33, xmax = -82.1, ymin = 27.34, ymax = 27.5)
 
 pout <- p1 + p2 + plot_layout(ncol = 2, guides = 'collect') & 
   theme(
     legend.justification = 'top', 
     legend.box.spacing = unit(0, 'cm'),
     legend.spacing.y = unit(0, 'cm')
-    )
+  )
 
 jpeg(here('figs/map.jpeg'), height = 4.2, width = 9, family = 'serif', units = 'in', res = 500)
 print(pout)
 dev.off()
 
-jpeg(here('submission/Fig1.jpeg'), height = 4.2, width = 9, family = 'serif', units = 'in', res = 500)
+jpeg(here('revision/Fig1.jpeg'), height = 4.2, width = 9, family = 'serif', units = 'in', res = 500)
 print(pout)
 dev.off()
 
 # timeline copy -----------------------------------------------------------
 
-file.copy(here('figs/timeline.jpg'), here('submission/Fig2.jpg'))
+file.copy(here('figs/timeline.jpg'), here('revision/Fig2.jpg'))
 
 # nutrients, chloropyll, secchi map ---------------------------------------
 
@@ -328,13 +331,14 @@ toplo2 <- wqdat %>%
   filter(var %in% 'chla') %>% 
   mutate(val = pmin(30, val))
 
+legttl <- expression(paste(mu, 'g/L'))
 brks <- c(1, 3, 10 , 30)
 lbs <- c('1', '3', '10', '>30')
 p2 <- bsmap +
   geom_point(data = toplo2, aes(x = lng, y = lat, size = val, fill = val, group = dategrp, color = inrng), pch = 21, alpha = 0.8) +
-  scale_fill_gradientn('ug/L', trans = 'log10', breaks = brks, labels = lbs, colours = vrscols) +
+  scale_fill_gradientn(legttl, trans = 'log10', breaks = brks, labels = lbs, colours = vrscols) +
   scale_color_manual('In normal range?', values = c('black', 'lightgrey'), guide = T) +
-  scale_size('ug/L', range = c(0.5, 5), breaks = brks, labels = lbs, trans = 'log10') + 
+  scale_size(legttl, range = c(0.5, 5), breaks = brks, labels = lbs, trans = 'log10') + 
   coord_map() + 
   guides(
     fill = guide_legend(order = 1), 
@@ -376,7 +380,7 @@ jpeg(here('figs/wqmap.jpeg'), height = 7, width = 12, units = 'in', res = 500, f
 print(p)
 dev.off()
 
-jpeg(here('submission/Fig3.jpeg'), height = 7, width = 12, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig3.jpeg'), height = 7, width = 12, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -410,7 +414,7 @@ jpeg(here('figs/wqgam.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, 
 print(p)
 dev.off()
 
-jpeg(here('submission/Fig4.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig4.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -449,7 +453,7 @@ jpeg(here('figs/trnex.jpeg'), height = 7, width = 8, units = 'in', res = 500, fa
 print(p)
 dev.off()
 
-jpeg(here('submission/Fig5.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig5.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -581,7 +585,7 @@ jpeg(here('figs/trnfrq.jpeg'), height = 6, width = 9, units = 'in', res = 500, f
 print(p)
 dev.off()
 
-jpeg(here('submission/Fig6.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig6.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -932,7 +936,7 @@ jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500,
 print(p)
 dev.off()
 
-jpeg(here('submission/Fig7.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig7.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -1208,7 +1212,7 @@ jpeg(here('figs/nutrientflow.jpeg'), height = 8, width = 6, units = 'in', res = 
 print(p)
 dev.off()
 
-jpeg(here('submission/Fig8.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig8.jpeg'), height = 8, width = 6, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
