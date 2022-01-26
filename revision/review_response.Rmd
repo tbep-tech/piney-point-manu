@@ -72,6 +72,8 @@ P4/L56: deliberately "released"
 
 P5/L4: I see the use of the term lower Tampa Bay; how does that compare to Figure 1, the areas of interest? Ultimately, lower Tampa Bay is used extensively, but I don't see it defined. Also, is this region ecologically based or defined by currents?
 
+* __Response__: The boundary between middle and lower Tampa Bay was added to Figure 1. These boundaries are used by the Tampa Bay Estuary Program to track annual attainment of water quality targets under a Reasonable Assurance plan for TMDL reporting to the Florida Department of Environmental Protection.  We do not define the rationale for the boundaries in the main text because the regulatory delineations of the bay are not of interest to a broader audience, but we use the delineation as it is useful for our discussion of trends in the paper.  Our area delineations (areas 1 - 3) were meant to provide a more relevant grouping for the paper. 
+
 P5/L22-27: I think a citation may be warranted here; while predictable, numerous studies ultimately supported the statement that nitrogen is limiting in Tampa Bay.
 
 P5/L29: interesting that discharge was to Port Manatee and not Bishop Harbor like the release discussed previously.
@@ -113,6 +115,8 @@ Page 7, Line 22 - Were the breakpoints for K. brevis, or total phytoplankton abu
 Page 7, Line 37 - What about from ungauged flows?
 
 Page 11, Line 30 - Need to put Anna Maria Sound on the map. Likewise for Port Manatee.
+
+* __Response__: Locations were added to the map.
 
 Page 12-14, Water quality trends section - Very little attention is given to the role of the hurricane that hit the area in early July. Would be interesting to hear more about its effects on water quality in the study area.
 

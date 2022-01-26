@@ -69,6 +69,20 @@ pineypoint <- tibble(
 ) %>% 
   st_as_sf(coords = c('lon', 'lat'), crs = 4326)
 
+# anna maria sound loc
+annamaria <- tibble(
+  lon = -82.69431, 
+  lat = 27.48293
+) %>% 
+  st_as_sf(coords = c('lon', 'lat'), crs = 4326)
+
+# port manatee
+portmanatee <- tibble(
+  lon = -82.56343, 
+  lat = 27.63378
+) %>% 
+  st_as_sf(coords = c('lon', 'lat'), crs = 4326)
+
 # segments
 areas <- ppseg %>% 
   rename(area = Name) %>% 
@@ -131,9 +145,24 @@ p1 <- ggmap(bsmap1_transparent) +
   new_scale_fill() + 
   geom_sf(data = bsstatloc, aes(fill = 'Long-term monitoring', shape = 'Long-term monitoring'), color = 'black', size = 2, inherit.aes= F) +
   geom_sf(data = pineypoint, aes(fill = 'Piney Point', shape = 'Piney Point'), color = 'black', size = 3, inherit.aes= F) + 
+  geom_sf(data = portmanatee, aes(fill = 'Port Manatee', shape = 'Port Manatee'), color = 'black', size = 2.5, inherit.aes= F) + 
+  geom_sf(data = annamaria, aes(fill = 'Anna Maria Sound', shape = 'Anna Maria Sound'), color = 'black', size = 2.5, inherit.aes= F) + 
   geom_sf_text(data = areas, aes(label = area), color = 'black', inherit.aes = F, alpha = 0.8, size = 6) +
-  scale_fill_manual('test', values = c('white', 'black')) +
-  scale_shape_manual('test', values= c(21, 24)) +
+  scale_fill_manual('test', 
+                    values = list(
+                      `Long-term monitoring` = 'white', 
+                      `Piney Point`  = 'black', 
+                      `Port Manatee` = 'black', 
+                      `Anna Maria Sound` = 'black')
+  ) +
+  scale_shape_manual('test', 
+                     values = list(
+                       `Long-term monitoring` = 21, 
+                       `Piney Point`  = 24,
+                       `Port Manatee` = 23, 
+                       `Anna Maria Sound` = 22
+                     ) 
+  )  +
   theme_bw() + 
   theme(
     legend.title = element_blank(), 
@@ -166,7 +195,9 @@ p2a <- ggmap(bsmap1_transparent) +
   geom_sf(data = tomap, aes(color = type), inherit.aes = F) +
   geom_sf(data = pineypoint, fill = 'black', pch = 24, color = 'black', size = 3, inherit.aes= F) + 
   geom_sf(data = tbseglines[1, ], aes(fill = 'middle/lower Tampa\nBay boundary'), color = 'black', inherit.aes = F) + 
-  # scale_fill_manual(values = 'grey') +
+  geom_sf(data = portmanatee, fill = 'black', pch = 23, color = 'black', size = 2.5, inherit.aes= F) +
+  geom_sf(data = annamaria, fill ='black', pch = 22, color = 'black', size = 2.5, inherit.aes= F) +
+  scale_fill_manual(values = 'grey') +
   theme_bw() + 
   theme(
     panel.grid = element_blank(), 
@@ -201,7 +232,7 @@ insetylim <- st_bbox(statebuff)[c('ymin', 'ymax')]
 insetxlim <- st_bbox(statebuff)[c('xmin', 'xmax')]
 
 lbs1 <- tibble(
-  lon = -86, lat = 25.6, label = 'Gulf of\nMexico'
+  lon = -85.9, lat = 25.6, label = 'Gulf of\nMexico'
 ) %>% 
   st_as_sf(coords = c('lon', 'lat'), crs = 4326)
 lbs2 <- tibble(
@@ -212,17 +243,17 @@ lbs2 <- tibble(
 p2b <- ggplot() + 
   geom_sf(data = states, fill = 'grey', colour = 'grey') +
   geom_sf(data = insetbb, fill = NA, color = 'blue', size = 1.25) +
-  geom_sf_text(data = lbs1, aes(label = label), size = 3.75) + 
-  geom_sf_text(data = lbs2, aes(label = label), size = 4, angle = -65) + 
+  geom_sf_text(data = lbs1, aes(label = label), size = 3.25) + 
+  geom_sf_text(data = lbs2, aes(label = label), size = 3.5, angle = -65) + 
   coord_sf(ylim = insetylim, xlim = insetxlim) +
   theme_void() +
   theme( 
-    panel.background = element_rect(fill = '#FFFFFF99', colour = 'white'), 
+    panel.background = element_rect(fill = '#FFFFFF', colour = 'white'), 
     panel.border = element_rect(colour = 'black', fill = 'transparent')
   ) 
 
 p2 <- p2a + 
-  inset(ggplotGrob(p2b), xmin = -82.33, xmax = -82.1, ymin = 27.34, ymax = 27.5)
+  inset(ggplotGrob(p2b), xmin = -82.5035, xmax = -82.3435, ymin = 27.32, ymax = 27.5)
 
 pout <- p1 + p2 + plot_layout(ncol = 2, guides = 'collect') & 
   theme(
