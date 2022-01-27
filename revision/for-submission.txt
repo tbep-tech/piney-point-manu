@@ -5,4 +5,5 @@ For MPB submission:
 * remove figures from manu, title as fig captions
 * format tables so no page breaks
 * manuscript main text double space
-* Add S prefix to figure and table captions in supplement
+* add S prefix to figure and table captions in supplement
+* replace xxx in review response with line numbers
