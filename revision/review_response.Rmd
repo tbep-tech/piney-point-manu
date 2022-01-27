@@ -84,6 +84,8 @@ P6/L54-65: is it routine to take water samples directly from the surface? Ultima
 
 P7/L32-37: why get data from Tampa Airport and the Airfield in St. Petersburg? There is an NWS location not far from Piney Point.
 
+* __Response__: We have updated our weather data to include wind and precipitation from Albert Whitted Field in St. Petersburg and have excluded the precipitation data from Tampa International Airport.  Our initial rationale for including Tampa was a longer period of record.  However, we have revised the historical baseline in the plot to include only years 2006 to 2020, consistent with our comparison of the water quality data with the historical observations.  Also, the NWS location is in Ruskin, Florida and is farther from the bay proper than the location in St. Petersburg.
+
 P9/L27-29: not sure what to make of the aggregating data to weeks or months; isn't there a way to maintain the actual sampling regime?
 
 P9/L49: This is a bit confusing; is this comparing "between" pre and post?
@@ -113,6 +115,10 @@ Page 6, Lines 46-54 - More information is needed on laboratory procedures. In pa
 Page 7, Line 22 - Were the breakpoints for K. brevis, or total phytoplankton abundance?
 
 Page 7, Line 37 - What about from ungauged flows?
+
+* __Response__: Our methods for estimating inflows into Tampa Bay are based on methods that are similarly presented in a technical report published by the Tampa Bay Estuary Program in 2012.  This report provides the basis for compliance assessment of our TMDL for reporting to the Florida Department of Environmental Protection and represents our best estimate at hydrologic load inputs in to the bay.  We have provided a citation to this report in the paper.
+
+     Janicki Environmental, Inc., 2012. Development of a screening level tool for estimating annual hydrologic loadings to Tampa Bay (No. 05-12). Tampa Bay Estuary Program, St. Petersburg, Florida.
 
 Page 11, Line 30 - Need to put Anna Maria Sound on the map. Likewise for Port Manatee.
 

@@ -764,12 +764,13 @@ p2 <- ggplot(toplo, aes(x = week, y =  1 + val)) +
 
 # precip 
 toplo <- raindat %>% 
-  filter(grepl('^Tampa', station)) %>% 
+  filter(grepl('^St\\.\\sPete', station)) %>% 
   mutate(
     doy = yday(date), 
     yr = year(date), 
     mo = month(date)
   ) %>% 
+  filter(yr >= 2006) %>% 
   group_by(yr) %>% 
   arrange(yr, doy) %>% 
   mutate(precip_cm = cumsum(precip_cm)) %>% 
@@ -778,7 +779,7 @@ toplo <- raindat %>%
   mutate(
     flvl = case_when(
       yr == 2021 ~ '2021', 
-      T ~ '1995 - 2020'
+      T ~ '2006 - 2020'
     ), 
     xvals = ymd(paste('2021', month(date), day(date), sep = '-'))
   )
@@ -789,12 +790,12 @@ toplo2 <- toplo %>%
   filter(yr < 2021) %>% 
   group_by(xvals) %>% 
   summarise(
-    lov = quantile(precip_cm, 0.25, na.rm = T),
-    hiv = quantile(precip_cm, 0.75, na.rm = T),
+    lov = quantile(precip_cm, 0.05, na.rm = T),
+    hiv = quantile(precip_cm, 0.95, na.rm = T),
   ) %>% 
   ungroup()
 p3 <- ggplot() + 
-  geom_ribbon(data = toplo2, aes(x = xvals, ymin = lov, ymax = hiv, fill = '1995 - 2020\n25th - 75th %tile'), alpha = 0.7) +
+  geom_ribbon(data = toplo2, aes(x = xvals, ymin = lov, ymax = hiv, fill = '2006 - 2020\n5th - 95th %tile'), alpha = 0.7) +
   geom_line(data = toplo1, aes(x = xvals, y = precip_cm, color = '2021'), size = 1.2) +
   scale_color_manual(values = '#00806E') +
   scale_fill_manual(values = 'grey') + 
@@ -821,6 +822,7 @@ toplo <- hydrodat %>%
     yr = year(date), 
     mo = month(date)
   ) %>% 
+  filter(yr >= 2006) %>% 
   group_by(yr) %>% 
   arrange(yr, doy) %>% 
   mutate(
@@ -832,7 +834,7 @@ toplo <- hydrodat %>%
   mutate(
     flvl = case_when(
       yr == 2021 ~ '2021', 
-      T ~ '1995 - 2020'
+      T ~ '2006 - 2020'
     ), 
     xvals = ymd(paste('2021', month(date), day(date), sep = '-'))
   )
@@ -843,12 +845,12 @@ toplo2 <- toplo %>%
   filter(yr < 2021) %>% 
   group_by(xvals) %>% 
   summarise(
-    lov = quantile(flow_km3, 0.25, na.rm = T),
-    hiv = quantile(flow_km3, 0.75, na.rm = T),
+    lov = quantile(flow_km3, 0.05, na.rm = T),
+    hiv = quantile(flow_km3, 0.95, na.rm = T),
   ) %>% 
   ungroup()
 p4 <- ggplot() + 
-  geom_ribbon(data = toplo2, aes(x = xvals, ymin = lov, ymax = hiv, fill = '1995 - 2020\n25th - 75th %tile'), alpha = 0.7) +
+  geom_ribbon(data = toplo2, aes(x = xvals, ymin = lov, ymax = hiv, fill = '2006 - 2020\n5th - 95th %tile'), alpha = 0.7) +
   geom_line(data = toplo1, aes(x = xvals, y = flow_km3, color = '2021'), size = 1.2) +
   scale_color_manual(values = '#00806E') +
   scale_fill_manual(values = 'grey') + 
