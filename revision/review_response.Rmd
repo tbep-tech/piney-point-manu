@@ -18,7 +18,7 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 spelling::spell_check_files('revision-response.Rmd')
 ```
 
-We sincerely thank the reviewers for providing comments on our manuscript.  We provie a point-by-point response to these comments below. In general, most of the revisions address concerns raised by all three reviewers, including 1) improvement in writing style for clarity and brevity, and 2) additional information on sampling methods.  We have also addressed concerns of Reviewer 2 about potential nutrient cycling by adding a section in the discussion and concerns of Reviewer 4 regarding additional detail on the simulation modelling.    
+We sincerely thank the reviewers for providing comments on our manuscript.  We provide a point-by-point response to these comments below. In general, most of the revisions address concerns raised by all three reviewers, including 1) improvement in writing style for clarity and brevity, and 2) additional information on sampling methods.  We have also addressed concerns of Reviewer 2 about potential nutrient cycling by adding a section in the discussion and concerns of Reviewer 4 regarding additional detail on the simulation modelling.    
 
 ## Reviewer 1
 
@@ -65,7 +65,11 @@ In all, it seemed like an interesting exercise to describe all the patterns, but
 
 Beck and colleagues report on the short- and mid-term effect of a very large nutrient-rich release from Piney Point. The authors focus on a few water quality indicators, but also include data for several additional responses (e.g., seagrass coverage). The results are largely what you would expect, initial rapid response of phytoplankton with cascading secondary responses.
 
+* __Response__: We really appreciate your comments.  Please see the detailed responses below. 
+
 First, a few of the things that make this a worthwhile contribution to MPB. The authors should be commended for their quick response to data collection and the large number of data streams that were brought to the study. It really is quite impressive. Further, compared to citizen monitoring, I expect the data is high quality and consistent. Second, the writing was quite good; there were some sections where flow or organization could be improved (beginning of results; last section of discussion); however, these considerations are very minor.
+
+* __Response__: Thank you for pointing out the merits of this paper and providing suggestions where the writing can be improved.  We have edited the sections you point out for brevity and clarity.  
 
 Second, a few things that could be improved or warrant some critique. What is the rationale for the lack of continuous line numbers? Journal suggestion? Reviewing is so much easier when line numbers line up with the text and continue throughout the document. I realize this is not something that should be fixed now, but it is bothersome. 
 
@@ -73,15 +77,25 @@ Second, a few things that could be improved or warrant some critique. What is th
 
 That said, my one major critique of the manuscript, one that is difficult to reconcile with the available data, is the speculative nature of last section of the Results, titled Potential nutrient cycling. This is clearly a very important section and, in my opinion, warrants additional consideration. The title of this section is correct, yes; thus, I would like to see 1) this section moved to the discussion, 2) the MAJOR lines of evidence supporting this thesis outlined and discussed consecutively in one section, 3) major alternatives entertained and addressed. The authors might also think about what it would take to make the connections more explicit, if possible (stable isotopes, modeling, etc.).
 
+* __Response__: Thank you for this comment.  We agree this section is important as it relates the timeline of events in a plausible manner, although it is definitely speculative without more quantitative results linking the pieces.  As such, we have moved the content to the discussion and amended to text to include a more nuanced description of the trends, including what information may be needed to support the narrative.  This includes information from the final paragraph of the discussion, which was removed.  The new section is included from lines xxx to xxx.
+
 MINOR COMMENTS/SPECIFIC SUGGESTIONS
 
 P3/L56: Recommend removing "in other countries". When I read that passage it seems to suggest a broader critique, one that is more political. That may not have been your intention, but that was how I read it.
 
+* __Response__: Our point was to suggest that mining products in Florida are generally exported and have little benefit for the local communities, aside from localized economic benefits.  However, this may be a bit editorialized and was removed. 
+
 P4/L21-24: I am not sure if "unanticipated releases" captures the spirt in which these releases occurred. In fact, the title of the FWC report was "Response of estuarine nekton to the regulated discharge of treated phosphate-production process water". This regulated discharge seemed to occur after extensive consultation with the EPA.
+
+* __Response__: Agreed, we have removed "unanticipated". We agree that the releases often occur after consultation or approval from regulatory bodies, but they are generally unanticipated in that site management has not planned for these events, nor the potential impacts on the environment.
 
 P4/L51: worth indicating that these concentrations, especially for TP, are several orders of magnitude greater than typical surface waters?
 
+* __Response__: The sentence was edited: "Water quality of NGS-S measured in 2019 showed total phosphorus (160 mg/L) and total nitrogen (230 mg/L) were approximately three orders of magnitude higher than typical concentrations in Tampa Bay." 
+
 P4/L56: deliberately "released"
+
+* __Response__: Changed to "released under FDEP authorization". 
 
 P5/L4: I see the use of the term lower Tampa Bay; how does that compare to Figure 1, the areas of interest? Ultimately, lower Tampa Bay is used extensively, but I don't see it defined. Also, is this region ecologically based or defined by currents?
 
@@ -89,11 +103,21 @@ P5/L4: I see the use of the term lower Tampa Bay; how does that compare to Figur
 
 P5/L22-27: I think a citation may be warranted here; while predictable, numerous studies ultimately supported the statement that nitrogen is limiting in Tampa Bay.
 
+* __Response__: Agreed, we have revised this statement to include additional citations and explanation:
+
+     "Numerous studies, as well as the successful nutrient management paradigm for Tampa Bay, have demonstrated nitrogen-limitation in Tampa Bay and the system is generally considered phosphorus enriched [@Wang99;@Greening06;@Greening14]. As such, we focus on nitrogen in our analyses as the identified limiting nutrient for Tampa Bay and its potential to create water quality conditions unfavorable for seagrass growth due to enhanced algal production."
+
 P5/L29: interesting that discharge was to Port Manatee and not Bishop Harbor like the release discussed previously.
+
+* __Response__: Yes, we believe the intent was to minimize impacts to sensitive back-bay habitats that were observed in previous releases, although we have no information to verify this claim and have not included it in the text.  
 
 P6/L24-39: that is an impressive and extensive list of agencies and partners; any potential drawbacks to so many data streams?
 
+* __Response__: Data quality assurance and control was a primary concern with multiple partners collecting information.  We have included additional information about the data collection procedures and how the Tampa Bay Estuary Program worked to facilitate quality of the data.  Please see the additions starting on line xxx.
+
 P6/L54-65: is it routine to take water samples directly from the surface? Ultimately, were the authors worried about any potential stratification, particularly of Karenia brevis.
+
+* __Response__:  Most of the water quality and phytoplankton samples were surface collections following standard sampling methods used by our partners (see the text addition about sampling).  Tampa Bay also has a very shallow average depth of just over 3m and is not strongly stratified for most of the year.  So, we feel confident that the majority of samples used in our analyses were generally representative of conditions in the water column. Anecdotally, benthic fishes were observed during the fish kills (e.g., eels, rays), so it is likely that *K. brevis* was present throughout the water column, although we have very little quantitative data to describe the vertical distribution.   
 
 P7/L32-37: why get data from Tampa Airport and the Airfield in St. Petersburg? There is an NWS location not far from Piney Point.
 
@@ -101,13 +125,23 @@ P7/L32-37: why get data from Tampa Airport and the Airfield in St. Petersburg? T
 
 P9/L27-29: not sure what to make of the aggregating data to weeks or months; isn't there a way to maintain the actual sampling regime?
 
+* __Response__:
+
 P9/L49: This is a bit confusing; is this comparing "between" pre and post?
+
+* __Response__:
 
 P11/L12-14: as personal preference, I see no reason to lead off the results with a general statement about the location of a figure summary. Instead, the authors might reference the figure when they describe, in general, that a bloom was observed ~2 weeks after the release began, red tide was observed within x weeks, the bloom peaks, and conditions become stable on xx.
 
+* __Response__:
+
 P11/L20-: this first part of the results has a choppy structure
 
+* __Response__:
+
 P11/L31-34: the authors indicate the Tampa Bay influx was related to an ongoing coastal bloom; is this indicating the red tide bloom was ongoing prior to the Piney Point discharge? Also, not clear what "related" means in this context. This important statement may require additional context.
+
+* __Response__:
 
 P16/L26: not sure I see the rationale for analyzing the data using Braun Blanquet estimates, which, in my impression, was developed as a rapid assessment
 
@@ -117,7 +151,11 @@ P16/L26: not sure I see the rationale for analyzing the data using Braun Blanque
 
 P17/Potential nutrient cycling: Unfortunately, much of the latter portions of this section are speculative and better presented in the discussion. Further, it would have been nice to see something a bit more concrete linking the nutrient shift from photoplankton to macroalgae and release of macroalgae nutrients to K. brevis; stable isotopes perhaps; the nitrogen sources could have been highly enriched
 
+* __Response__: This section was moved to the discussion, please see the response to your general comment above. 
+
 P18/L18: or a shift in the relative availability, N:P
+
+* __Response__:
 
 ## Reviewer 4
 
@@ -185,11 +223,7 @@ Page 17, Lines 37-40 - Could there have been a role for low D.O. in the post-sto
 
 Discussion - In general, it would be useful if the team would spend some time establishing the prevalence of N-limitation in the system, either based on their own data or previous studies. The interpretation of plume impacts is predicated on the system being N-limited, so that needs to be established up front.
 
-* __Response__: We agree that the nutrient limitation needs to be clearly stated as the basis for focusing primarily on nitrogen and not phosphorus. The second paragraph in the introduction was meant to provide this justification, but this was clearly insufficient as noted in the review.  We include some additional text and citations in the final paragraph of the introduction as further justification:
-
-     "Numerous studies, as well as the successful nutrient management paradigm for Tampa Bay, have demonstrated nitrogen-limitation in Tampa Bay and the system is generally considered phosphorus enriched [@Wang99;@Greening06;@Greening14]. As such, we focus on nitrogen in our analyses as the identified limiting nutrient for Tampa Bay and its potential to create water quality conditions unfavorable for seagrass growth due to enhanced algal production."
-     
-     Phosphorus summary plots are also included in the supplement.
+* __Response__: We agree that the nutrient limitation needs to be clearly stated as the basis for focusing primarily on nitrogen and not phosphorus. The second paragraph in the introduction was meant to provide this justification, but this was clearly insufficient as noted in the review.  We include some additional text and citations in the final paragraph of the introduction as further justification - see the response to the similar critique from reviewer 2.  Also note that phosphorus summary plots were previously included in the supplement.
 
 Page 20, Line 22 - Ammonium, not ammonia. Or was pH such that ammonia would be the dominant form?
 
