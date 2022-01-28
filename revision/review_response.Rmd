@@ -127,7 +127,7 @@ This is an interesting study in that it utilizes a quasi-Lagrangian approach to 
 
 Page 1, Line 38 - "Elevated levels of phytoplankton" - needs to be clearer… is this referring to biomass or abundance?
 
-*__Response__: This line was changed to "An initial phytoplankton bloom (non-harmful diatoms) was first observed...".  This was based on chlorohpyll measurements in the vicinity of Port Manataee and cell concentrations enumerated to taxa from laboratory analysis.  The word limit for the absract prevents these details, but they are presented in text (i.e., line xxx and xxx).
+* __Response__: This line was changed to "An initial phytoplankton bloom (non-harmful diatoms) was first observed...".  This was based on chlorohpyll measurements in the vicinity of Port Manataee and cell concentrations enumerated to taxa from laboratory analysis.  The word limit for the abstract prevents these details, but they are presented in text (i.e., line xxx and xxx).
 
 Pages 6, Lines 4-22 - The sampling regime was largely dictated by output of a model of plume evolution. It would be useful to see more details on how the model is calibrated, and if/how its output is cross-verified. In other words, are field observations of T/S compared with model output to evaluate its performance in terms of accuracy of plume location? This seems like critical information for assuring that the sampling regime actually followed the plume.
 
@@ -153,7 +153,7 @@ Page 7, Line 22 - Were the breakpoints for K. brevis, or total phytoplankton abu
 
 Page 7, Line 37 - What about from ungauged flows?
 
-* __Response__: Our methods for estimating inflows into Tampa Bay are based on methods that are similarly presented in a technical report published by the Tampa Bay Estuary Program in 2012 [@Janicki12].  This report provides the basis for compliance assessment of our TMDL for reporting to the Florida Department of Environmental Protection and represents our best estimate at hydrologic load inputs in to the bay.  We have provided a citation to this report in the paper.
+* __Response__: Our methods for estimating inflows into Tampa Bay are based on methods that are similarly presented in a technical report published by the Tampa Bay Estuary Program in 2012 [@Janicki12].  This report provides the basis for compliance assessment of our TMDL for reporting to the Florida Department of Environmental Protection and represents our best estimate at hydrologic load inputs to the bay.  We have provided a citation to this report in the paper.
 
 Page 11, Line 30 - Need to put Anna Maria Sound on the map. Likewise for Port Manatee.
 
@@ -161,15 +161,21 @@ Page 11, Line 30 - Need to put Anna Maria Sound on the map. Likewise for Port Ma
 
 Page 12-14, Water quality trends section - Very little attention is given to the role of the hurricane that hit the area in early July. Would be interesting to hear more about its effects on water quality in the study area.
 
-* __Response__: As noted in the red tide section and discussion, Tropical Storm Elsa was considered a confounding factor when interpreting drivers of the red tide event. It is challenging to disentangle an isolated effect of the storm on the red tide and the same could be said for the broader suite of parameters that were used to assess water quality. For example, a clear chlorophyll spike in early July coincided with the red tide peak, which also coincided with passage of the storm.  A lack of continuous monitoring in the bay also prevented a more comprehensive assessment of potential storm effects.  However, water quality conditions were changing rapidly from the red tide, preceding the arrival of the storm by several days, and we consider the water quality conditions at the time of passage to be driven primarily by the *K. brevis* bloom in the bay. We have added some additional text describing these interpretations in response to your comment below about dissolved oxygen.
+* __Response__: As noted in the red tide section and discussion, Tropical Storm Elsa was a confounding factor when interpreting drivers of the red tide event. It is challenging to disentangle an isolated effect of the storm on the red tide and the same could be said for the broader suite of parameters that were used to assess water quality. For example, a clear chlorophyll spike in early July coincided with the red tide peak, which also coincided with passage of the storm.  A lack of continuous monitoring in the bay also prevented a more comprehensive assessment of potential storm effects.  However, water quality conditions were changing rapidly from the red tide, preceding the arrival of the storm by several days, and we consider the water quality conditions at the time of passage to be driven primarily by the *K. brevis* bloom in the bay. We have added some additional text describing these interpretations in response to your comment below about dissolved oxygen and fish kills.
 
 Page 14, Macroalgae and seagrass trends section - This appears to be one of the weaker components of the project, although it is outside of my expertise. My biggest concern is that it is not clear to me how useful "% occurrence" is. As far as I can tell, this is not equivalent to biomass or areal coverage. Perhaps I am mistaken? Regardless, it would be useful to see a better justification for this metric. Also, how did the 2021 data compare to historic spatial-temporal trends?
 
-* __Response__: 
+* __Response__: Frequency occurrence is a routine reporting metric used by the Tampa Bay Estuary Program to summarize the long-term annual transect monitoring [see @Johansson16;@Sherwood17]. Additional text on line xxx was added to make this clear: 
 
+     "Frequency occurrence estimates were used to evaluate macroalgae and seagrasses as a standard metric used in previous analyses in Tampa Bay [@Johansson16;@Sherwood17]."
+
+     We realize that additional metrics could have been used to summarize the data and we presented trend assessments using the Braun-Blanquet abundance estimates as confirmation for the results from the frequency occurrence analyses (line xxx).  However, this does not provide an assessment of biomass or coverage.  Weight data were collected for select macroalgae samples during the 2021 surveys and a preliminary analysis (see the Seagrass -> Biomass estimates tab [here](https://tbep-tech.github.io/piney-point-analysis/trend)) suggested similar trends as the frequnecy occurrence results.  Because we did not have comparable weight data for seagrasses, the analysis was not included.  It is also worth mentioning that coverage estimates are obtained every two years for Tampa Bay as an annual snapshot (noted on line xxx in the discussion), but these are not of sufficient temporal resolution to support the analyses in this paper. 
+
+     There were limitations to our analysis that were noted in the original draft, primarily the lack of long-term historical data on seasonal trends for seagrasses and macroalgae.  For example, line xxx in the original discussion: "Long-term monitoring data describing normal seasonal variation in macroalgae are unavailable and we cannot distinguish between seasonal and interannual changes and those in potential response to the Piney Point release." 
+     
 Page 17, Lines 17-20 - How did the 2021 fish kills compare to historical kill spatial-temporal trends?
 
-* __Response__: We were also interested in this question and had included a long-term trend plot in an earlier draft, with results as early as 1995.  However, this was not included due to differences in reporting methods that have changed over time.  For example, online reporting iculties in comparing the long-term trend to current results
+* __Response__: We were also interested in this question and had included a long-term trend plot in an earlier draft, with results as early as 1995 (see [here](https://github.com/tbep-tech/piney-point-manu/blob/c45049af6885e1e7d29aeb414d161a0ce4bdeadb/figs/redtide.jpeg)).  However, this was not included due to differences in reporting methods that have changed over time.  Online reporting became an option in recent years and we considered the results incomparable to the earlier data that were based on phone reporting methods.
 
 Page 17, Lines 37-40 - Could there have been a role for low D.O. in the post-storm fish kills?
 
@@ -179,19 +185,21 @@ Page 17, Lines 37-40 - Could there have been a role for low D.O. in the post-sto
 
 Discussion - In general, it would be useful if the team would spend some time establishing the prevalence of N-limitation in the system, either based on their own data or previous studies. The interpretation of plume impacts is predicated on the system being N-limited, so that needs to be established up front.
 
-* __Response__: We agree that this nutrient limitation needs to be clearly stated as the basis for focusing primarily on nitrogen and not phosphorus. The second paragraph in the introduction was meant to provide this justification, but this was clearly insufficient as noted in the review.  We include some additional text and citations in the final paragraph of the introduction as further justification:
+* __Response__: We agree that the nutrient limitation needs to be clearly stated as the basis for focusing primarily on nitrogen and not phosphorus. The second paragraph in the introduction was meant to provide this justification, but this was clearly insufficient as noted in the review.  We include some additional text and citations in the final paragraph of the introduction as further justification:
 
      "Numerous studies, as well as the successful nutrient management paradigm for Tampa Bay, have demonstrated nitrogen-limitation in Tampa Bay and the system is generally considered phosphorus enriched [@Wang99;@Greening06;@Greening14]. As such, we focus on nitrogen in our analyses as the identified limiting nutrient for Tampa Bay and its potential to create water quality conditions unfavorable for seagrass growth due to enhanced algal production."
      
-     We also note that phosphorus trends are included in the supplement.
+     Phosphorus summary plots are also included in the supplement.
 
 Page 20, Line 22 - Ammonium, not ammonia. Or was pH such that ammonia would be the dominant form?
 
-* __Response__: 
+* __Response__: This is in reference to total ammonia nitrogen, as was provided by the water quality sampling.  We have made a note on line xxx in the methods that any mention of ammonia refers to total ammonia nitrogen.  
 
 Page 20, Line 39 - Might be worth having a separate paragraph that talks about the timing/duration of the K. brevis bloom in 2021 compared to historic conditions.
 
-* __Response__: 
+* __Response__: Previous content in the discussion below this paragraph provided some historical context on red tide events in the region.  Specifically, starting on line xxx: "Occurrence of this species has historically been spatially distinct, with blooms originating in subsurface water offshore on the West Florida Shelf..." 
+
+     We have added some text below the existing pararaph to provide more context: "Seasonal persistence in Gulf waters in southwest Florida can vary between years, with some blooms lasting as short as a few weeks, while others have been present for longer than a year [the 2018 bloom lasted sixteen months, @Skripnikov21]. Severity in estuaries is typically less than Gulf waters as *K. brevis* is limited to higher salinity." 
 
 Page 20 (last paragraph)-21 (first paragraph) - Without showing methods and/or data, I feel that it is inappropriate to introduce the nekton abundance/composition here.
 
@@ -199,10 +207,14 @@ Page 20 (last paragraph)-21 (first paragraph) - Without showing methods and/or d
 
 Page 21, Lines 32-47 - Much of this text on seagrass seems speculative, and again, unclear about use of % occurrence as a metric.
 
-* __Response__: 
+* __Response__: We have replaced the beginning of this paragraph with more definitive text: 
+
+     "Previous research for Tampa Bay has identified water quality conditions that are likely to promote seagrass growth [@Greening06;@Greening14, and references therein]. The results observed in 2021 suggested water quality conditions were not supportive of seagrass growth, although changes were not observed and the conditions likely did not persist long enough to impact seagrasses." 
+
+     Also, please see our response above about frequency occurrence. 
 
 Page 24, Lines 17-52 - Speculative without showing methods of data collection or the actual data.
 
-* __Response__: 
+* __Response__: The paragraph was removed for brevity.  
 
 # References
