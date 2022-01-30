@@ -117,31 +117,37 @@ P6/L24-39: that is an impressive and extensive list of agencies and partners; an
 
 P6/L54-65: is it routine to take water samples directly from the surface? Ultimately, were the authors worried about any potential stratification, particularly of Karenia brevis.
 
-* __Response__:  Most of the water quality and phytoplankton samples were surface collections following standard sampling methods used by our partners (see the text addition about sampling).  Tampa Bay also has a very shallow average depth of just over 3m and is not strongly stratified for most of the year.  So, we feel confident that the majority of samples used in our analyses were generally representative of conditions in the water column. Anecdotally, benthic fishes were observed during the fish kills (e.g., eels, rays), so it is likely that *K. brevis* was present throughout the water column, although we have very little quantitative data to describe the vertical distribution.   
+* __Response__:  Most of the water quality and phytoplankton samples were surface collections following standard sampling methods used by our partners (see the text addition about sampling).  Tampa Bay also has a very shallow average depth of just over 3m and is not strongly stratified for most of the year.  So, we feel confident that the majority of samples used in our analyses were generally representative of conditions in the water column. Anecdotally, benthic fishes were observed during the fish kills (e.g., eels, rays), so it is likely that *K. brevis* was present throughout the water column, although we have very little quantitative data to describe the vertical distribution.  Please see the addition of information on *K. brevis* sampling on line xxx provided in response to reviewer 1.
 
 P7/L32-37: why get data from Tampa Airport and the Airfield in St. Petersburg? There is an NWS location not far from Piney Point.
 
-* __Response__: We have updated our weather data to include wind and precipitation from Albert Whitted Field in St. Petersburg and have excluded the precipitation data from Tampa International Airport.  Our initial rationale for including Tampa was a longer period of record.  However, we have revised the historical baseline in the plot to include only years 2006 to 2020, consistent with our comparison of the water quality data with the historical observations.  Also, the NWS location is in Ruskin, Florida and is farther from the bay proper than the location in St. Petersburg.
+* __Response__: We have updated our weather data to include wind and precipitation from Albert Whitted Field in St. Petersburg and have excluded the precipitation data from Tampa International Airport.  Our initial rationale for using data from Tampa was a longer period of record.  However, we have revised the historical baseline in the plot to include only years 2006 to 2020, consistent with our comparison of the water quality data with historical observations.  Also, the NWS location is in Ruskin, Florida and is farther from the bay proper than the location in St. Petersburg.
 
 P9/L27-29: not sure what to make of the aggregating data to weeks or months; isn't there a way to maintain the actual sampling regime?
 
-* __Response__:
+* __Response__: The weekly aggregation was only done to allow plotting and comparison between variables on a common scale (e.g., Figure 7 and 8).  None of the statistical tests used data with fixed sample dates. We removed the text because the statement is inaccurate and somewhat misleading.   
 
 P9/L49: This is a bit confusing; is this comparing "between" pre and post?
 
-* __Response__:
+* __Response__: No, these tests were meant to compare all observations post-release to help identify periods of time when observations differed, e.g., when chlorophyll was at its maximum.  The text was revised for clarity. 
+
+     "Differences in observations between months for April to September for water quality, seagrass, and macroalgae within each area (Figure \@ref(fig:map)a) were evaluated using a Kruskal-Wallis one-way analysis of variance (ANOVA) followed by multiple comparisons using 2-sided Mann-Whitney U tests [@Hollander13]. These tests were used to statistically characterize the temporal progression of changes in the bay following release from Piney Point."
 
 P11/L12-14: as personal preference, I see no reason to lead off the results with a general statement about the location of a figure summary. Instead, the authors might reference the figure when they describe, in general, that a bloom was observed ~2 weeks after the release began, red tide was observed within x weeks, the bloom peaks, and conditions become stable on xx.
 
-* __Response__:
+* __Response__: The first section of the results describing the timeline was removed and text was placed in the appropriate sections that followed.  The timeline is now referenced in the first paragraph of the discussion to provide a synthesis of the main results that were described. 
 
 P11/L20-: this first part of the results has a choppy structure
 
-* __Response__:
+* __Response__: Please see the response to the previous comment.
 
 P11/L31-34: the authors indicate the Tampa Bay influx was related to an ongoing coastal bloom; is this indicating the red tide bloom was ongoing prior to the Piney Point discharge? Also, not clear what "related" means in this context. This important statement may require additional context.
 
-* __Response__:
+* __Response__: Yes, red tide was observed in the Gulf of Mexico prior to the occurrence in Tampa Bay.  Content in the red tide section was edited to make this clear (line xxx): 
+
+     "This first Tampa Bay influx originated from an ongoing coastal bloom in the Gulf of Mexico, as is common when red tide is observed in the bay [@Steidinger72;@Flaherty11]."
+     
+     Blooms in Tampa Bay originate from *K. brevis* that is transported in from the Gulf of Mexico.  An important distinction that we make in this paper is that, although blooms in Tampa Bay are not uncommon, the severity of the 2021 bloom was very likely related to the favorable conditions in the bay prior to July.  These favorable conditons were related to 1) nutrient availability from Piney Point, and 2) high salinity conditions from low rainfall.  The passage of tropical storm Elsa was also a confounding factor.  It is nearly impossible to identify a single factor causing the observed conditions, but we describe the considerations in the discussion (lines xxx to xxx).
 
 P16/L26: not sure I see the rationale for analyzing the data using Braun Blanquet estimates, which, in my impression, was developed as a rapid assessment
 
@@ -155,7 +161,7 @@ P17/Potential nutrient cycling: Unfortunately, much of the latter portions of th
 
 P18/L18: or a shift in the relative availability, N:P
 
-* __Response__:
+* __Response__: Added text "...or changing availability of nutrient ratios."
 
 ## Reviewer 4
 
