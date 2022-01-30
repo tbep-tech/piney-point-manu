@@ -24,7 +24,7 @@ We sincerely thank the reviewers for providing comments on our manuscript.  We p
 
 The authors (a very long list of authors) have described the sequence of events that followed a phosphate mining spill. The paper is long and tedious- and in the end cannot conclude any strong relationships with red tide occurrence. I wish I could be more positive about this paper, but it has the feeling that authors were rushing to get something in press, rather than taking the time to write a well crafted manuscript. There are some very good writers on the list of authors- so I am a bit surprised that they all agreed to this final version.
 
-* __Response__: Thank you for your comments. We have made revisions to improve the writing, by reducing length in many locations and making additional edits where noted. Please see the details below. 
+* __Response__: Thank you for your comments. We have made revisions to improve the writing, by reducing length in many locations and making additional edits where noted. Note that many of the edits in response to the more specific comments from the other reviewers are used to address some of the comments below.
 
 graphic abstract- much too complicated; fonts too tiny, too much text
 
@@ -55,11 +55,19 @@ p. 7 - eyes on seagrass is meaningless (except for locals)
 
 stats section- poorly written, confusing, wordy
 
+* __Response__: Please see the responses to reviewer 2.
+
 Results- rambling, disorganized and non-quantitative. Paragraphs don't make sense (try using topic sentences and structuring concepts accordingly)
+
+* __Response__: Please see the responses to reviewer 2, particularly regarding the first section of the results.
 
 Discussion- I was left wondering what I learned. No conclusions drawn
 
+* __Response__: Please see the responses to reviewer 2, particularly regarding the edits to the discussion sections.
+
 In all, it seemed like an interesting exercise to describe all the patterns, but this does not make a quality manuscript that will stand the test of time.
+
+* __Response__: We are confident that the edits made in response to your comments and those from the other reviewers have made this a more compelling and valuable contribution. 
 
 ## Reviewer 2
 
