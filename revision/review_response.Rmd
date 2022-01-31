@@ -18,13 +18,13 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 spelling::spell_check_files('revision-response.Rmd')
 ```
 
-We sincerely thank the reviewers for providing comments on our manuscript.  We provide a point-by-point response to these comments below. In general, most of the revisions address concerns raised by all three reviewers, including 1) improvement in writing style for clarity and brevity, and 2) additional information on sampling methods.  We have also addressed concerns of Reviewer 2 about potential nutrient cycling by adding a section in the discussion and concerns of Reviewer 4 regarding additional detail on the simulation modelling.    
+We sincerely thank the reviewers for providing comments on our manuscript.  We provide a point-by-point response to these comments below. In general, most of the revisions address concerns raised by all three reviewers, including 1) numerouis edits to improve the writing for clarity and brevity, and 2) additional information on sampling methods.  We have also addressed concerns of Reviewer 2 about potential nutrient cycling by adding a section in the discussion and concerns of Reviewer 4 regarding additional detail on the simulation modelling.    
 
 ## Reviewer 1
 
 The authors (a very long list of authors) have described the sequence of events that followed a phosphate mining spill. The paper is long and tedious- and in the end cannot conclude any strong relationships with red tide occurrence. I wish I could be more positive about this paper, but it has the feeling that authors were rushing to get something in press, rather than taking the time to write a well crafted manuscript. There are some very good writers on the list of authors- so I am a bit surprised that they all agreed to this final version.
 
-* __Response__: Thank you for your comments. We have made revisions to improve the writing, by reducing length in many locations and making additional edits where noted. Note that many of the edits in response to the more specific comments from the other reviewers are used to address some of the comments below.
+* __Response__: Thank you for your comments. We have made revisions to improve the writing, by reducing length in many locations and making additional edits where noted. Note that many of the edits in response to the specific comments from the other reviewers are used to address some of the comments below.
 
 graphic abstract- much too complicated; fonts too tiny, too much text
 
@@ -36,7 +36,11 @@ highlights- the term Piney Point is meaningless except for locals
 
 abstract- poorly written
 
+* __Response__: Abstract was edited.
+
 Introduction- needs a complete rewrite- it takes more than 3 pages to get to the point that there was a spill. The general background is interesting but you need to grab the readers attention first.
+
+* __Response__: Introduction was shortened and edits were made to improve clarity.
 
 p. 5- inadequate explanation for why the focus on N. Why not both?
 
@@ -67,7 +71,7 @@ Discussion- I was left wondering what I learned. No conclusions drawn
 
 In all, it seemed like an interesting exercise to describe all the patterns, but this does not make a quality manuscript that will stand the test of time.
 
-* __Response__: We are confident that the edits made in response to your comments and those from the other reviewers have made this a more compelling and valuable contribution. 
+* __Response__: We are confident that the edits made in response to your comments and those from the other reviewers have made this manuscript a more compelling and valuable contribution. 
 
 ## Reviewer 2
 
@@ -85,7 +89,7 @@ Second, a few things that could be improved or warrant some critique. What is th
 
 That said, my one major critique of the manuscript, one that is difficult to reconcile with the available data, is the speculative nature of last section of the Results, titled Potential nutrient cycling. This is clearly a very important section and, in my opinion, warrants additional consideration. The title of this section is correct, yes; thus, I would like to see 1) this section moved to the discussion, 2) the MAJOR lines of evidence supporting this thesis outlined and discussed consecutively in one section, 3) major alternatives entertained and addressed. The authors might also think about what it would take to make the connections more explicit, if possible (stable isotopes, modeling, etc.).
 
-* __Response__: Thank you for this comment.  We agree this section is important as it relates the timeline of events in a plausible manner, although it is definitely speculative without more quantitative results linking the pieces.  As such, we have moved the content to the discussion and amended to text to include a more nuanced description of the trends, including what information may be needed to support the narrative.  This includes information from the final paragraph of the discussion, which was removed.  The new section is included from lines xxx to xxx.
+* __Response__: Thank you for this comment.  We agree this section is important, although it is definitely speculative without more quantitative results that more definitively link the pieces.  As such, we have moved the content to the discussion and amended to text to include a more nuanced description of the trends, including what information may be needed to support the narrative.  This includes information from the final paragraph of the discussion, which was shortened and combined with the prior paragraph.  The new section is included from lines xxx to xxx.
 
 MINOR COMMENTS/SPECIFIC SUGGESTIONS
 
