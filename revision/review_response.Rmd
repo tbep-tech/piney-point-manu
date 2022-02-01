@@ -15,16 +15,18 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 ```
 
 ```{r echo = F, cache = F, eval = F}
-spelling::spell_check_files('revision-response.Rmd')
+spelling::spell_check_files(here::here('revision/review_response.Rmd'))
 ```
 
-We sincerely thank the reviewers for providing comments on our manuscript.  We provide a point-by-point response to these comments below. In general, most of the revisions address concerns raised by all three reviewers, including 1) numerouis edits to improve the writing for clarity and brevity, and 2) additional information on sampling methods.  We have also addressed concerns of Reviewer 2 about potential nutrient cycling by adding a section in the discussion and concerns of Reviewer 4 regarding additional detail on the simulation modelling.    
+We sincerely thank the reviewers for providing comments on our manuscript.  We provide a point-by-point response to these comments below. In general, most of the revisions address concerns raised by all three reviewers, including 1) numerous edits to improve the writing for clarity and brevity, and 2) additional information on sampling methods.  We have also addressed concerns of Reviewer 2 about potential nutrient cycling by adding and expanding a section in the discussion and concerns of Reviewer 4 regarding additional detail on the simulation modelling.    
+
+All page and line numbers in the reviewer comments refer to the original submission.  Page and line numbers noted in our response refer to the revised submission. 
 
 ## Reviewer 1
 
 The authors (a very long list of authors) have described the sequence of events that followed a phosphate mining spill. The paper is long and tedious- and in the end cannot conclude any strong relationships with red tide occurrence. I wish I could be more positive about this paper, but it has the feeling that authors were rushing to get something in press, rather than taking the time to write a well crafted manuscript. There are some very good writers on the list of authors- so I am a bit surprised that they all agreed to this final version.
 
-* __Response__: Thank you for your comments. We have made revisions to improve the writing, by reducing length in many locations and making additional edits where noted. Note that many of the edits in response to the specific comments from the other reviewers are used to address some of the comments below.
+* __Response__: Thank you for your comments. We have made revisions to improve the writing, by reducing length in many locations and making additional edits where noted. Many of the edits in response to the specific comments from the other reviewers are used to address some of the comments below.
 
 graphic abstract- much too complicated; fonts too tiny, too much text
 
@@ -52,6 +54,8 @@ the first paragraph on monitoring is all about modeling, not monitoring
 * __Response__: We have added a "Modeling" sub-section at the beginning of the methods.
 
 p. 7- how were the Karenia data quantified...they didn't just appear in a database.
+
+* __Response__: Text was added: "HAB sampling typically occurs in response to bloom events or fish kills with extensive quality control of cell counts conducted by FWC-FWRI [additional details in @Stumpf22]. HAB data were restricted to Tampa Bay boundaries and over 90\% of the samples were collected within one meter of the surface."
 
 p. 7 - eyes on seagrass is meaningless (except for locals)
 
@@ -89,17 +93,17 @@ Second, a few things that could be improved or warrant some critique. What is th
 
 That said, my one major critique of the manuscript, one that is difficult to reconcile with the available data, is the speculative nature of last section of the Results, titled Potential nutrient cycling. This is clearly a very important section and, in my opinion, warrants additional consideration. The title of this section is correct, yes; thus, I would like to see 1) this section moved to the discussion, 2) the MAJOR lines of evidence supporting this thesis outlined and discussed consecutively in one section, 3) major alternatives entertained and addressed. The authors might also think about what it would take to make the connections more explicit, if possible (stable isotopes, modeling, etc.).
 
-* __Response__: Thank you for this comment.  We agree this section is important, although it is definitely speculative without more quantitative results that more definitively link the pieces.  As such, we have moved the content to the discussion and amended to text to include a more nuanced description of the trends, including what information may be needed to support the narrative.  This includes information from the final paragraph of the discussion, which was shortened and combined with the prior paragraph.  The new section is included from lines xxx to xxx.
+* __Response__: Thank you for this comment.  We agree this section is important, although it is definitely speculative without more quantitative results that definitively link the pieces.  As such, we have moved the content to the discussion and expanded to text to include a more nuanced description of the trends, including what information may be needed to support the narrative.  This includes information from the final paragraph of the discussion, which was shortened and combined with the prior paragraph.  The new section is included from lines xxx to xxx.
 
 MINOR COMMENTS/SPECIFIC SUGGESTIONS
 
 P3/L56: Recommend removing "in other countries". When I read that passage it seems to suggest a broader critique, one that is more political. That may not have been your intention, but that was how I read it.
 
-* __Response__: Our point was to suggest that mining products in Florida are generally exported and have little benefit for the local communities, aside from localized economic benefits.  However, this may be a bit editorialized and was removed. 
+* __Response__: Our point was to suggest that mining products in Florida are generally exported and have little benefit for the local communities.  However, this may be a bit editorialized and was removed. 
 
 P4/L21-24: I am not sure if "unanticipated releases" captures the spirt in which these releases occurred. In fact, the title of the FWC report was "Response of estuarine nekton to the regulated discharge of treated phosphate-production process water". This regulated discharge seemed to occur after extensive consultation with the EPA.
 
-* __Response__: Agreed, we have removed "unanticipated". We agree that the releases often occur after consultation or approval from regulatory bodies, but they are generally unanticipated in that site management has not planned for these events, nor the potential impacts on the environment.
+* __Response__: Agreed, we have removed "unanticipated". We agree that the releases often occur after consultation or approval from regulatory bodies, but they are generally unanticipated in that long-term site management has not planned for these events, nor the potential impacts on the environment.
 
 P4/L51: worth indicating that these concentrations, especially for TP, are several orders of magnitude greater than typical surface waters?
 
@@ -107,7 +111,7 @@ P4/L51: worth indicating that these concentrations, especially for TP, are sever
 
 P4/L56: deliberately "released"
 
-* __Response__: Changed to "released under FDEP authorization". 
+* __Response__: Changed to "From March 30th to April 9th, approximately 814 million liters (215 million gallons) of stack water were released to lower Tampa Bay following an [emergency order](https://floridadep.gov/sites/default/files/21-0323.pdf) authorized by the Florida Department of Environmental Protection (FDEP)."  A similar, redundant sentence earlier in the paragraph was removed.
 
 P5/L4: I see the use of the term lower Tampa Bay; how does that compare to Figure 1, the areas of interest? Ultimately, lower Tampa Bay is used extensively, but I don't see it defined. Also, is this region ecologically based or defined by currents?
 
@@ -117,7 +121,7 @@ P5/L22-27: I think a citation may be warranted here; while predictable, numerous
 
 * __Response__: Agreed, we have revised this statement to include additional citations and explanation:
 
-     "Numerous studies, as well as the successful nutrient management paradigm for Tampa Bay, have demonstrated nitrogen-limitation in Tampa Bay and the system is generally considered phosphorus enriched [@Wang99;@Greening06;@Greening14]. As such, we focus on nitrogen in our analyses as the identified limiting nutrient for Tampa Bay and its potential to create water quality conditions unfavorable for seagrass growth due to enhanced algal production."
+     "Numerous studies, as well as the successful nutrient management paradigm, have demonstrated nitrogen-limitation in Tampa Bay and the system is generally considered phosphorus enriched [@Wang99;@Greening06;@Greening14]. As such, we focus on nitrogen in our analyses as the identified limiting nutrient for Tampa Bay and its potential to create water quality conditions unfavorable for seagrass growth due to enhanced algal production."
 
 P5/L29: interesting that discharge was to Port Manatee and not Bishop Harbor like the release discussed previously.
 
@@ -133,17 +137,17 @@ P6/L54-65: is it routine to take water samples directly from the surface? Ultima
 
 P7/L32-37: why get data from Tampa Airport and the Airfield in St. Petersburg? There is an NWS location not far from Piney Point.
 
-* __Response__: We have updated our weather data to include wind and precipitation from Albert Whitted Field in St. Petersburg and have excluded the precipitation data from Tampa International Airport.  Our initial rationale for using data from Tampa was a longer period of record.  However, we have revised the historical baseline in the plot to include only years 2006 to 2020, consistent with our comparison of the water quality data with historical observations.  Also, the NWS location is in Ruskin, Florida and is farther from the bay proper than the location in St. Petersburg.
+* __Response__: We have updated our weather data to include wind and precipitation from Albert Whitted Field in St. Petersburg and have excluded the precipitation data from Tampa International Airport.  Our initial rationale for using data from Tampa was a longer period of record.  However, we have revised the historical baseline in the plot to include only years 2006 to 2020, consistent with our comparison of the water quality data to historical observations.  Also, the NWS location is in Ruskin, Florida and is farther from the bay proper than the location in St. Petersburg.
 
 P9/L27-29: not sure what to make of the aggregating data to weeks or months; isn't there a way to maintain the actual sampling regime?
 
-* __Response__: The weekly aggregation was only done to allow plotting and comparison between variables on a common scale (e.g., Figure 7 and 8).  None of the statistical tests used data with fixed sample dates. We removed the text because the statement is inaccurate and somewhat misleading.   
+* __Response__: The weekly aggregation was only done to allow plotting and comparison between variables on a common scale (e.g., Figure 6 and 8 in the revised text).  None of the statistical tests used data with fixed sample dates. We removed the text because the statement is inaccurate and somewhat misleading.   
 
 P9/L49: This is a bit confusing; is this comparing "between" pre and post?
 
 * __Response__: No, these tests were meant to compare all observations post-release to help identify periods of time when observations differed, e.g., when chlorophyll was at its maximum.  The text was revised for clarity. 
 
-     "Differences in observations between months for April to September for water quality, seagrass, and macroalgae within each area (Figure \@ref(fig:map)a) were evaluated using a Kruskal-Wallis one-way analysis of variance (ANOVA) followed by multiple comparisons using 2-sided Mann-Whitney U tests [@Hollander13]. These tests were used to statistically characterize the temporal progression of changes in the bay following release from Piney Point."
+     "Differences in observations between months for April to September for water quality, seagrass, and macroalgae within each area (Figure 1a) were evaluated using a Kruskal-Wallis one-way analysis of variance (ANOVA) followed by multiple comparisons using 2-sided Mann-Whitney U tests [@Hollander13]. These tests were used to statistically characterize the temporal progression of changes in the bay following release from Piney Point, e.g., were July conditions significantly different from April?"
 
 P11/L12-14: as personal preference, I see no reason to lead off the results with a general statement about the location of a figure summary. Instead, the authors might reference the figure when they describe, in general, that a bloom was observed ~2 weeks after the release began, red tide was observed within x weeks, the bloom peaks, and conditions become stable on xx.
 
@@ -159,11 +163,11 @@ P11/L31-34: the authors indicate the Tampa Bay influx was related to an ongoing 
 
      "This first Tampa Bay influx originated from an ongoing coastal bloom in the Gulf of Mexico, as is common when red tide is observed in the bay [@Steidinger72;@Flaherty11]."
      
-     Blooms in Tampa Bay originate from *K. brevis* that is transported in from the Gulf of Mexico.  An important distinction that we make in this paper is that, although blooms in Tampa Bay are not uncommon, the severity of the 2021 bloom was very likely related to the favorable conditions in the bay prior to July.  These favorable conditons were related to 1) nutrient availability from Piney Point, and 2) high salinity conditions from low rainfall.  The passage of tropical storm Elsa was also a confounding factor.  It is nearly impossible to identify a single factor causing the observed conditions, but we describe the considerations in the discussion (lines xxx to xxx).
+     Blooms in Tampa Bay originate from *K. brevis* that is transported in from the Gulf of Mexico.  An important distinction that we make in this paper is that, although blooms in Tampa Bay are not uncommon, the severity of the 2021 bloom was very likely related to the favorable conditions in the bay prior to July.  These favorable conditions were described in the paper as 1) nutrient availability from Piney Point, and 2) high salinity conditions from low rainfall.  The passage of tropical storm Elsa was also a confounding factor.  It is nearly impossible to identify a single factor causing the observed conditions, but we describe the considerations in the discussion (lines xxx to xxx).
 
 P16/L26: not sure I see the rationale for analyzing the data using Braun Blanquet estimates, which, in my impression, was developed as a rapid assessment
 
-* __Response__: Seagrass transect monitoring in Tampa Bay has occurred annually since the mid-1990s using similar methods as in this paper [i.e., @Sherwood17].  The primary difference for the routine monitoring is the transect length, which is typically much longer than the 50m used in the 2021 rapid design. This shorter distance was chosen to allow for quicker sampling times and greater coverage in response to the rapidly changing conditions in 2021.  Thus, we consider the rapid design as providing data that are of similar quality to the long-term data, with notable exceptions indicated in the mansucript (i.e., no seasonal estimates).  Our rationale for evaluating Braun Blanquet coverage was to verify the results obtained evaluating frequency occurrence estimates.  Line xxx was modified to make this clear:
+* __Response__: Seagrass transect monitoring in Tampa Bay has occurred annually since the mid-1990s using similar methods as in this paper [i.e., @Sherwood17].  The primary difference for the annual monitoring is the transect length, which is typically much longer than the 50m used in the 2021 rapid design. This shorter distance was chosen to allow for quicker sampling times and greater coverage in response to the rapidly changing conditions in 2021.  Thus, the rapid design provides data that are similar quality to the long-term data, with notable exceptions indicated in the manuscript (i.e., no seasonal estimates).  Our rationale for evaluating Braun Blanquet coverage was to verify the results obtained evaluating frequency occurrence estimates.  Line xxx was modified to make this clear:
 
      "Tests using Braun Blanquet cover estimates confirmed the results from the frequency occurrence estimates (Tables S3, S4)."
 
@@ -173,7 +177,7 @@ P17/Potential nutrient cycling: Unfortunately, much of the latter portions of th
 
 P18/L18: or a shift in the relative availability, N:P
 
-* __Response__: Added text "...or changing availability of nutrient ratios."
+* __Response__: Added text "...or changing availability of nutrient ratios creating favorable conditions for macroalgae growth [@Valiela97;@Cohen06]."
 
 ## Reviewer 4
 
@@ -183,7 +187,7 @@ This is an interesting study in that it utilizes a quasi-Lagrangian approach to 
 
 Page 1, Line 38 - "Elevated levels of phytoplankton" - needs to be clearer… is this referring to biomass or abundance?
 
-* __Response__: This line was changed to "An initial phytoplankton bloom (non-harmful diatoms) was first observed...".  This was based on chlorohpyll measurements in the vicinity of Port Manataee and cell concentrations enumerated to taxa from laboratory analysis.  The word limit for the abstract prevents these details, but they are presented in text (i.e., line xxx and xxx).
+* __Response__: This line was changed to "An initial phytoplankton bloom (non-harmful diatoms) was first observed...".  This was based on chlorophyll measurements in the vicinity of Port Manataee and cell concentrations enumerated to taxa from laboratory analysis.  The word limit for the abstract prevents these details, but they are presented in text (i.e., line xxx and xxx).
 
 Pages 6, Lines 4-22 - The sampling regime was largely dictated by output of a model of plume evolution. It would be useful to see more details on how the model is calibrated, and if/how its output is cross-verified. In other words, are field observations of T/S compared with model output to evaluate its performance in terms of accuracy of plume location? This seems like critical information for assuring that the sampling regime actually followed the plume.
 
@@ -195,7 +199,7 @@ Pages 6, Lines 4-22 - The sampling regime was largely dictated by output of a mo
 
      Liu, Y., Weisberg, R.H., Zheng, L., Sun, Y., Chen, J. (2021), Nowcast/Forecast of the Tampa Bay, Piney Point Effluent Plume: A Rapid Response, Coastal and Estuarine Research Federation (CERF) 2021 Virtual Meeting, November 2021.
 
-     Lines xxx were edited to include some of the above details: "The modeled plume evolution web product (http://ocgweb.marine.usf.edu/~liu/Tracer/) served as the principal guidance for coordinating the data collection during the event. Preliminary model results were reported in @Liu21."
+     Lines xxx were edited to include some of the above details: "The modeled plume evolution web product (http://ocgweb.marine.usf.edu/~liu/Tracer/) served as the principal guidance for coordinating the data collection during the event. Preliminary model results for Piney Point are reported in @Liu21 and previous model veracity testing was described in @Chen18 and @Chen19 (and references therein)"
      
 Page 6, Lines 46-54 - More information is needed on laboratory procedures. In particular, with many different entities running samples and presumably utilizing different analytical approaches for each variable, it is important to know how comparable the data is between programs.
 
@@ -209,7 +213,7 @@ Page 7, Line 22 - Were the breakpoints for K. brevis, or total phytoplankton abu
 
 Page 7, Line 37 - What about from ungauged flows?
 
-* __Response__: Our methods for estimating inflows into Tampa Bay are based on methods that are similarly presented in a technical report published by the Tampa Bay Estuary Program in 2012 [@Janicki12].  This report provides the basis for compliance assessment of our TMDL for reporting to the Florida Department of Environmental Protection and represents our best estimate at hydrologic load inputs to the bay.  We have provided a citation to this report in the paper.
+* __Response__: Our methods for estimating inflows into Tampa Bay are based on those similarly presented in a technical report published by the Tampa Bay Estuary Program [@Janicki12].  This report provides the basis for compliance assessment of our TMDL for reporting to the Florida Department of Environmental Protection and represents our best estimate at hydrologic load inputs to the bay.  We have provided a citation to this report in the paper.
 
 Page 11, Line 30 - Need to put Anna Maria Sound on the map. Likewise for Port Manatee.
 
@@ -225,13 +229,13 @@ Page 14, Macroalgae and seagrass trends section - This appears to be one of the 
 
      "Frequency occurrence estimates were used to evaluate macroalgae and seagrasses as a standard metric used in previous analyses in Tampa Bay [@Johansson16;@Sherwood17]."
 
-     We realize that additional metrics could have been used to summarize the data and we presented trend assessments using the Braun-Blanquet abundance estimates as confirmation for the results from the frequency occurrence analyses (line xxx).  However, this does not provide an assessment of biomass or coverage.  Weight data were collected for select macroalgae samples during the 2021 surveys and a preliminary analysis (see the Seagrass -> Biomass estimates tab [here](https://tbep-tech.github.io/piney-point-analysis/trend)) suggested similar trends as the frequnecy occurrence results.  Because we did not have comparable weight data for seagrasses, the analysis was not included.  It is also worth mentioning that coverage estimates are obtained every two years for Tampa Bay as an annual snapshot (noted on line xxx in the discussion), but these are not of sufficient temporal resolution to support the analyses in this paper. 
+     We realize that additional metrics could have been used to summarize the data and we presented trend assessments using the Braun-Blanquet abundance estimates as confirmation for the results from the frequency occurrence analyses (line xxx).  However, this does not provide an assessment of biomass or coverage.  Weight data were collected for select macroalgae samples during the 2021 surveys and a preliminary analysis (see the Seagrass -> Biomass estimates tab [here](https://tbep-tech.github.io/piney-point-analysis/trend)) suggested similar trends as the frequency occurrence results.  Because we did not have comparable weight data for seagrasses, the analysis was not included.  It is also worth mentioning that coverage estimates are obtained every two years for Tampa Bay as an annual snapshot (noted on line xxx in the discussion), but these are not of sufficient temporal resolution to support the analyses in this paper. 
 
      There were limitations to our analysis that were noted in the original draft, primarily the lack of long-term historical data on seasonal trends for seagrasses and macroalgae.  For example, line xxx in the original discussion: "Long-term monitoring data describing normal seasonal variation in macroalgae are unavailable and we cannot distinguish between seasonal and interannual changes and those in potential response to the Piney Point release." 
      
 Page 17, Lines 17-20 - How did the 2021 fish kills compare to historical kill spatial-temporal trends?
 
-* __Response__: We were also interested in this question and had included a long-term trend plot in an earlier draft, with results as early as 1995 (see [here](https://github.com/tbep-tech/piney-point-manu/blob/c45049af6885e1e7d29aeb414d161a0ce4bdeadb/figs/redtide.jpeg)).  However, this was not included due to differences in reporting methods that have changed over time.  Online reporting became an option in recent years and we considered the results incomparable to the earlier data that were based on phone reporting methods.
+* __Response__: We were also interested in this question and had included a long-term trend plot in an earlier draft, with results as early as 1995 (see [here](https://github.com/tbep-tech/piney-point-manu/blob/c45049af6885e1e7d29aeb414d161a0ce4bdeadb/figs/redtide.jpeg)).  However, this was not included due to differences in reporting methods that have changed over time.  Online reporting became available in recent years and we considered the results incomparable to the earlier data that were based on phone reporting methods.
 
 Page 17, Lines 37-40 - Could there have been a role for low D.O. in the post-storm fish kills?
 
@@ -251,7 +255,7 @@ Page 20, Line 39 - Might be worth having a separate paragraph that talks about t
 
 * __Response__: Previous content in the discussion below this paragraph provided some historical context on red tide events in the region.  Specifically, starting on line xxx: "Occurrence of this species has historically been spatially distinct, with blooms originating in subsurface water offshore on the West Florida Shelf..." 
 
-     We have added some text below the existing pararaph to provide more context: "Seasonal persistence in Gulf waters in southwest Florida can vary between years, with some blooms lasting as short as a few weeks, while others have been present for longer than a year [the 2018 bloom lasted sixteen months, @Skripnikov21]. Severity in estuaries is typically less than Gulf waters as *K. brevis* is limited to higher salinity." 
+     We have added some text below the existing paragraph to provide more context: "Seasonal persistence in Gulf waters in southwest Florida can vary between years, with some blooms lasting as short as a few weeks, while others have been present for longer than a year [the 2018 bloom lasted sixteen months, @Skripnikov21]. Severity in estuaries is typically less than Gulf waters as *K. brevis* is limited to higher salinity." 
 
 Page 20 (last paragraph)-21 (first paragraph) - Without showing methods and/or data, I feel that it is inappropriate to introduce the nekton abundance/composition here.
 
