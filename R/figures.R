@@ -270,10 +270,6 @@ jpeg(here('revision/Fig1.jpeg'), height = 4.2, width = 9, family = 'serif', unit
 print(pout)
 dev.off()
 
-# timeline copy -----------------------------------------------------------
-
-file.copy(here('figs/timeline.jpg'), here('revision/Fig2.jpg'))
-
 # nutrients, chloropyll, secchi map ---------------------------------------
 
 # nonbay stations
@@ -411,7 +407,7 @@ jpeg(here('figs/wqmap.jpeg'), height = 7, width = 12, units = 'in', res = 500, f
 print(p)
 dev.off()
 
-jpeg(here('revision/Fig3.jpeg'), height = 7, width = 12, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig2.jpeg'), height = 7, width = 12, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -445,7 +441,7 @@ jpeg(here('figs/wqgam.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, 
 print(p)
 dev.off()
 
-jpeg(here('revision/Fig4.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig3.jpeg'), height = 6, width = 8.5, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -484,7 +480,7 @@ jpeg(here('figs/trnex.jpeg'), height = 7, width = 8, units = 'in', res = 500, fa
 print(p)
 dev.off()
 
-jpeg(here('revision/Fig5.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig4.jpeg'), height = 7, width = 8, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -616,7 +612,7 @@ jpeg(here('figs/trnfrq.jpeg'), height = 6, width = 9, units = 'in', res = 500, f
 print(p)
 dev.off()
 
-jpeg(here('revision/Fig6.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig5.jpeg'), height = 6, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
 
@@ -969,9 +965,13 @@ jpeg(here('figs/redtide.jpeg'), height = 11, width = 9, units = 'in', res = 500,
 print(p)
 dev.off()
 
-jpeg(here('revision/Fig7.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
+jpeg(here('revision/Fig6.jpeg'), height = 11, width = 9, units = 'in', res = 500, family = 'serif')
 print(p)
 dev.off()
+
+# timeline copy -----------------------------------------------------------
+
+file.copy(here('figs/timeline.jpg'), here('revision/Fig7.jpg'))
 
 # nutrient flow -----------------------------------------------------------
 

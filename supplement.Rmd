@@ -75,7 +75,7 @@ knitr::include_graphics(here('figs/trnabu-supp.jpeg'))
 knitr::include_graphics('figs/windroses-supp.jpeg')
 ```
 
-```{r phymcrfoest-supp, fig.cap = 'Frequency occurrence estimates for (a) phytoplankton (diatoms and *K. brevis*) and (b) macroalgae groups. Frequency occurrence estimates are aggregated by week of observation based on all sample locations where a phytoplankton or macroalgal taxa was observed divided by all sample locations in a week.  Estimates are not additive and are specific to each taxa.  Sample dates are noted by vertical grey lines in each plot. Diatoms are based on presence/absence of *Asterionellopsis sp*. and *Skeletonema sp*.  Note that frequency occurrence is not a precise measure of cell concentrations.'}
+```{r phymcrfoest-supp, fig.cap = 'Frequency occurrence estimates for (a) phytoplankton (diatoms and *K. brevis*) and (b) macroalgae groups. Frequency occurrence estimates are aggregated by week of observation based on all sample locations where a phytoplankton or macroalgal taxa was observed divided by all sample locations in a week.  Estimates are not additive and are specific to each taxa.  Sample dates are noted by vertical grey lines in each plot. Diatoms are based on presence/absence of *Asterionellopsis sp*. and *Skeletonema sp*.'}
 knitr::include_graphics('figs/phymcrfoest-supp.jpeg')
 ```
 
