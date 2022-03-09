@@ -50,8 +50,12 @@ This is a nice paper that addresses the effects of a high visibility/publicity w
 
 3. The authors argue in several locations that elevated salinities are conducive to K. brevis growth. Need references to support this.
 
+     * __Response__: We have added citations to the discussion, second to last paragraph: "Severe *K. brevis* blooms are rarer in estuaries because high abundances are most common at higher salinities typical of coastal or oceanic waters [@Steidinger98;@Villac20]."
+
 4. The discussion is awkwardly laid out, e.g., the first paragraph of "Additional interpretation of impacts" would seemingly belong in the previous section on "Nutrient cycling".
 
 5. In the discussion section on seagrass impacts, there is a sentence that is confusing and possibly contradictory: "The results observed in 2021 suggested water quality conditions were not supportive of seagrass growth, although changes were not observed and the conditions likely did not persist long enough to impact seagrasses."
+
+     * __Response__: This sentence was revised as "Water quality results in 2021 suggested that conditions may have been light-limiting for seagrass growth (e.g., high chlorophyll concentrations, low secchi observations), although the conditions likely did not persist long enough to impact seagrasses."
 
 # References
