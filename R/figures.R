@@ -1226,6 +1226,7 @@ p5 <- ggplot(toplo2, aes(x = week, y = medv)) +
   scale_y_continuous(labels = function(x) as.numeric(format(x, scientific = FALSE))) +
   scale_x_date(breaks = brks, date_labels = '%b %d', limits = range(brks), expand = c(0.01, 0.01)) +
   # geom_hline(aes(yintercept = 1e5, color = 'Bloom\nconcentration')) +
+  coord_cartesian(ylim = c(0, 5e6)) +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1),

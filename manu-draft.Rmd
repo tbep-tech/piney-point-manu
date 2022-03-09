@@ -1,5 +1,5 @@
 ---
-title: "Initial estuarine response to the nutrient-rich Piney Point release into Tampa Bay, Florida"
+title: "Initial estuarine response to inorganic nutrient inputs from a legacy mining facility to Tampa Bay, Florida"
 output: 
   bookdown::word_document2:
     reference_docx: my_styles.docx
@@ -59,7 +59,7 @@ spelling::spell_check_files(here::here('manu-draft.Rmd'))
 
 Legacy mining facilities pose significant risks to aquatic resources.  From March 30th to April 9th, 2021, 814 million liters of phosphate mining wastewater and marine dredge water from the Piney Point facility were released into lower Tampa Bay (Florida, USA). This resulted in an estimated addition of 186 metric tons of total nitrogen, exceeding typical annual external nitrogen load estimates to lower Tampa Bay in a matter of days. An initial phytoplankton bloom (non-harmful diatoms) was first observed in April. Filamentous cyanobacteria blooms (*Dapis* spp.) peaked in June, followed by a bloom of the red tide organism *Karenia brevis*. Reported fish kills tracked *K. brevis* concentrations, prompting cleanup of over 1600 metric tons of dead fish. Seagrasses had minimal changes over the study period.  By comparing these results to baseline environmental monitoring data, we demonstrate adverse water quality changes in response to abnormally high and rapidly delivered nitrogen loads.
 
-*Key words*: eutrophication, macroalgae, nitrogen, phosphate mining, seagrass, Tampa Bay
+*Key words*: macroalgae, nitrogen, phosphate mining, Piney Point, seagrass, Tampa Bay
 
 # Introduction
 
@@ -379,7 +379,7 @@ knitr::include_graphics('figs/redtide.jpeg')
 knitr::include_graphics(here('figs/timeline.jpg'))
 ```
 
-```{r nutrientflow, fig.cap = 'Weekly summarized observations (medians, 2.5th to 97.5th percentiles) across all sampled locations for (a) total nitrogen concentrations, (b) chlorophyll-a concentrations, (c) diatom cell concentrations, (d) filamentous cyanobacteria abundances, and (e) *Karenia brevis* cell concentrations.  Values are summarized for all samples within each week.  The values suggest nutrient cycling between water column phytoplankton in the initial April diatom bloom, then to filamentous cyanobacteria in May to June, and then to *K. brevis* peaking in early July. Quantitative cell counts for diatoms are missing for several weeks, but see Figure S6 for frequency occurrence estimates across all dates.  Diatom concentrations are based on combined cell counts from *Asterionellopsis* sp. and *Skeletonema sp*.'}
+```{r nutrientflow, fig.cap = 'Weekly summarized observations (medians, 2.5th to 97.5th percentiles) across all sampled locations for (a) total nitrogen concentrations, (b) chlorophyll-a concentrations, (c) diatom cell concentrations, (d) filamentous cyanobacteria abundances, and (e) *Karenia brevis* cell concentrations.  Values are summarized for all samples within each week.  The values suggest nutrient cycling between water column phytoplankton in the initial April diatom bloom, then to filamentous cyanobacteria in May to June, and then to *K. brevis* peaking in early July.  The upper limit of the y-axis on (e) is truncated to emphasize trends. Quantitative cell counts for diatoms are missing for several weeks, but see Figure S6 for frequency occurrence estimates across all dates.  Diatom concentrations are based on combined cell counts from *Asterionellopsis* sp. and *Skeletonema sp*.'}
 knitr::include_graphics('figs/nutrientflow.jpeg')
 ```
 

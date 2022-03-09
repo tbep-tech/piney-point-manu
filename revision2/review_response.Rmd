@@ -18,19 +18,25 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 spelling::spell_check_files(here::here('revision2/review_response.Rmd'))
 ```
 
-We sincerely thank the reviewers again for providing comments on our manuscript.  As before, we provide a point-by-point response to these comments below. 
-
-All page and line numbers in the reviewer comments refer to the revised manuscript from the previous submission.
+We sincerely thank the reviewers again for providing comments on our manuscript.  As before, we provide a point-by-point response to these comments below. All page and line numbers in the reviewer comments refer to the revised manuscript from the previous submission.
 
 ## Reviewer 1
 
 This revised version is significantly improved compared to the first submission. However, there are still some issues that need addressing. It remains an overall descriptive study with little or no mechanistic understanding of why the bloom happened- but perhaps that is OK. The writing is better.
 
+* __Response__: Thank you for your comments and we are pleased to hear that the draft has improved. We have addressed the remaining concerns below.   
+
 Title- no one other than local people will know what a Piney Point is. Needs revision to something along the lines of: Initial estuarine response to a spill of phosphate mining waste: time course of a red tide following  the Piney Point spill in Tampa Bay, USA
+
+* __Response__: Agreed, the title has been changed to "Initial estuarine response to inorganic nutrient inputs from a legacy mining facility to Tampa Bay, Florida".  However, we have aded "Piney Point" to the key words to assist with article indexing.
 
 The graphics abstract needs a lot of work. It has far too many words and too much detail. Such an abstract is intended as a tease, not as a way to condense every detail of the paper. The little blurred icons are not helpful- I can't even tell what some of the blobs are supposed to represent. No one needs dates and every detail for this presentation. It should not be a miniaturized poster. Simplify, simplify. Key points: the spill and the bloom followed.
 
+* __Response__: The graphical abstract has again been revised for simplicity.  We have enlarged the icons, removed unnecessary icons, and simplified the text.  
+
 Figure 8d looks like K brevis occurred on only 1 day or 2-- odd.
+
+* __Response__: Each point on the x-axis is one week.  However, the upper limit of the y-axis was truncated to better emphasize the date ranges within which *K. brevis* was observed. This is also noted in the figure caption.
 
 The paper lays out a lot of background and will be helpful to follow up papers.
 
