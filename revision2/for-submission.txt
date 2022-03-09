@@ -1,0 +1,12 @@
+For MPB submission:
+
+* remove line numbers from manu and supp
+* remove date compiled from manu
+* remove figures from manu, title as fig captions
+* format tables so no page breaks, header font size 12, body font size 10
+* manuscript main text double space
+* Demote subsections in main text in navigation pane so font is smaller
+* add S prefix to figure and table captions in supplement
+* make tables, figs, refs on new page in main text and supplement
+* add line below paragraph start for fig, table, ref headers
+* replace xxx in review response with page numbers

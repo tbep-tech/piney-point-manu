@@ -1,0 +1,51 @@
+---
+output: 
+  bookdown::word_document2:
+    reference_docx: response_styles.docx
+    number_sections: false
+always_allow_html: true
+urlcolor: blue
+link-citations: true
+bibliography: ../refs.bib
+---
+
+```{r setup, echo = F, warning = F, message = F, results = 'hide'}
+# figure path, chunk options
+knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, cache = F, dev.args = list(family = 'serif'), dpi = 300, warning = F)
+```
+
+```{r echo = F, cache = F, eval = F}
+spelling::spell_check_files(here::here('revision2/review_response.Rmd'))
+```
+
+We sincerely thank the reviewers again for providing comments on our manuscript.  As before, we provide a point-by-point response to these comments below. 
+
+All page and line numbers in the reviewer comments refer to the revised manuscript from the previous submission.
+
+## Reviewer 1
+
+This revised version is significantly improved compared to the first submission. However, there are still some issues that need addressing. It remains an overall descriptive study with little or no mechanistic understanding of why the bloom happened- but perhaps that is OK. The writing is better.
+
+Title- no one other than local people will know what a Piney Point is. Needs revision to something along the lines of: Initial estuarine response to a spill of phosphate mining waste: time course of a red tide following  the Piney Point spill in Tampa Bay, USA
+
+The graphics abstract needs a lot of work. It has far too many words and too much detail. Such an abstract is intended as a tease, not as a way to condense every detail of the paper. The little blurred icons are not helpful- I can't even tell what some of the blobs are supposed to represent. No one needs dates and every detail for this presentation. It should not be a miniaturized poster. Simplify, simplify. Key points: the spill and the bloom followed.
+
+Figure 8d looks like K brevis occurred on only 1 day or 2-- odd.
+
+The paper lays out a lot of background and will be helpful to follow up papers.
+
+## Reviewer 2
+
+This is a nice paper that addresses the effects of a high visibility/publicity wastewater spill on an iconic estuary (Tampa bay). Most of my comments were addressed, but there are still a few issues that need additional attention.
+
+1. The authors didn't address my question of how the plume model was verified, other than to point to a couple of papers. I read those papers and don't fully understand them as I am not a physical oceanographer, but as far as I could tell, neither paper clearly stated how verification was made using field observations. Given that this paper is likely to be read mostly by water quality experts and not physical oceanographers, I feel strongly that the authors need to include a brief (plain language… not physical oceanographer-speak) description of modeled plume verification, especially considering that the field sampling and interpretation of results is so strongly dependent on accurate quantification of plume evolution.
+
+2. The authors speculate that nutrients were likely a driver of the abnormally high K. brevis abundances during the study. Is there any way to determine if the abundances observed in Tampa Bay were a result of growth vs. a physical concentration mechanism? This seems like it would be a good first step for giving the reader some confidence that nutrients from Piney Point played a role. For example, if you know the initial abundance coming into Tampa Bay via the inlet, can the plume model be used to estimate transit time to whatever location/time point maximum abundances were observed, and from that, can you use known growth rates to determine if those abundances are logical based on growth alone vs physical concentration?
+
+3. The authors argue in several locations that elevated salinities are conducive to K. brevis growth. Need references to support this.
+
+4. The discussion is awkwardly laid out, e.g., the first paragraph of "Additional interpretation of impacts" would seemingly belong in the previous section on "Nutrient cycling".
+
+5. In the discussion section on seagrass impacts, there is a sentence that is confusing and possibly contradictory: "The results observed in 2021 suggested water quality conditions were not supportive of seagrass growth, although changes were not observed and the conditions likely did not persist long enough to impact seagrasses."
+
+# References
