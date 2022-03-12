@@ -6,6 +6,7 @@ output:
 always_allow_html: true
 urlcolor: blue
 link-citations: true
+csl: ../marine-pollution-bulletin.csl
 bibliography: ../refs.bib
 ---
 
@@ -44,15 +45,21 @@ The paper lays out a lot of background and will be helpful to follow up papers.
 
 This is a nice paper that addresses the effects of a high visibility/publicity wastewater spill on an iconic estuary (Tampa bay). Most of my comments were addressed, but there are still a few issues that need additional attention.
 
+* __Response__: Thank you again for your comments. We have made efforts to address your final concerns as noted below.
+
 1. The authors didn't address my question of how the plume model was verified, other than to point to a couple of papers. I read those papers and don't fully understand them as I am not a physical oceanographer, but as far as I could tell, neither paper clearly stated how verification was made using field observations. Given that this paper is likely to be read mostly by water quality experts and not physical oceanographers, I feel strongly that the authors need to include a brief (plain language… not physical oceanographer-speak) description of modeled plume verification, especially considering that the field sampling and interpretation of results is so strongly dependent on accurate quantification of plume evolution.
 
 2. The authors speculate that nutrients were likely a driver of the abnormally high K. brevis abundances during the study. Is there any way to determine if the abundances observed in Tampa Bay were a result of growth vs. a physical concentration mechanism? This seems like it would be a good first step for giving the reader some confidence that nutrients from Piney Point played a role. For example, if you know the initial abundance coming into Tampa Bay via the inlet, can the plume model be used to estimate transit time to whatever location/time point maximum abundances were observed, and from that, can you use known growth rates to determine if those abundances are logical based on growth alone vs physical concentration?
 
+     * __Response__: These are all valid points when considering the potential mechanisms driving the observed red tide in 2021.  However, without additional data on timing and locations of cell concentrations and substantial modelling efforts, we cannot fully address this question.  We do note in several locations in the discussion that the bloom did originate in the Gulf of Mexico, yet the availability of nutrients from Piney Point very likely increased the severity of the bloom in July.  We provide some additional citations in the discussion to make this point more clearly [@Medina20;@Medina22].  
+     
 3. The authors argue in several locations that elevated salinities are conducive to K. brevis growth. Need references to support this.
 
      * __Response__: We have added citations to the discussion, second to last paragraph: "Severe *K. brevis* blooms are rarer in estuaries because high abundances are most common at higher salinities typical of coastal or oceanic waters [@Steidinger98;@Villac20]."
 
 4. The discussion is awkwardly laid out, e.g., the first paragraph of "Additional interpretation of impacts" would seemingly belong in the previous section on "Nutrient cycling".
+
+     * __Response__: This paragraph was moved to the preceding section.
 
 5. In the discussion section on seagrass impacts, there is a sentence that is confusing and possibly contradictory: "The results observed in 2021 suggested water quality conditions were not supportive of seagrass growth, although changes were not observed and the conditions likely did not persist long enough to impact seagrasses."
 
